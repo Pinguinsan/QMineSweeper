@@ -1,2 +1,4 @@
 # QMineSweeper
-The game of minesweeper, written in C++ using the Qt framework
+MineSweeper in C++ using the Qt 5.5 framework
+
+Hello, World!

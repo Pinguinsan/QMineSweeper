@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/mine-icons">
+        <file>png/mine-icons/16-qminesweeper.png</file>
+        <file>png/mine-icons/24-qminesweeper.png</file>
+        <file>png/mine-icons/32-qminesweeper.png</file>
+        <file>png/mine-icons/48-qminesweeper.png</file>
+        <file>png/mine-icons/64-qminesweeper.png</file>
+        <file>png/mine-icons/72-qminesweeper.png</file>
+        <file>png/mine-icons/96-qminesweeper.png</file>
+        <file>png/mine-icons/128-qminesweeper.png</file>
+    </qresource>
+    <qresource prefix="/status-icons">
+        <file>png/status-icons/question-mark.png</file>
+        <file>png/status-icons/flag.png</file>
+        <file>png/status-icons/flag-x.png</file>
+        <file>png/status-icons/flag-check.png</file>
+    </qresource>
+    <qresource prefix="/surrounding-mine-icons">
+        <file>png/surrounding-mine-icons/1.png</file>
+        <file>png/surrounding-mine-icons/2.png</file>
+        <file>png/surrounding-mine-icons/3.png</file>
+        <file>png/surrounding-mine-icons/4.png</file>
+        <file>png/surrounding-mine-icons/5.png</file>
+        <file>png/surrounding-mine-icons/6.png</file>
+        <file>png/surrounding-mine-icons/7.png</file>
+        <file>png/surrounding-mine-icons/8.png</file>
+    </qresource>
+    <qresource prefix="/face-icons">
+        <file>png/face-icons/big-smiley-face.png</file>
+        <file>png/face-icons/crazy-face.png</file>
+        <file>png/face-icons/frowny-face.png</file>
+        <file>png/face-icons/sleepy-face.png</file>
+        <file>png/face-icons/smiley-face.png</file>
+        <file>png/face-icons/winky-face.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,65 @@
+/***********************************************************************
+*    minecoordinates.h:                                                *
+*    Custom pair class that includes the x and y coordinates for mines *
+*    Copyright (c) 2016 Tyler Lewis                                    *
+************************************************************************
+*    This is a header file for QMineSweeper:                           *
+*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    This file contains the declarations for a custom pair class       *
+*    MineCoordinates serve as the x and y (or row and column)          *
+*    coordinates for mines, abstracted so as not use use a lot of      *
+*    unnamed std::pair<int, int> data structures                       *
+*    The source code is released under the LGPL                        *
+*                                                                      *
+*    You should have received a copy of the GNU Lesser General         *
+*    Public license along with QMineSweeper                            *
+*    If not, see <http://www.gnu.org/licenses/>                        *
+***********************************************************************/
+
+#ifndef QMINESWEEPER_MINECOORDINATES_H
+#define QMINESWEEPER_MINECOORDINATES_H
+
+#include <functional>
+#include <algorithm>
+#include <memory>
+#include <iostream>
+#include <tuple>
+
+#include "qminesweeperutilities.h"
+
+class MineCoordinates
+{
+
+public:
+    MineCoordinates(int X, int Y);
+    MineCoordinates(const std::pair<int, int> xy);
+
+    int X() const;
+    void setX(int X);
+
+    int Y() const;
+    void setY(int Y);
+
+    bool operator==(const MineCoordinates &compareObject) const;
+    bool operator==(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator<(const MineCoordinates &compareObject) const;
+    bool operator<(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator<=(const MineCoordinates &compareObject) const;
+    bool operator<=(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator>(const MineCoordinates &compareObject) const;
+    bool operator>(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator>=(const MineCoordinates &compareObject) const;
+    bool operator>=(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    friend std::ostream& operator<<(std::ostream &os, const MineCoordinates &mc);
+    friend std::ostream& operator<<(std::ostream &os, const std::shared_ptr<MineCoordinates> &mc);
+
+    static std::shared_ptr<MineCoordinates> generateRandomMineCoordinatesPtrInBounds(int maxColumn, int maxRow);
+    static MineCoordinates generateRandomMineCoordinatesInBounds(int maxColumn, int maxRow);
+
+private:
+    int m_x;
+    int m_y;
+
+};
+
+#endif //QMINESWEEPER_MINECOORDINATES_H
