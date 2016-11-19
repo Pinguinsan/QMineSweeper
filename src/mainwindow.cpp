@@ -539,7 +539,7 @@ void MainWindow::updateUserIdleTimer()
         this->m_userIdleTimer->update();
     }
     if (this->m_gcPtr->gameState() == GameState::GAME_ACTIVE) {
-        if (this->m_userIdleTimer->totalTimeMilliseconds() >= this->m_gcPtr->DEFAULT_SLEEPY_FACE_TIMEOUT()) {
+        if (this->m_userIdleTimer->totalTime() >= this->m_gcPtr->DEFAULT_SLEEPY_FACE_TIMEOUT()) {
             this->m_ui->resetButton->setIcon(this->m_qmsiPtr->FACE_ICON_SLEEPY);
         }
     }

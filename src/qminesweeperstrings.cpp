@@ -34,7 +34,7 @@ QMineSweeperStrings::QMineSweeperStrings() :
     UNCOVERED_MINE_STYLESHEET{"color: rgb(255, 0, 0); background-color: rgb(255, 0, 0);"},
     CONFIGURATION_FILE_NAME{"qminesweeper.config"},
     #if (defined(_WIN32) || defined(__CYGWIN__))
-        const std::string DEFAULT_CONFIGUATION_FILE{""},
+        DEFAULT_CONFIGUATION_FILE{""},
     #else
         DEFAULT_CONFIGURATION_FILE{"~/.local/qminesweeper/qminesweeper.config"},
     #endif

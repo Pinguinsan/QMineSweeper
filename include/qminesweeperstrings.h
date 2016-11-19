@@ -19,6 +19,7 @@
 #ifndef QMINESWEEPERSTRINGS_H
 #define QMINESWEEPERSTRINGS_H
 
+#include <string>
 
 class QMineSweeperStrings
 {
