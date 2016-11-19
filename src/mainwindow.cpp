@@ -43,21 +43,12 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
                        std::shared_ptr<QDesktopWidget> qdwPtr,
                        QWidget *parent) :
     QMainWindow{parent},
-#if defined(__ANDROID__)
-    m_eventTimer{new QTimer()},
-    m_playTimer{new GameTimer()},
-    m_userIdleTimer{new GameTimer()},
-    m_bsui{new Ui::Dialog()},
-    m_ui{new Ui::MainWindow()},
-    m_boardSizeDialog{new CustomDialog()},
-#else
     m_eventTimer{std::make_unique<QTimer>()},
     m_playTimer{std::make_unique<EventTimer>()},
     m_userIdleTimer{std::make_unique<EventTimer>()},
     m_bsui{std::make_unique<Ui::Dialog>()},
     m_ui{std::make_unique<Ui::MainWindow>()},
     m_boardSizeDialog{std::make_unique<CustomDialog>()},
-#endif
     m_qmsiPtr{qmsiPtr},
     m_qmssePtr{qmssePtr},
     m_qmsstrPtr{qmsstrPtr},
@@ -113,12 +104,11 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
     connect(this, SIGNAL(mineExplosionEvent()), this->m_gcPtr.get(), SLOT(onMineExplosionEventTriggered()));
     connect(this->m_gcPtr.get(), SIGNAL(mineExplosionEvent()), this, SLOT(onMineExplosionEventTriggered()));
     connect(this->m_boardSizeDialog.get(), SIGNAL(aboutToClose()), this, SLOT(onCustomDialogClosed()));
+    std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qdwPtr->availableGeometry())};
 
     #if defined(__ANDROID__)
-        std::unique_ptr<QRect> avail{new QRect(this->m_qDesktopWidget->availableGeometry())};
         this->m_reductionSizeScaleFactor = 1;
     #else
-        std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qdwPtr->availableGeometry())};
         if (avail->height() > 800) {
             this->m_reductionSizeScaleFactor = 16.0;
         } else {
@@ -154,6 +144,7 @@ void MainWindow::hideEvent(QHideEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     emit(gamePaused());
+    /*
     QMessageBox::StandardButton userReply;
     userReply = QMessageBox::question(this, this->m_qmsstrPtr->CLOSE_APPLICATION_WINDOW_TITLE, this->m_qmsstrPtr->CLOSE_APPLICATION_WINDOW_PROMPT, QMessageBox::Yes|QMessageBox::No);
     if (userReply == QMessageBox::Yes) {
@@ -166,6 +157,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
             emit (gameResumed());
         }
     }
+    */
 }
 
 void MainWindow::onCustomDialogClosed()
@@ -201,11 +193,7 @@ void MainWindow::onGameWon()
             tempMsb->setIsRevealed(true);
         }
     }
-#if defined(__ANDROID__)
-    std::unique_ptr<QMessageBox> winBox{new QMessageBox()};
-#else
     std::unique_ptr<QMessageBox> winBox{std::make_unique<QMessageBox>()};
-#endif
     winBox->setWindowTitle(this->m_qmsstrPtr->MAIN_WINDOW_TITLE);
     winBox->setText(this->m_qmsstrPtr->WIN_DIALOG_BASE + toQString(this->m_gcPtr->numberOfMovesMade()) + this->m_qmsstrPtr->WIN_DIALOG_MIDDLE + this->statusBar()->currentMessage());
     winBox->setWindowIcon(this->m_qmsiPtr->MINE_ICON_48);
@@ -231,11 +219,7 @@ int MainWindow::yPlacement() const
 
 void MainWindow::calculateXYPlacement()
 {
-#if defined(__ANDROID__)
-    std::unique_ptr<QRect> avail{new QRect(this->m_qDesktopWidget->availableGeometry())};
-#else
     std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qdwPtr->availableGeometry())};
-#endif
     this->m_xPlacement = (avail->width()/2)-(this->width()/2);
     this->m_yPlacement = (avail->height()/2)-(this->height()/2) - this->s_TASKBAR_HEIGHT;
 }
@@ -343,11 +327,7 @@ QSize MainWindow::getMaxMineSize()
         int y{(this->m_qdwPtr->availableGeometry().width()-gridSpacingWidth-widthScale)/this->m_gcPtr->numberOfColumns()};
         if ((x < 5) || (y < 5)) {
             //TODO: Deal with too small to play mines
-            #if defined(__ANDROID__)
-                std::unique_ptr<QMessageBox> errorBox{new QMessageBox()};
-            #else
-                std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
-            #endif
+            std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
             errorBox->setWindowTitle(this->m_qmsstrPtr->MAIN_WINDOW_TITLE);
             errorBox->setText(this->m_qmsstrPtr->GENERIC_ERROR_MESSAGE);
             errorBox->setWindowIcon(this->m_qmsiPtr->MINE_ICON_48);

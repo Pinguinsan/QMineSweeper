@@ -343,11 +343,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(std::shared_ptr<MineSw
             assignAllMines();
             determineNeighborMineCounts();
         } catch (std::exception &e) {
-            #if defined(__ANDROID__)
-                std::unique_ptr<QMessageBox> errorBox{new QMessageBox()};
-            #else
-                std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
-            #endif
+            std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
             errorBox->setText(this->m_mwPtr->qmsstrPtr()->GENERIC_ERROR_MESSAGE);
             std::cout << e.what() << std::endl;
             errorBox->exec();
@@ -394,11 +390,7 @@ void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<MineS
             this->assignAllMines();
             this->determineNeighborMineCounts();
         } catch (std::exception &e) {
-            #if defined(__ANDROID__)
-                std::unique_ptr<QMessageBox> errorBox{new QMessageBox()};
-            #else
-                std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
-            #endif
+            std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
             errorBox->setWindowTitle(this->m_mwPtr->qmsstrPtr()->GENERIC_ERROR_MESSAGE);
             errorBox->setText(this->m_mwPtr->qmsstrPtr()->GENERIC_ERROR_MESSAGE);
             errorBox->setWindowIcon(this->m_mwPtr->qmsiPtr()->MINE_ICON_48);

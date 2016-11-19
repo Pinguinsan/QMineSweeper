@@ -57,7 +57,9 @@ RESOURCES += resources/icons.qrc \
 FORMS += forms/mainwindow.ui \
          forms/board-size-dialog.ui
 
-win32:RC_FILE += resources/qminesweeper.rc
+win32 {
+    RC_FILE += resources/qminesweeper.rc
+}
 
 android {
     DISTFILES += Android/AndroidManifest.xml \
