@@ -222,7 +222,11 @@ void MainWindow::calculateXYPlacement()
 {
     std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
     this->m_xPlacement = (avail->width()/2)-(this->width()/2);
+#if defined(__ANDROID__)
+    this->m_yPlacement = avail->height() - this->height();
+#else
     this->m_yPlacement = (avail->height()/2)-(this->height()/2) - this->s_TASKBAR_HEIGHT;
+#endif
 }
 
 
@@ -358,9 +362,9 @@ void MainWindow::resizeResetIcon()
 {
 #if defined(__ANDROID__)
     this->m_ui->resetButton->setFixedSize(this->m_gameController->mineSweeperButtonAtIndex(0, 0)->size());
+    this->m_ui->resetButton->setIconSize(this->m_ui->resetButton->size());
     this->m_ui->numberOfMoves->setFixedSize(this->m_ui->numberOfMoves->size() * 3);
     this->m_ui->minesRemaining->setFixedSize(this->m_ui->numberOfMoves->size());
-    this->m_ui->resetButton->setIconSize(this->m_ui->resetButton->size()*4);
 #else
     this->m_ui->resetButton->setIconSize(this->m_ui->resetButton->size() - this->getIconReductionSize());
 #endif
@@ -601,7 +605,7 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     this->m_bsui->rowsBox->setFont(font);
 
     this->m_bsui->columnsBox->setFixedSize(this->m_bsui->columnsBox->size()*4);
-        this->m_bsui->rowsBox->setFixedSize(this->m_bsui->rowsBox->size()*4);
+    this->m_bsui->rowsBox->setFixedSize(this->m_bsui->rowsBox->size()*4);
     //this->m_bsui->columnsBox->setHeight(this->m_bsui->columnsBox->height() + 20);
     //this->m_bsui->rowsBox->setHeight(this->m_bsui->columnsBox->height() + 20);
 #endif

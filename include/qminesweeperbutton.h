@@ -71,6 +71,7 @@ public:
     void setHasQuestionMark(bool hasQuestionMark);
     void setIsRevealed(bool isRevealed);
     void setNumberOfSurroundingMines(int numberOfSurroundingMines);
+    void setBlockClicks(bool blockClicks);
     void drawNumberOfSurroundingMines();
 
 signals:
@@ -96,8 +97,8 @@ private:
     int m_columnIndex;
     int m_rowIndex;
     bool m_isBeingLongClicked;
-    std::unique_ptr<EventTimer> m_longClickTimer;
-
+    bool m_blockClicks;
+    EventTimer m_longClickTimer;
 };
 
 #endif //QMINESWEEPER_MINESWEEPERBUTTON_H

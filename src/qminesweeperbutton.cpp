@@ -28,11 +28,13 @@ QMineSweeperButton::QMineSweeperButton(int columnIndex, int rowIndex, QWidget *p
     m_columnIndex{columnIndex},
     m_rowIndex{rowIndex},
     m_isBeingLongClicked{false},
-    m_longClickTimer{std::make_unique<EventTimer>()}
+    m_blockClicks{false},
+    m_longClickTimer{}
 {
    //Row and column validity is checked by GameController
    this->installEventFilter(this);
-}
+}                                         
+
 
 QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
     QPushButton{static_cast<QWidget*>(other->parent())},
@@ -44,9 +46,10 @@ QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
     m_columnIndex{other->columnIndex()},
     m_rowIndex{other->rowIndex()},
     m_isBeingLongClicked{false},
-    m_longClickTimer{std::make_unique<EventTimer>()}
+    m_blockClicks{false},
+    m_longClickTimer{}
 {
-   this->installEventFilter(this);
+    this->installEventFilter(this);
 }
 
 QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
@@ -59,7 +62,8 @@ QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
     m_columnIndex{std::move(other.columnIndex())},
     m_rowIndex{std::move(other.rowIndex())},
     m_isBeingLongClicked{false},
-    m_longClickTimer{std::make_unique<EventTimer>()}
+    m_blockClicks{false},
+    m_longClickTimer{}
 {
    this->installEventFilter(this);
 }
@@ -74,9 +78,10 @@ QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& othe
     m_columnIndex{std::move(other->m_columnIndex)},
     m_rowIndex{std::move(other->m_rowIndex)},
     m_isBeingLongClicked{std::move(other->m_isBeingLongClicked)},
+    m_blockClicks{std::move(other->m_blockClicks)},
     m_longClickTimer{std::move(other->m_longClickTimer)}
 {
-   this->installEventFilter(this);
+    this->installEventFilter(this);
 }
 
 bool QMineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
@@ -101,6 +106,9 @@ bool QMineSweeperButton::operator==(const QMineSweeperButton &other) const
 void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
 {
     //QPushButton::mousePressEvent(mouseEvent);
+    if (this->m_blockClicks) {
+        return;
+    }
     if (this->isChecked()) {
         this->m_isRevealed = true;
     }
@@ -113,8 +121,13 @@ void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
             emit(rightClicked(shared_from_this()));
         }
     }
-    this->m_longClickTimer->start();
+    this->m_longClickTimer.start();
     QTimer::singleShot(GameController::LONG_CLICK_THRESHOLD(), this, SLOT(doInformLongClick()));
+}
+
+void QMineSweeperButton::setBlockClicks(bool blockClicks)
+{
+    this->m_blockClicks = blockClicks;
 }
 
 void QMineSweeperButton::doInformLongClick()
@@ -129,14 +142,17 @@ void QMineSweeperButton::doInformLongClick()
 void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
 {
     using namespace QMineSweeperStrings;
+    if (this->m_blockClicks) {
+        return;
+    }
     if (this->isChecked()) {
         this->m_isRevealed = true;
     }
     this->setStyleSheet("");
-    this->m_longClickTimer->update();
+    this->m_longClickTimer.update();
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+            if ((this->m_longClickTimer.totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
                 emit (longLeftClickReleased(shared_from_this()));
             } else {
                 emit(leftClickReleased(shared_from_this()));
@@ -144,7 +160,7 @@ void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+            if ((this->m_longClickTimer.totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
                 emit longLeftClickReleased(shared_from_this());
             } else {
                 emit(rightClickReleased(shared_from_this()));
@@ -152,7 +168,7 @@ void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
         }
     }
     this->m_isBeingLongClicked = false;
-    //this->m_longClickTimer->stop();
+    //this->m_longClickTimer.stop();
 }
 
 

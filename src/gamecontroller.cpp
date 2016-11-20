@@ -114,6 +114,9 @@ int GameController::userDisplayNumberOfMines() const
 void GameController::onMineExplosionEventTriggered()
 {
     this->m_gameState = GameState::GAME_INACTIVE;
+    for (auto &it : this->m_mineSweeperButtons) {
+        it.second->setBlockClicks(true);
+    }
 }
 
 void GameController::setNumberOfMinesRemaining(int numberOfMinesRemaining)
@@ -232,6 +235,7 @@ void GameController::onGameReset()
         msbp.second->setHasMine(false);
         msbp.second->setIsRevealed(false);
         msbp.second->setNumberOfSurroundingMines(0);
+        msbp.second->setBlockClicks(false);
     }
     clearRandomMinePlacement();
     this->m_initialClickFlag = true;
@@ -350,6 +354,9 @@ void GameController::onMineSweeperButtonRightClicked(std::shared_ptr<QMineSweepe
 void GameController::onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb)
 {
     using namespace QMineSweeperStrings;
+    if (this->m_gameOver) {
+        return;
+    }
     if (this->m_initialClickFlag) {
         this->generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msb));
         this->m_initialClickFlag = false;
@@ -388,6 +395,9 @@ void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<QMine
 {
     using namespace QMineSweeperUtilities;
     using namespace QMineSweeperStrings;
+    if (this->m_gameOver) {
+        return;
+    }
     if (this->m_initialClickFlag) {
         generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msb));
         try {
