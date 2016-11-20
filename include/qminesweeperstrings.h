@@ -41,7 +41,7 @@ namespace QMineSweeperStrings
     extern const char *LONG_CLICKED_MINE_STYLESHEET;
     extern const char *CONFIGURATION_FILE_NAME;
 #if (defined(_WIN32) || defined(__CYGWIN__))
-    extern const std::string DEFAULT_CONFIGUATION_FILE;
+    extern const char *DEFAULT_CONFIGUATION_FILE;
 #else
     extern const char *DEFAULT_CONFIGURATION_FILE;
 #endif
