@@ -597,6 +597,8 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     this->m_bsui->columnsBox->setValue(this->m_gameController->numberOfColumns());
     this->m_bsui->rowsBox->setValue(this->m_gameController->numberOfRows());
 #if defined(__ANDROID__)
+    this->m_bsui->okayButton->setFixedSize(this->m_bsui->okayButton->size()*3);
+    this->m_bsui->cancelButton->setFixedSize(this->m_bsui->cancelButton->size()*3);
     this->m_boardSizeWindow->setFixedHeight(this->m_qDesktopWidget->availableGeometry().height() / 5);
     this->m_boardSizeWindow->setFixedWidth(this->m_qDesktopWidget->availableGeometry().width());
     QFont font;
