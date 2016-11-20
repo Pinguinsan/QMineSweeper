@@ -18,34 +18,36 @@
 
 #include "qminesweepericons.h"
 
+using namespace QMineSweeperStrings;
+
 QMineSweeperIcons::QMineSweeperIcons() :
-    MINE_ICON_16{QIcon{":/mine-icons/png/mine-icons/16-qminesweeper.png"}},
-    MINE_ICON_24{QIcon{":/mine-icons/png/mine-icons/24-qminesweeper.png"}},
-    MINE_ICON_32{QIcon{":/mine-icons/png/mine-icons/32-qminesweeper.png"}},
-    MINE_ICON_48{QIcon{":/mine-icons/png/mine-icons/48-qminesweeper.png"}},
-    MINE_ICON_64{QIcon{":/mine-icons/png/mine-icons/64-qminesweeper.png"}},
-    MINE_ICON_72{QIcon{":/mine-icons/png/mine-icons/72-qminesweeper.png"}},
-    MINE_ICON_96{QIcon{":/mine-icons/png/mine-icons/96-qminesweeper.png"}},
-    MINE_ICON_128{QIcon{":/mine-icons/png/mine-icons/128-qminesweeper.png"}},
-    FACE_ICON_BIG_SMILEY{QIcon{":/face-icons/png/face-icons/big-smiley-face.png"}},
-    FACE_ICON_CRAZY{QIcon{":/face-icons/png/face-icons/crazy-face.png"}},
-    FACE_ICON_FROWNY{QIcon{":/face-icons/png/face-icons/frowny-face.png"}},
-    FACE_ICON_SLEEPY{QIcon{":/face-icons/png/face-icons/sleepy-face.png"}},
-    FACE_ICON_SMILEY{QIcon{":/face-icons/png/face-icons/smiley-face.png"}},
-    FACE_ICON_WINKY{QIcon{":/face-icons/png/face-icons/winky-face.png"}},
+    MINE_ICON_16{QIcon{MINE_ICON_16_STRING}},
+    MINE_ICON_24{QIcon{MINE_ICON_24_STRING}},
+    MINE_ICON_32{QIcon{MINE_ICON_32_STRING}},
+    MINE_ICON_48{QIcon{MINE_ICON_48_STRING}},
+    MINE_ICON_64{QIcon{MINE_ICON_64_STRING}},
+    MINE_ICON_72{QIcon{MINE_ICON_72_STRING}},
+    MINE_ICON_96{QIcon{MINE_ICON_96_STRING}},
+    MINE_ICON_128{QIcon{MINE_ICON_128_STRING}},
+    FACE_ICON_BIG_SMILEY{QIcon{FACE_ICON_BIG_SMILEY_STRING}},
+    FACE_ICON_CRAZY{QIcon{FACE_ICON_CRAZY_STRING}},
+    FACE_ICON_FROWNY{QIcon{FACE_ICON_FROWNY_STRING}},
+    FACE_ICON_SLEEPY{QIcon{FACE_ICON_SLEEPY_STRING}},
+    FACE_ICON_SMILEY{QIcon{FACE_ICON_SMILEY_STRING}},
+    FACE_ICON_WINKY{QIcon{FACE_ICON_WINKY_STRING}},
     COUNT_MINES_0{QIcon{}},
-    COUNT_MINES_1{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/1.png"}},
-    COUNT_MINES_2{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/2.png"}},
-    COUNT_MINES_3{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/3.png"}},
-    COUNT_MINES_4{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/4.png"}},
-    COUNT_MINES_5{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/5.png"}},
-    COUNT_MINES_6{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/6.png"}},
-    COUNT_MINES_7{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/7.png"}},
-    COUNT_MINES_8{QIcon{":/surrounding-mine-icons/png/surrounding-mine-icons/8.png"}},
-    STATUS_ICON_FLAG{QIcon{":/status-icons/png/status-icons/flag.png"}},
-    STATUS_ICON_QUESTION{QIcon{":/status-icons/png/status-icons/question-mark.png"}},
-    STATUS_ICON_FLAG_CHECK{QIcon{":/status-icons/png/status-icons/flag-check.png"}},
-    STATUS_ICON_FLAG_X{QIcon{":/status-icons/png/status-icons/flag-x.png"}}
+    COUNT_MINES_1{QIcon{COUNT_MINES_1_STRING}},
+    COUNT_MINES_2{QIcon{COUNT_MINES_2_STRING}},
+    COUNT_MINES_3{QIcon{COUNT_MINES_3_STRING}},
+    COUNT_MINES_4{QIcon{COUNT_MINES_4_STRING}},
+    COUNT_MINES_5{QIcon{COUNT_MINES_5_STRING}},
+    COUNT_MINES_6{QIcon{COUNT_MINES_6_STRING}},
+    COUNT_MINES_7{QIcon{COUNT_MINES_7_STRING}},
+    COUNT_MINES_8{QIcon{COUNT_MINES_8_STRING}},
+    STATUS_ICON_FLAG{QIcon{STATUS_ICON_FLAG_STRING}},
+    STATUS_ICON_QUESTION{QIcon{STATUS_ICON_QUESTION_STRING}},
+    STATUS_ICON_FLAG_CHECK{QIcon{STATUS_ICON_FLAG_CHECK_STRING}},
+    STATUS_ICON_FLAG_X{QIcon{STATUS_ICON_FLAG_X_STRING}}
 {
     //Constructor
 }

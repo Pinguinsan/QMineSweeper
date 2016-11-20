@@ -16,12 +16,12 @@
 ***********************************************************************/
 
 
-#ifndef QMINESWEEPER_CUSTOMDIALOG_H
-#define QMINESWEEPER_CUSTOMDIALOG_H
+#ifndef QMINESWEEPER_BOARDRESIZEDIALOG_H
+#define QMINESWEEPER_BOARDRESIZEDIALOG_H
 
-#include <QDialog>
+#include <QMainWindow>
 
-class CustomDialog : public QDialog
+class BoardResizeWindow : public QMainWindow
 {
     Q_OBJECT
 public:
@@ -33,8 +33,8 @@ public:
     void closeEvent(QCloseEvent *ce)
     {
         emit (aboutToClose());
-        QDialog::closeEvent(ce);
+        QMainWindow::closeEvent(ce);
     }
 };
 
-#endif //QMINESWEEPER_CUSTOMDIALOG_H
+#endif //QMINESWEEPER_BOARDRESIZEDIALOG_H

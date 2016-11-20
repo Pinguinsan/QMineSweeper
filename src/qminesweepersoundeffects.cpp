@@ -19,12 +19,16 @@
 
 #include "qminesweepersoundeffects.h"
 
+using namespace QMineSweeperStrings;
+
+const int QMineSweeperSoundEffects::s_EXPLOSION_EFFECT_VOLUME{25};
+
 QMineSweeperSoundEffects::QMineSweeperSoundEffects() :
     explosionEffect{},
-    m_explosionEffectSource{"qrc:/sounds/sounds/explosion-fast.wav"}
+    m_explosionEffectSource{EXPLOSION_EFFECT_SOURCE_STRING}
 {
     this->explosionEffect.setMedia(QUrl{this->m_explosionEffectSource});
-    this->explosionEffect.setVolume(75);
+    this->explosionEffect.setVolume(QMineSweeperSoundEffects::s_EXPLOSION_EFFECT_VOLUME);
 }
 
 QMineSweeperSoundEffects::~QMineSweeperSoundEffects()

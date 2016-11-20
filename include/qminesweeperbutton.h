@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QImage>
+#include <QTimer>
 #include <QIcon>
 #include <memory>
 #include <string>
@@ -36,19 +37,21 @@
 #include "minecoordinates.h"
 #include "qminesweeperutilities.h"
 #include "gamecontroller.h"
+#include "eventtimer.h"
 
 
-class MineSweeperButton : public QPushButton, public std::enable_shared_from_this<MineSweeperButton>
+class QMineSweeperButton : public QPushButton, public std::enable_shared_from_this<QMineSweeperButton>
 {
     Q_OBJECT
 public:
-    MineSweeperButton(int columnIndex, int rowIndex, QWidget *parent);
-    MineSweeperButton(const MineSweeperButton &other);
-    MineSweeperButton(MineSweeperButton *other);
-    MineSweeperButton(MineSweeperButton &&other);
-    MineSweeperButton(std::shared_ptr<MineSweeperButton> &other);
+    QMineSweeperButton() = delete;
+    QMineSweeperButton(int columnIndex, int rowIndex, QWidget *parent);
+    QMineSweeperButton(const QMineSweeperButton &other);
+    QMineSweeperButton(QMineSweeperButton *other);
+    QMineSweeperButton(QMineSweeperButton &&other);
+    QMineSweeperButton(std::shared_ptr<QMineSweeperButton> &other);
 
-    bool operator==(const MineSweeperButton &other) const;
+    bool operator==(const QMineSweeperButton &other) const;
     bool eventFilter(QObject *pObject, QEvent *pEvent) override;
 
     /*Member access functions*/
@@ -63,8 +66,6 @@ public:
     bool isCornerButton() const;
     bool isEdgeButton() const;
 
-    void setColumnIndex(int columnIndex);
-    void setRowIndex(int rowIndex);
     void setHasMine(bool hasMine);
     void setHasFlag(bool hasFlag);
     void setHasQuestionMark(bool hasQuestionMark);
@@ -73,14 +74,17 @@ public:
     void drawNumberOfSurroundingMines();
 
 signals:
-    void leftClicked(std::shared_ptr<MineSweeperButton> msbp);
-    void rightClicked(std::shared_ptr<MineSweeperButton> msbp);
-    void leftClickReleased(std::shared_ptr<MineSweeperButton> msbp);
-    void rightClickReleased(std::shared_ptr<MineSweeperButton> msbp);
+    void leftClicked(std::shared_ptr<QMineSweeperButton> msbp);
+    void rightClicked(std::shared_ptr<QMineSweeperButton> msbp);
+    void leftClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
+    void longLeftClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
+    void rightClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
+    void longRightClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
 
 protected slots:
     void mousePressEvent(QMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QMouseEvent *mouseEvent) override;
+    void doInformLongClick();
 
 private:
     /*Private data members regarding mine status*/
@@ -91,7 +95,8 @@ private:
     int m_numberOfSurroundingMines;
     int m_columnIndex;
     int m_rowIndex;
-
+    bool m_isBeingLongClicked;
+    std::unique_ptr<EventTimer> m_longClickTimer;
 
 };
 

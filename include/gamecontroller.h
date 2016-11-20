@@ -32,14 +32,14 @@
 #include <sstream>
 #include <set>
 
-#include "minesweeperbutton.h"
+#include "qminesweeperbutton.h"
 #include "minecoordinates.h"
 #include "mainwindow.h"
 #include "qminesweepericons.h"
 #include "minecoordinatehash.h"
 #include "qminesweeperutilities.h"
 
-class MineSweeperButton;
+class QMineSweeperButton;
 class MineCoordinateHash;
 class MineCoordinates;
 class MainWindow;
@@ -77,8 +77,8 @@ public:
     void setNumberOfMinesRemaining(int userDisplayNumberOfMines);
     void startResetIconTimer(unsigned int howLong, const QIcon &icon) const;
 
-    std::shared_ptr<MineSweeperButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
-    std::shared_ptr<MineSweeperButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
+    std::shared_ptr<QMineSweeperButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
+    std::shared_ptr<QMineSweeperButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
     bool coordinatePairExists(const MineCoordinates &coordinatesToCheck) const;
     bool mineInBounds(const MineCoordinates &coordinatesToCheck) const;
     bool mineInBounds(int columnIndex, int rowIndex) const;
@@ -93,31 +93,35 @@ public:
     void clearRandomMinePlacement();
     void assignAllMines();
     void determineNeighborMineCounts();
-    void generateRandomMinePlacement(std::shared_ptr<MineSweeperButton> msb);
-    void checkForOtherEmptyMines(std::shared_ptr<MineSweeperButton> msb);
+    void generateRandomMinePlacement(std::shared_ptr<QMineSweeperButton> msb);
+    void checkForOtherEmptyMines(std::shared_ptr<QMineSweeperButton> msb);
 
-    bool isCornerButton(std::shared_ptr<MineSweeperButton> msb) const;
-    bool isEdgeButton(std::shared_ptr<MineSweeperButton> msb) const;
+    bool isCornerButton(std::shared_ptr<QMineSweeperButton> msb) const;
+    bool isEdgeButton(std::shared_ptr<QMineSweeperButton> msb) const;
     GameState gameState() const;
     int totalButtonCount() const;
 
-    double DEFAULT_NUMBER_OF_MINES() const;
-    int GAME_TIMER_INTERVAL() const;
-    std::pair<double, double> CELL_TO_MINE_RATIOS() const;
-    int CELL_TO_MINE_THRESHOLD() const;
-    int NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES() const;
-    int EDGE_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES() const;
-    int CORNER_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES() const;
-    int DEFAULT_WINKY_FACE_TIMEOUT() const;
-    int DEFAULT_CRAZY_FACE_TIMEOUT() const;
-    int DEFAULT_BIG_SMILEY_FACE_TIMEOUT() const;
-    int DEFAULT_SLEEPY_FACE_TIMEOUT() const;
+    static double DEFAULT_NUMBER_OF_MINES();
+    static int GAME_TIMER_INTERVAL();
+    static std::pair<double, double> CELL_TO_MINE_RATIOS();
+    static int CELL_TO_MINE_THRESHOLD();
+    static int NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES();
+    static int EDGE_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES();
+    static int CORNER_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES();
+    static int DEFAULT_WINKY_FACE_TIMEOUT();
+    static int DEFAULT_CRAZY_FACE_TIMEOUT();
+    static int DEFAULT_BIG_SMILEY_FACE_TIMEOUT();
+    static int DEFAULT_SLEEPY_FACE_TIMEOUT();
+    static int LONG_CLICK_THRESHOLD();
 
 public slots:
-    void onMineSweeperButtonLeftClicked(std::shared_ptr<MineSweeperButton> msb);
-    void onMineSweeperButtonRightClicked(std::shared_ptr<MineSweeperButton> msb);
-    void onMineSweeperButtonLeftClickReleased(std::shared_ptr<MineSweeperButton> msb);
-    void onMineSweeperButtonRightClickReleased(std::shared_ptr<MineSweeperButton> msb);
+    void onMineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonLeftClicked(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonRightClicked(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonRightClickReleased(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonLongLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonLongRightClickReleased(std::shared_ptr<QMineSweeperButton> msb);
     void onGameReset();
     void onContextMenuActive();
     void onContextMenuInactive();
@@ -127,7 +131,6 @@ public slots:
     void onGameResumed();
     void onMineDisplayed();
     void onGameWon();
-
 signals:
     void gameStarted();
     void gamePaused();
@@ -139,7 +142,7 @@ signals:
 
 private:
     std::set<std::pair<int, int>> m_mineCoordinates;
-    std::unordered_map<MineCoordinates, std::shared_ptr<MineSweeperButton>, MineCoordinateHash> m_mineSweeperButtons;
+    std::unordered_map<MineCoordinates, std::shared_ptr<QMineSweeperButton>, MineCoordinateHash> m_mineSweeperButtons;
     int m_numberOfMines;
     int m_userDisplayNumberOfMines;
     bool m_initialClickFlag;
@@ -163,6 +166,7 @@ private:
     static const int s_DEFAULT_CRAZY_FACE_TIMEOUT;
     static const int s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT;
     static const int s_DEFAULT_SLEEPY_FACE_TIMEOUT;
+    static const int s_LONG_CLICK_THRESHOLD;
 };
 
 

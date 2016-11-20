@@ -25,7 +25,9 @@ CONFIG += c++14
 
 INCLUDEPATH += include/
 
-LIBS += -ltjlutils
+!android {
+    LIBS += -ltjlutils
+}
 
 TARGET   = QMineSweeper
 TEMPLATE = app
@@ -33,29 +35,31 @@ TEMPLATE = app
 HEADERS += include/mainwindow.h \
            include/gamecontroller.h \
            include/minecoordinates.h \
-           include/minesweeperbutton.h \
            include/qminesweepericons.h \
            include/minecoordinatehash.h \
-           include/customdialog.h \
+           include/eventtimer.h \
            include/qminesweeperutilities.h \
-    include/qminesweepersoundeffects.h \
-    include/qminesweeperstrings.h
+           include/qminesweepersoundeffects.h \
+           include/qminesweeperstrings.h \
+    include/boardresizewindow.h \
+    include/qminesweeperbutton.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
+           src/eventtimer.cpp \
            src/gamecontroller.cpp \
            src/minecoordinates.cpp \
-           src/minesweeperbutton.cpp \
            src/qminesweepericons.cpp \
            src/qminesweeperutilities.cpp \
-    src/qminesweepersoundeffects.cpp \
-    src/qminesweeperstrings.cpp
+           src/qminesweepersoundeffects.cpp \
+           src/qminesweeperstrings.cpp \
+    src/qminesweeperbutton.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc
 
 FORMS += forms/mainwindow.ui \
-         forms/board-size-dialog.ui
+    forms/boardresizewindow.ui
 
 win32 {
     RC_FILE += resources/qminesweeper.rc

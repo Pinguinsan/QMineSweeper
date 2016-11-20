@@ -15,10 +15,10 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "minesweeperbutton.h"
+#include "qminesweeperbutton.h"
 
 
-MineSweeperButton::MineSweeperButton(int columnIndex, int rowIndex, QWidget *parent) :
+QMineSweeperButton::QMineSweeperButton(int columnIndex, int rowIndex, QWidget *parent) :
     QPushButton{parent},
     m_hasMine{false},
     m_hasFlag{false},
@@ -26,13 +26,15 @@ MineSweeperButton::MineSweeperButton(int columnIndex, int rowIndex, QWidget *par
     m_isRevealed{false},
     m_numberOfSurroundingMines{0},
     m_columnIndex{columnIndex},
-    m_rowIndex{rowIndex}
+    m_rowIndex{rowIndex},
+    m_isBeingLongClicked{false},
+    m_longClickTimer{std::make_unique<EventTimer>()}
 {
    //Row and column validity is checked by GameController
    this->installEventFilter(this);
 }
 
-MineSweeperButton::MineSweeperButton(MineSweeperButton *other) :
+QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
     QPushButton{static_cast<QWidget*>(other->parent())},
     m_hasMine{other->hasMine()},
     m_hasFlag{other->hasFlag()},
@@ -40,12 +42,14 @@ MineSweeperButton::MineSweeperButton(MineSweeperButton *other) :
     m_isRevealed{other->isRevealed()},
     m_numberOfSurroundingMines{other->numberOfSurroundingMines()},
     m_columnIndex{other->columnIndex()},
-    m_rowIndex{other->rowIndex()}
+    m_rowIndex{other->rowIndex()},
+    m_isBeingLongClicked{false},
+    m_longClickTimer{std::make_unique<EventTimer>()}
 {
    this->installEventFilter(this);
 }
 
-MineSweeperButton::MineSweeperButton(MineSweeperButton &&other) :
+QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
     QPushButton{static_cast<QWidget*>(std::move(other.parent()))},
     m_hasMine{std::move(other.hasMine())},
     m_hasFlag{std::move(other.hasFlag())},
@@ -53,25 +57,29 @@ MineSweeperButton::MineSweeperButton(MineSweeperButton &&other) :
     m_isRevealed{std::move(other.isRevealed())},
     m_numberOfSurroundingMines{std::move(other.numberOfSurroundingMines())},
     m_columnIndex{std::move(other.columnIndex())},
-    m_rowIndex{std::move(other.rowIndex())}
+    m_rowIndex{std::move(other.rowIndex())},
+    m_isBeingLongClicked{false},
+    m_longClickTimer{std::make_unique<EventTimer>()}
 {
    this->installEventFilter(this);
 }
 
-MineSweeperButton::MineSweeperButton(std::shared_ptr<MineSweeperButton>& other) :
+QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& other) :
     QPushButton{static_cast<QWidget*>(other->parent())},
-    m_hasMine{other->hasMine()},
-    m_hasFlag{other->hasFlag()},
-    m_hasQuestionMark{other->hasQuestionMark()},
-    m_isRevealed{other->isRevealed()},
-    m_numberOfSurroundingMines{other->numberOfSurroundingMines()},
-    m_columnIndex{other->columnIndex()},
-    m_rowIndex{other->rowIndex()}
+    m_hasMine{std::move(other->m_hasMine)},
+    m_hasFlag{std::move(other->m_hasFlag)},
+    m_hasQuestionMark{std::move(other->m_hasQuestionMark)},
+    m_isRevealed{std::move(other->m_isRevealed)},
+    m_numberOfSurroundingMines{std::move(other->m_numberOfSurroundingMines)},
+    m_columnIndex{std::move(other->m_columnIndex)},
+    m_rowIndex{std::move(other->m_rowIndex)},
+    m_isBeingLongClicked{std::move(other->m_isBeingLongClicked)},
+    m_longClickTimer{std::move(other->m_longClickTimer)}
 {
    this->installEventFilter(this);
 }
 
-bool MineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
+bool QMineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
 {
     if (pEvent->type() == QEvent::KeyPress)  {
         QKeyEvent* pKeyEvent = static_cast<QKeyEvent*>(pEvent);
@@ -85,12 +93,12 @@ bool MineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
     return true;
 }
 
-bool MineSweeperButton::operator==(const MineSweeperButton &other) const
+bool QMineSweeperButton::operator==(const QMineSweeperButton &other) const
 {
     return ((this->m_columnIndex == other.columnIndex()) && (this->m_rowIndex == other.rowIndex()));
 }
 
-void MineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
+void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
 {
     //QPushButton::mousePressEvent(mouseEvent);
     if (this->isChecked()) {
@@ -105,115 +113,119 @@ void MineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
             emit(rightClicked(shared_from_this()));
         }
     }
+    this->m_longClickTimer->start();
+    QTimer::singleShot(GameController::LONG_CLICK_THRESHOLD(), this, SLOT(doInformLongClick()));
 }
 
-void MineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
+void QMineSweeperButton::doInformLongClick()
 {
+    using namespace QMineSweeperStrings;
+    if (this->isDown()) {
+        this->setStyleSheet(LONG_CLICKED_MINE_STYLESHEET);
+        this->m_isBeingLongClicked = true;
+    }
+}
+
+void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
+{
+    using namespace QMineSweeperStrings;
     if (this->isChecked()) {
         this->m_isRevealed = true;
     }
+    this->setStyleSheet("");
+    this->m_longClickTimer->update();
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            emit(leftClickReleased(shared_from_this()));
+            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+                emit (longLeftClickReleased(shared_from_this()));
+            } else {
+                emit(leftClickReleased(shared_from_this()));
+            }
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            emit(rightClickReleased(shared_from_this()));
+            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+                emit longLeftClickReleased(shared_from_this());
+            } else {
+                emit(rightClickReleased(shared_from_this()));
+            }
         }
     }
+    this->m_isBeingLongClicked = false;
+    //this->m_longClickTimer->stop();
 }
 
 
-void MineSweeperButton::setHasMine(bool hasMine)
+void QMineSweeperButton::setHasMine(bool hasMine)
 {
     this->m_hasMine = hasMine;
 }
 
-void MineSweeperButton::setHasQuestionMark(bool hasQuestionMark)
+void QMineSweeperButton::setHasQuestionMark(bool hasQuestionMark)
 {
     this->m_hasQuestionMark = hasQuestionMark;
 }
 
-void MineSweeperButton::setHasFlag(bool hasFlag)
+void QMineSweeperButton::setHasFlag(bool hasFlag)
 {
     this->m_hasFlag = hasFlag;
 }
 
-void MineSweeperButton::setIsRevealed(bool isRevealed)
+void QMineSweeperButton::setIsRevealed(bool isRevealed)
 {
     this->m_isRevealed = isRevealed;
 }
 
-bool MineSweeperButton::isRevealed() const
+bool QMineSweeperButton::isRevealed() const
 {
     return this->m_isRevealed;
 }
 
-bool MineSweeperButton::hasMine() const
+bool QMineSweeperButton::hasMine() const
 {
     return this->m_hasMine;
 }
 
-bool MineSweeperButton::hasFlag() const
+bool QMineSweeperButton::hasFlag() const
 {
     return m_hasFlag;
 }
 
-bool MineSweeperButton::hasQuestionMark() const
+bool QMineSweeperButton::hasQuestionMark() const
 {
     return m_hasQuestionMark;
 }
 
-int MineSweeperButton::columnIndex() const
+int QMineSweeperButton::columnIndex() const
 {
     return this->m_columnIndex;
 }
 
-int MineSweeperButton::rowIndex() const
+int QMineSweeperButton::rowIndex() const
 {
     return this->m_rowIndex;
 }
 
-std::shared_ptr<MineCoordinates> MineSweeperButton::mineCoordinates() const
+std::shared_ptr<MineCoordinates> QMineSweeperButton::mineCoordinates() const
 {
     return std::make_shared<MineCoordinates>(this->m_columnIndex, this->m_rowIndex);
 }
 
-int MineSweeperButton::numberOfSurroundingMines() const
+int QMineSweeperButton::numberOfSurroundingMines() const
 {
     return this->m_numberOfSurroundingMines;
 }
 
-void MineSweeperButton::setNumberOfSurroundingMines(int numberOfSurroundingMines)
+void QMineSweeperButton::setNumberOfSurroundingMines(int numberOfSurroundingMines)
 {
     using namespace QMineSweeperUtilities;
+    using namespace QMineSweeperStrings;
     if (numberOfSurroundingMines < 0) {
-        throw std::logic_error("numberOfSurroundingMines cannot be negative (" + toString(numberOfSurroundingMines) + " < 0)");
+        throw std::runtime_error(NUMBER_OF_SURROUND_MINES_NEGATIVE_STRING + toString(numberOfSurroundingMines) + LESS_THAN_ZERO_STRING);
     } else if (numberOfSurroundingMines > 8) {
-        throw std::logic_error("numberOfSurroundMines cannot be greater than 8 (" + toString(numberOfSurroundingMines) + " > 8)");
+        throw std::runtime_error(NUMBER_OF_SURROUNDING_MINES_TOO_LARGE_STRING + toString(numberOfSurroundingMines) + GREATER_THAN_8_STRING);
     } else {
         this->m_numberOfSurroundingMines = numberOfSurroundingMines;
     }
 }
-
-
-void MineSweeperButton::setColumnIndex(int columnIndex)
-{
-    using namespace QMineSweeperUtilities;
-    if (columnIndex < 0) {
-        throw std::logic_error("columnIndex cannot be negative (" + toString(columnIndex) + " < 0)");
-    }
-    this->m_columnIndex = columnIndex;
-}
-
-
-void MineSweeperButton::setRowIndex(int rowIndex)
-{
-    using namespace QMineSweeperUtilities;
-    if (rowIndex < 0) {
-        throw std::logic_error("rowIndex cannot be negative (" + toString(rowIndex) + " < 0)");
-    }
-    this->m_rowIndex = rowIndex;
-}
-
 

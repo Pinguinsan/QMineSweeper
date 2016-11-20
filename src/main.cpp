@@ -22,7 +22,7 @@
 #include <memory>
 
 #include "mainwindow.h"
-#include "minesweeperbutton.h"
+#include "qminesweeperbutton.h"
 #include "qminesweepericons.h"
 #include "qminesweeperstrings.h"
 #include "qminesweepersoundeffects.h"
@@ -30,13 +30,13 @@
 
 int main(int argc, char *argv[])
 {
+    using namespace QMineSweeperStrings;
     QApplication qApplication(argc, argv);
     std::shared_ptr<QMineSweeperIcons> qmsi{std::make_shared<QMineSweeperIcons>()};
     std::shared_ptr<QMineSweeperSoundEffects> qmsse{std::make_shared<QMineSweeperSoundEffects>()};
-    std::shared_ptr<QMineSweeperStrings> qmsstr{std::make_shared<QMineSweeperStrings>()};
     std::shared_ptr<GameController> gameController{std::make_shared<GameController>()};
     std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
-    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(qmsi, qmsse, qmsstr, gameController, qDesktopWidget)};
+    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(qmsi, qmsse, gameController, qDesktopWidget)};
     gameController->bindMainWindow(mainWindow);
     //mainWindow->bindGameController(gameController);
     //mainWindow->bindQDesktopWidget(qDesktopWidget);
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
     mainWindow->setWindowIcon(mainWindow->qmsiPtr()->MINE_ICON_72);
-    mainWindow->setWindowTitle(mainWindow->qmsstrPtr()->MAIN_WINDOW_TITLE);
+    mainWindow->setWindowTitle(MAIN_WINDOW_TITLE);
 #if defined(__ANDROID__)
     mainWindow->showMaximized();
     mainWindow->setFixedSize(mainWindow->minimumSize());

@@ -26,6 +26,7 @@
 #include <QUrl>
 
 #include "qminesweeperutilities.h"
+#include "qminesweeperstrings.h"
 
 class QMineSweeperSoundEffects
 {
@@ -37,6 +38,8 @@ public:
 
 private:
     QString m_explosionEffectSource;
+
+    static const int s_EXPLOSION_EFFECT_VOLUME;
 
 };
 

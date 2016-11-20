@@ -21,6 +21,7 @@
 
 #include <QString>
 #include <QIcon>
+#include "qminesweeperstrings.h"
 
 class QMineSweeperIcons
 {
