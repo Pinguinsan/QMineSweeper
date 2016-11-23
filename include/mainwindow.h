@@ -125,6 +125,7 @@ private:
     bool m_maxMineSizeCacheIsValid;
     bool m_iconReductionSizeCacheIsValid;
     bool m_tempPauseFlag;
+    bool m_boardSizeGeometrySet;
 
     void hideEvent(QHideEvent *event);
     void showEvent(QShowEvent *event);

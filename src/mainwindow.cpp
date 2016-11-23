@@ -57,7 +57,8 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
     m_currentDefaultMineSize{QSize{0,0}},
     m_currentMaxMineSize{QSize{0,0}},
     m_maxMineSizeCacheIsValid{false},
-    m_tempPauseFlag{false}
+    m_tempPauseFlag{false},
+    m_boardSizeGeometrySet{false}
 {
     using namespace QMineSweeperStrings;
     this->m_ui->setupUi(this);
@@ -597,19 +598,20 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     this->m_bsui->columnsBox->setValue(this->m_gameController->numberOfColumns());
     this->m_bsui->rowsBox->setValue(this->m_gameController->numberOfRows());
 #if defined(__ANDROID__)
-    this->m_bsui->okayButton->setFixedSize(this->m_bsui->okayButton->size()*4);
-    this->m_bsui->cancelButton->setFixedSize(this->m_bsui->cancelButton->size()*4);
-    this->m_boardSizeWindow->setFixedHeight(this->m_qDesktopWidget->availableGeometry().height() / 5);
-    this->m_boardSizeWindow->setFixedWidth(this->m_qDesktopWidget->availableGeometry().width());
-    QFont font;
-    font.setPointSize(font.pointSize() + 50);
-    this->m_bsui->columnsBox->setFont(font);
-    this->m_bsui->rowsBox->setFont(font);
+    if (!this->m_boardSizeGeometrySet) {
+        this->m_bsui->okayButton->setFixedSize(this->m_bsui->okayButton->size()*4);
+        this->m_bsui->cancelButton->setFixedSize(this->m_bsui->cancelButton->size()*4);
+        this->m_boardSizeWindow->setFixedHeight(this->m_qDesktopWidget->availableGeometry().height() / 5);
+        this->m_boardSizeWindow->setFixedWidth(this->m_qDesktopWidget->availableGeometry().width());
+        QFont font;
+        font.setPointSize(font.pointSize() + 50);
+        this->m_bsui->columnsBox->setFont(font);
+        this->m_bsui->rowsBox->setFont(font);
 
-    this->m_bsui->columnsBox->setFixedSize(this->m_bsui->columnsBox->size()*4);
-    this->m_bsui->rowsBox->setFixedSize(this->m_bsui->rowsBox->size()*4);
-    //this->m_bsui->columnsBox->setHeight(this->m_bsui->columnsBox->height() + 20);
-    //this->m_bsui->rowsBox->setHeight(this->m_bsui->columnsBox->height() + 20);
+        this->m_bsui->columnsBox->setFixedSize(this->m_bsui->columnsBox->size()*4);
+        this->m_bsui->rowsBox->setFixedSize(this->m_bsui->rowsBox->size()*4);
+        this->m_boardSizeGeometrySet = true;
+    }
 #endif
     this->m_boardSizeWindow->show();
     emit(gamePaused());
