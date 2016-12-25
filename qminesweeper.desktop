@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=QMineSweeper
-GenericName=QMineSweeper
-Comment=Play minesweeper!
-Exec=run-qminesweeper.sh
-Icon=qminesweeper.png
-Terminal=false
-Categories=Games;

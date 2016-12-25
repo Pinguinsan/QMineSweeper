@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=DOOM (GUI Launcher)
+Version=1.0
+GenericName=DOOM
+Comment=Play DOOM!
+Terminal=false
+Type=Application
+Categories=Games;
