@@ -14,7 +14,7 @@
 iconName="qminesweeper.png"
 skeletonDesktopFileName=".qminesweeper.desktop.skel"
 desktopFileName="qminesweeper.desktop"
-programName="QMineSweeper"
+programLongName="QMineSweeper"
 
 absolutePath="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 fileName="${absolutePath##*/}"
