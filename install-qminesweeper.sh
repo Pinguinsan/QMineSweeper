@@ -10,12 +10,12 @@
 #
 ##########################################
 
-
-iconName="qminesweeper.png"
-skeletonDesktopFileName=".qminesweeper.desktop.skel"
-desktopFileName="qminesweeper.desktop"
+baseName="qminesweeper"
 programLongName="QMineSweeper"
 programName="QMineSweeper"
+iconName="$baseName.png"
+skeletonDesktopFileName=".$baseName.desktop.skel"
+desktopFileName="$baseName.desktop"
 
 absolutePath="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 fileName="${absolutePath##*/}"
@@ -24,7 +24,7 @@ sourceDir="$filePath/src/"
 utilityDir="$filePath/utility/"
 resourceDir="$filePath/resources/"
 iconPath="$resourceDir/$iconName"
-globalBinDir="/usr/bin"
+globalBinDir="/usr/bin/"
 dependancyLibName="lib$dependancyRootName.so"
 libDir="/usr/lib/"
 dependancy="$libDir/$dependancyLibName"
