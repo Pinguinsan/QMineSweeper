@@ -516,37 +516,22 @@ void MainWindow::updateVisibleGameTimer()
             this->m_playTimer->unpause();
         }
         this->m_playTimer->update();
-        if (this->m_playTimer->hours() == 0) {
-            gameTime = toQString(this->m_playTimer->minutes())
-                    + ":"
-                    + toQString(this->m_playTimer->seconds())
-                    + "." + toQString(this->m_playTimer->milliseconds());
+        std::string tempString{this->m_playTimer->toString()};
+        if (tempString.find('.') == std::string::npos) {
+            gameTime = toQString(tempString);
         } else {
-            gameTime = toQString(this->m_playTimer->hours())
-                    + ":"
-                    + toQString(this->m_playTimer->minutes())
-                    + ":"
-                    + toQString(this->m_playTimer->seconds())
-                    + "."
-                    + toQString(this->m_playTimer->milliseconds());
+            gameTime = toQString(tempString.substr(0, tempString.length() - 2));
         }
         this->m_ui->statusBar->showMessage(gameTime);
     } else if (!this->m_gameController->initialClickFlag()){
         this->m_playTimer->pause();
         this->m_playTimer->update();
-        if (this->m_playTimer->hours() == 0) {
-            gameTime = toQString(this->m_playTimer->minutes())
-                    + ":"
-                    + toQString(this->m_playTimer->seconds())
-                    + "."
-                    + toQString(this->m_playTimer->milliseconds());
+        std::string tempString{this->m_playTimer->toString()};
+        if (tempString.find('.') == std::string::npos) {
+            gameTime = toQString(tempString);
         } else {
-            gameTime = toQString(this->m_playTimer->hours())
-                                 + ":" + toQString(this->m_playTimer->minutes())
-                                 + ":" + toQString(this->m_playTimer->seconds())
-                                 + "." + toQString(this->m_playTimer->milliseconds());
-        }
-        this->m_ui->statusBar->showMessage(gameTime);
+            gameTime = toQString(tempString.substr(0, tempString.length() - 2));
+        }        this->m_ui->statusBar->showMessage(gameTime);
     } else {
         this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);
     }
