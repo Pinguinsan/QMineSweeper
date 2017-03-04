@@ -133,6 +133,8 @@ void MainWindow::showEvent(QShowEvent *event)
     }
 }
 
+/* hideEvent() : Called when the main window is hidden, and emits
+ * a gamePaused signal if the window actually is hidden or minimized */
 void MainWindow::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event);
@@ -141,10 +143,12 @@ void MainWindow::hideEvent(QHideEvent *event)
     }
 }
 
+/* closeEvent() : Called when the main window is about to be closed,
+ * so the user can be prompted if they'd like to close the game */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     (void)event;
-   /*
+    /*
     emit(gamePaused());
     QMessageBox::StandardButton userReply;
     userReply = QMessageBox::question(this, CLOSE_APPLICATION_WINDOW_TITLE, CLOSE_APPLICATION_WINDOW_PROMPT, QMessageBox::Yes|QMessageBox::No);
@@ -161,6 +165,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     */
 }
 
+
+/* onCustomDialogClosed() : Called when a custom dialog (board resize, etc)
+ * is closed, signaling to the main game window to resume the game, if a game is in progress */
 void MainWindow::onCustomDialogClosed()
 {
     this->setEnabled(true);
@@ -169,6 +176,10 @@ void MainWindow::onCustomDialogClosed()
     }
 }
 
+/* onGameWon() : Called when the GameController class detects (via a mine click event,
+ * flagging enough mines, or whatever win condition is defined) that the game has been won
+ * Upon call, it iterates through the game board and sets the icons appropriately (green check if
+ * a mine was correctly marked, red x if a flag was incorrectly marked, etc */
 void MainWindow::onGameWon()
 {
     using namespace QMineSweeperUtilities;
@@ -202,6 +213,8 @@ void MainWindow::onGameWon()
     winBox->exec();
 }
 
+/* centerAndFitWindow() : Called whenever code requests the main window to be centered
+ * Typically called after resizing the UI on the main window */
 void MainWindow::centerAndFitWindow()
 {
     this->setFixedSize(this->minimumSize());
@@ -209,16 +222,21 @@ void MainWindow::centerAndFitWindow()
     this->move(this->m_xPlacement, this->m_yPlacement);
 }
 
+
+/* xPlacement() : Member access function for MainWindow::m_xPlacement */
 int MainWindow::xPlacement() const
 {
     return this->m_xPlacement;
 }
 
+/* yPlacement() : Member access function for MainWindow::m_yPlacement */
 int MainWindow::yPlacement() const
 {
     return this->m_yPlacement;
 }
 
+/* calculateXYPlacement() : Checks the currently available screen geometry, and calulates
+ * where the MainWindow must be moved to appear on at the center of the users screen */
 void MainWindow::calculateXYPlacement()
 {
     std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
@@ -230,22 +248,19 @@ void MainWindow::calculateXYPlacement()
 #endif
 }
 
-
+/* onGameStarted() : Called when a gameStarted() signal is emitted
+ * Start the game timer, as well as starting the user idle timer, which
+ * is used to change the smiley face to a sleepy face */
 void MainWindow::onGameStarted()
 {
     startGameTimer();
     startUserIdleTimer();
 }
 
-void MainWindow::onGamePaused()
-{
-    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-        for (int columnIndex = 0; columnIndex <this->m_gameController->numberOfColumns(); columnIndex++) {
-            this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)->setEnabled(false);
-        }
-    }
-}
-
+/* setupNewGame() : Called when a gameStarted() signal is emitted
+ * Iterate through all of the QMineSweeperButtons on the mineFrame and delete them,
+ * so new MineSweeperButtons can be created from a known fresh state, then
+ * populate the mineFrame via populateMineFrame() */
 void MainWindow::setupNewGame()
 {
     QLayoutItem *wItem;
@@ -257,6 +272,21 @@ void MainWindow::setupNewGame()
     centerAndFitWindow();
 }
 
+/* onGamePaused() : Called when a gamePaused() signal is emitted
+ * Iterate through all of the QMineSweeperButtons on the mineFrame and
+ * disable them, so the user cannot play the game until it is resumed */
+void MainWindow::onGamePaused()
+{
+    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
+        for (int columnIndex = 0; columnIndex <this->m_gameController->numberOfColumns(); columnIndex++) {
+            this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)->setEnabled(false);
+        }
+    }
+}
+
+/* onGameResumed() : Called when a gameResumed() signal is emitted
+ * Iterate through all of the QMineSweeperButtons on the mineFrame and enable them,
+ * so the user can continue with their game */
 void MainWindow::onGameResumed()
 {
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
@@ -266,6 +296,11 @@ void MainWindow::onGameResumed()
     }
 }
 
+/* displayMine() : Called via the click handlers or other code (maybe onGameWon())
+ * to provide a consistent way to display a mine on the MainWindow. First the number
+ * of surrounding mines is drawn (the push button icon is set to the correct number
+ * of surrounding mines), then a mineDisplayed() signal is emitted, to inform anything
+ * connected that a mine is being displayed, then recursively check for other empty mines */
 void MainWindow::displayMine(std::shared_ptr<QMineSweeperButton> msb)
 {
     drawNumberOfSurroundingMines(msb);
