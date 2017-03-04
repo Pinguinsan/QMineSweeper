@@ -21,11 +21,10 @@
 #include "eventtimer.h"
 
 const int EventTimer::INVALIDATE_CACHE_TIMEOUT{100};
-
 EventTimer::EventTimer() :
-    m_startTime{std::chrono::high_resolution_clock::now()},
-    m_endTime{std::chrono::high_resolution_clock::now()},
-    m_cacheStartTime{std::chrono::high_resolution_clock::now()},
+    m_startTime{platform_clock_t::now()},
+    m_endTime{platform_clock_t::now()},
+    m_cacheStartTime{platform_clock_t::now()},
     m_totalTime{0},
     m_hours{0},
     m_minutes{0},
@@ -48,19 +47,19 @@ void EventTimer::start()
     this->m_minutes = 0;
     this->m_seconds = 0;
     this->m_milliseconds = 0;
-    this->m_startTime = std::chrono::high_resolution_clock::now();
-    this->m_cacheStartTime = std::chrono::high_resolution_clock::now();
+    this->m_startTime = platform_clock_t::now();
+    this->m_cacheStartTime = platform_clock_t::now();
     this->m_isPaused = false;
 }
 
 bool EventTimer::cacheIsValid()
 {
-    return (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - this->m_cacheStartTime).count() < EventTimer::INVALIDATE_CACHE_TIMEOUT);
+    return (std::chrono::duration_cast<std::chrono::milliseconds>(platform_clock_t::now() - this->m_cacheStartTime).count() < EventTimer::INVALIDATE_CACHE_TIMEOUT);
 }
 
 void EventTimer::validateCache()
 {
-    this->m_cacheStartTime = std::chrono::high_resolution_clock::now();
+    this->m_cacheStartTime = platform_clock_t::now();
 }
 
 void EventTimer::pause()
@@ -123,7 +122,7 @@ void EventTimer::update()
 {
     using namespace QMineSweeperUtilities;
     if (!this->m_isPaused) {
-        this->m_endTime = std::chrono::high_resolution_clock::now();
+        this->m_endTime = platform_clock_t::now();
         this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime-this->m_startTime).count();
         this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime - this->m_startTime);
         this->m_hours = (this->m_totalTime/MILLISECONDS_PER_HOUR);
@@ -131,7 +130,7 @@ void EventTimer::update()
         this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
         this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE) - (this->m_seconds * MILLISECONDS_PER_SECOND));
     } else {
-        this->m_startTime = std::chrono::high_resolution_clock::now() - this->m_rawTime;
+        this->m_startTime = platform_clock_t::now() - this->m_rawTime;
     }
 }
 

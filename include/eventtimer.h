@@ -25,6 +25,9 @@
 #include <string>
 #include "qminesweeperutilities.h"
 
+
+using platform_clock_t = std::chrono::steady_clock;
+
 class EventTimer
 {
 public:
@@ -53,9 +56,9 @@ public:
     std::string toString();
 
 private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_endTime;
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_cacheStartTime;
+    std::chrono::time_point<platform_clock_t> m_startTime;
+    std::chrono::time_point<platform_clock_t> m_endTime;
+    std::chrono::time_point<platform_clock_t> m_cacheStartTime;
     std::chrono::milliseconds m_rawTime;
     long long int m_totalTime;
     long long int m_hours;
