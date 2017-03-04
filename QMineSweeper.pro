@@ -42,7 +42,6 @@ HEADERS += include/mainwindow.h \
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
-           src/eventtimer.cpp \
            src/gamecontroller.cpp \
            src/minecoordinates.cpp \
            src/qminesweepericons.cpp \

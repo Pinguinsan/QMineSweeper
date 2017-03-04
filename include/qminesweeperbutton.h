@@ -98,7 +98,7 @@ private:
     int m_rowIndex;
     bool m_isBeingLongClicked;
     bool m_blockClicks;
-    EventTimer m_longClickTimer;
+    EventTimer<std::chrono::steady_clock> m_longClickTimer;
 };
 
 #endif //QMINESWEEPER_MINESWEEPERBUTTON_H

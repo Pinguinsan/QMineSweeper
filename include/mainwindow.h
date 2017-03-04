@@ -94,8 +94,8 @@ public:
 
 private:
     std::unique_ptr<QTimer> m_eventTimer;
-    std::unique_ptr<EventTimer> m_playTimer;
-    std::unique_ptr<EventTimer> m_userIdleTimer;
+    std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
+    std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
     std::unique_ptr<Ui::BoardResizeWindow> m_bsui;
     std::unique_ptr<Ui::MainWindow> m_ui;
     std::unique_ptr<BoardResizeWindow>  m_boardSizeWindow;
