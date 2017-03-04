@@ -21,7 +21,7 @@
 #include "gamecontroller.h"
 
 const double GameController::s_DEFAULT_NUMBER_OF_MINES{81.0};
-const int GameController::s_GAME_TIMER_INTERVAL{1};
+const int GameController::s_GAME_TIMER_INTERVAL{100};
 const std::pair<double, double> GameController::s_CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
 const int GameController::s_CELL_TO_MINE_THRESHOLD{82};
 const int GameController::s_NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES{8};
@@ -122,6 +122,7 @@ void GameController::onMineExplosionEventTriggered()
 void GameController::setNumberOfMinesRemaining(int numberOfMinesRemaining)
 {
     this->m_userDisplayNumberOfMines = numberOfMinesRemaining;
+    emit (numberOfMinesRemainingChanged(this->m_userDisplayNumberOfMines));
 }
 
 int GameController::numberOfColumns() const
@@ -492,22 +493,22 @@ int GameController::numberOfMovesMade() const
 
 void GameController::incrementNumberOfMovesMade()
 {
-    this->m_numberOfMovesMade++;
+    emit(numberOfMovesMadeChanged(++this->m_numberOfMovesMade));
 }
 
 void GameController::decrementNumberOfMovesMade()
 {
-    this->m_numberOfMovesMade--;
+    emit(numberOfMovesMadeChanged(--this->m_numberOfMovesMade));
 }
 
 void GameController::incrementUserMineCountDisplay()
 {
-    this->m_userDisplayNumberOfMines++;
+    emit(numberOfMinesRemainingChanged(++this->m_userDisplayNumberOfMines));
 }
 
 void GameController::decrementUserMineCountDisplay()
 {
-    this->m_userDisplayNumberOfMines--;
+    emit(numberOfMinesRemainingChanged(--this->m_userDisplayNumberOfMines));
 }
 
 double GameController::DEFAULT_NUMBER_OF_MINES()

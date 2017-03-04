@@ -169,11 +169,12 @@ private slots:
     void onBsuiOkayButtonClicked();
     void onBsuiCancelButtonClicked();
     void updateVisibleGameTimer();
-    void updateLCDDisplays();
     void updateGeometry();
     void updateUserIdleTimer();
     void startGameTimer();
 
+    void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
+    void updateNumberOfMinesLCD(int numberOfMines);
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H

@@ -139,6 +139,8 @@ signals:
     void readyToBeginNewGame();
     void winEvent();
     void userIsNoLongerIdle();
+    void numberOfMinesRemainingChanged(int newNumber);
+    void numberOfMovesMadeChanged(int newNumber);
 
 private:
     std::set<std::pair<int, int>> m_mineCoordinates;

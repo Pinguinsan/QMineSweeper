@@ -18,6 +18,7 @@
 #include "ui_mainwindow.h"
 #include "ui_boardresizewindow.h"
 
+/* static const initializations */
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};
     const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
@@ -36,6 +37,9 @@
     const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
 #endif
 
+/* MainWindow() : Constructor, passing in shared_ptrs to all of
+ * the relevant media and logic controllers. All UI stuff if initialized and
+ * relevant events are hooked (QObject::connect()) to set up the game to play */
 MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
                        std::shared_ptr<QMineSweeperSoundEffects> qmssePtr,
                        std::shared_ptr<GameController> gcPtr,
@@ -89,6 +93,9 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
     connect(this->m_gameController.get(), SIGNAL(gameStarted()), this, SLOT(onGameStarted()));
     connect(this, SIGNAL(resetGame()), this->m_gameController.get(), SLOT(onGameReset()));
 
+    connect(this->m_gameController.get(), SIGNAL(numberOfMinesRemainingChanged(int)), this, SLOT(updateNumberOfMinesLCD(int)));
+    connect(this->m_gameController.get(), SIGNAL(numberOfMovesMadeChanged(int)), this, SLOT(updateNumberOfMovesMadeLCD(int)));
+
     connect(this->m_ui->menuFile, SIGNAL(aboutToShow()), this->m_gameController.get(), SLOT(onContextMenuActive()));
     connect(this->m_ui->menuPreferences, SIGNAL(aboutToShow()), this->m_gameController.get(), SLOT(onContextMenuActive()));
     connect(this->m_ui->menuHelp, SIGNAL(aboutToShow()), this->m_gameController.get(), SLOT(onContextMenuActive()));
@@ -116,13 +123,20 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
         }
     #endif
     this->m_eventTimer->start();
+    this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
+    this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
 }
 
+/* boardResizeDialogVisible() : Pass through function, delegating to
+ * the shared_ptr of the board size form, returning whether or not
+ * the form is visible, for use in pausing or unpausing the game */
 bool MainWindow::boardResizeDialogVisible()
 {
     return this->m_boardSizeWindow->isVisible();
 }
 
+/* showEvent() : Called when the main window is shown, and emits a
+ * gameResumed signal if the window is actually visible (ie not hidden) */
 void MainWindow::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
@@ -220,32 +234,6 @@ void MainWindow::centerAndFitWindow()
     this->setFixedSize(this->minimumSize());
     calculateXYPlacement();
     this->move(this->m_xPlacement, this->m_yPlacement);
-}
-
-
-/* xPlacement() : Member access function for MainWindow::m_xPlacement */
-int MainWindow::xPlacement() const
-{
-    return this->m_xPlacement;
-}
-
-/* yPlacement() : Member access function for MainWindow::m_yPlacement */
-int MainWindow::yPlacement() const
-{
-    return this->m_yPlacement;
-}
-
-/* calculateXYPlacement() : Checks the currently available screen geometry, and calulates
- * where the MainWindow must be moved to appear on at the center of the users screen */
-void MainWindow::calculateXYPlacement()
-{
-    std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
-    this->m_xPlacement = (avail->width()/2)-(this->width()/2);
-#if defined(__ANDROID__)
-    this->m_yPlacement = avail->height() - this->height();
-#else
-    this->m_yPlacement = (avail->height()/2)-(this->height()/2) - this->s_TASKBAR_HEIGHT;
-#endif
 }
 
 /* onGameStarted() : Called when a gameStarted() signal is emitted
@@ -496,10 +484,9 @@ void MainWindow::doGameReset()
 
 void MainWindow::eventLoop()
 {
-    updateLCDDisplays();
     updateVisibleGameTimer();
-    updateGeometry();
     updateUserIdleTimer();
+    //updateGeometry();
 }
 
 void MainWindow::updateGeometry()
@@ -592,33 +579,47 @@ std::string MainWindow::getLCDDisplayPadding(int howMuch)
     return returnString;
 }
 
-void MainWindow::updateLCDDisplays()
+void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
 {
     using namespace QMineSweeperUtilities;
     using namespace QMineSweeperStrings;
-    if (this->m_gameController->userDisplayNumberOfMines() > 999) {
+    if (numberOfMines > 999) {
         this->m_ui->minesRemaining->display(LCD_OVERFLOW_STRING);
-    } else if (this->m_gameController->userDisplayNumberOfMines() <= 0) {
+    } else if (numberOfMines <= 0) {
         this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(3)));
-    } else if (this->m_gameController->userDisplayNumberOfMines() < 10) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(2)) + toQString(this->m_gameController->userDisplayNumberOfMines()));
-    } else if (this->m_gameController->userDisplayNumberOfMines() < 100) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(1)) + toQString(this->m_gameController->userDisplayNumberOfMines()));
+    } else if (numberOfMines < 10) {
+        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(2)) + toQString(numberOfMines));
+    } else if (numberOfMines < 100) {
+        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(1)) + toQString(numberOfMines));
     } else {
-        this->m_ui->minesRemaining->display(this->m_gameController->userDisplayNumberOfMines());
+        this->m_ui->minesRemaining->display(numberOfMines);
+    }
+}
+
+void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
+{
+    using namespace QMineSweeperUtilities;
+    using namespace QMineSweeperStrings;
+    if (numberOfMovesMade > 999) {
+        this->m_ui->numberOfMoves->display(LCD_OVERFLOW_STRING);
+    } else if (numberOfMovesMade <= 0) {
+        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(3)));
+    } else if (numberOfMovesMade < 10) {
+        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(2)) + toQString(numberOfMovesMade));
+    } else if (numberOfMovesMade < 100) {
+        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(1)) + toQString(numberOfMovesMade));
+    } else {
+        this->m_ui->numberOfMoves->display(numberOfMovesMade);
     }
 
-    if (this->m_gameController->numberOfMovesMade() > 999) {
-        this->m_ui->numberOfMoves->display(LCD_OVERFLOW_STRING);
-    } else if (this->m_gameController->numberOfMovesMade() <= 0) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(3)));
-    } else if (this->m_gameController->numberOfMovesMade() < 10) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(2)) + toQString(this->m_gameController->numberOfMovesMade()));
-    } else if (this->m_gameController->numberOfMovesMade() < 100) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(1)) + toQString(this->m_gameController->numberOfMovesMade()));
-    } else {
-        this->m_ui->numberOfMoves->display(this->m_gameController->numberOfMovesMade());
-    }
+}
+
+void MainWindow::onMineExplosionEventTriggered()
+{
+    using namespace QMineSweeperUtilities;
+    displayAllMines();
+    this->m_qmssePtr->explosionEffect.play();
+    emit(mineExplosionEvent());
 }
 
 void MainWindow::onChangeBoardSizeActionTriggered()
@@ -693,6 +694,9 @@ void MainWindow::onBsuiCancelButtonClicked()
     }
 }
 
+/* onAboutQtActionTriggered() : Called when the About->About Qt menu
+ * option is clicked, causing the About Qt window (supplied by the Qt toolchain)
+ * to show. This separate event is also hooked, allowing the game to be paused if necessary */
 void MainWindow::onAboutQtActionTriggered()
 {
     /*
@@ -704,35 +708,54 @@ void MainWindow::onAboutQtActionTriggered()
     */
 }
 
+
+/* onApplicationExit() : Called when the QApplication is about to close,
+ * via hooking the QApplication::exit() event in main.cpp, empty by default */
 void MainWindow::onApplicationExit()
 {
 
 }
 
+/* bindGameController() : Convenience function for late binding of a shared_ptr
+ * to the GameController instance, to support dependancy injection for MainWindow,
+ * as this shared_ptr is passed in via the constructor */
 void MainWindow::bindGameController(std::shared_ptr<GameController> gc)
 {
     this->m_gameController.reset();
     this->m_gameController = gc;
 }
 
+/* bindQDesktopWidget() : Convenience function for late binding of a shared_ptr
+ * to the QDesktopWidget instance, to support dependancy injection for MainWindow,
+ * as this shared_ptr is passed in via the constructor */
 void MainWindow::bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw)
 {
     this->m_qDesktopWidget.reset();
     this->m_qDesktopWidget = qdw;
 }
 
+/* bindQMineSweeperIcons() : Convenience function for late binding of a shared_ptr
+ * to the QMineSweeperIcons instance, to support dependancy injection for MainWindow,
+ * as this shared_ptr is passed in via the constructor */
 void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QMineSweeperIcons> qmsiPtr)
 {
     this->m_qmsiPtr.reset();
     this->m_qmsiPtr = qmsiPtr;
 }
 
+/* bindGameController() : Convenience function for late binding of a shared_ptr
+ * to the GameController instance, to support dependancy injection for MainWindow,
+ * as this shared_ptr is passed in via the constructor */
 void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundEffects> qmssePtr)
 {
     this->m_qmssePtr.reset();
     this->m_qmssePtr = qmssePtr;
 }
 
+/* drawNumberOfSurroundingMines() : Called when a mine is about to be displayed
+ * Queries the shared_ptr passed in for it's number of surrounding mines, then
+ * uses the shared_ptr to the QMineSweeperIcons instance to set the graphic on the
+ * QMineSweeperButton to the correct number via chained else-ifs */
 void MainWindow::drawNumberOfSurroundingMines(std::shared_ptr<QMineSweeperButton> msb)
 {
     if (msb->numberOfSurroundingMines() == 0) {
@@ -758,16 +781,33 @@ void MainWindow::drawNumberOfSurroundingMines(std::shared_ptr<QMineSweeperButton
     }
 }
 
-
-void MainWindow::onMineExplosionEventTriggered()
+/* xPlacement() : Member access function for MainWindow::m_xPlacement */
+int MainWindow::xPlacement() const
 {
-    using namespace QMineSweeperUtilities;
-    displayAllMines();
-    this->m_qmssePtr->explosionEffect.play();
-    emit(mineExplosionEvent());
+    return this->m_xPlacement;
 }
 
+/* yPlacement() : Member access function for MainWindow::m_yPlacement */
+int MainWindow::yPlacement() const
+{
+    return this->m_yPlacement;
+}
 
+/* calculateXYPlacement() : Checks the currently available screen geometry, and calulates
+ * where the MainWindow must be moved to appear on at the center of the users screen */
+void MainWindow::calculateXYPlacement()
+{
+    std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
+    this->m_xPlacement = (avail->width()/2)-(this->width()/2);
+#if defined(__ANDROID__)
+    this->m_yPlacement = avail->height() - this->height();
+#else
+    this->m_yPlacement = (avail->height()/2)-(this->height()/2) - this->s_TASKBAR_HEIGHT;
+#endif
+}
+
+/* ~MainWindow() : Destructor, empty by default, as all ownership is taken care
+ * of by c++11's smart pointers (unique_ptr and shared_ptr) */
 MainWindow::~MainWindow()
 {
 
