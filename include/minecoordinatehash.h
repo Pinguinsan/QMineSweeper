@@ -29,7 +29,6 @@ public:
         auto xHash = std::hash<int>()(mc.X());
         auto yHash = std::hash<int>()(mc.Y());
         return (xHash ^ (yHash<<1));
-        return xHash;
     }
 };
 

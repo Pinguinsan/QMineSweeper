@@ -52,4 +52,17 @@ namespace QMineSweeperUtilities
         return returnValue;
     }
 
+    bool endsWith(const std::string &stringToCheck, const std::string &matchString)
+    {
+        if (matchString.size() > stringToCheck.size()) {
+            return false;
+        }
+        return std::equal(matchString.rbegin(), matchString.rend(), stringToCheck.rbegin());
+    }
+
+    bool endsWith(const std::string &stringToCheck, char matchChar)
+    {
+        return endsWith(stringToCheck, std::string{1, matchChar});
+    }
+
 }

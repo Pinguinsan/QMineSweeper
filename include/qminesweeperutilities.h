@@ -51,6 +51,8 @@ namespace QMineSweeperUtilities
 
     int roundIntuitively(double numberToRound);
     int randomBetween(int lowLimit, int highLimit);
+    bool endsWith(const std::string &stringToCheck, const std::string &matchString);
+    bool endsWith(const std::string &stringToCheck, char matchChar);
 
     const long long int constexpr NANOSECONDS_PER_MICROSECOND{1000};
     const long long int constexpr NANOSECONDS_PER_MILLISECOND{1000000};

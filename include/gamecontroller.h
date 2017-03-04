@@ -113,6 +113,7 @@ public:
     static int DEFAULT_BIG_SMILEY_FACE_TIMEOUT();
     static int DEFAULT_SLEEPY_FACE_TIMEOUT();
     static int LONG_CLICK_THRESHOLD();
+    static int MILLISECOND_DELAY_DIGITS();
 
 public slots:
     void onMineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msb);
@@ -169,6 +170,7 @@ private:
     static const int s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT;
     static const int s_DEFAULT_SLEEPY_FACE_TIMEOUT;
     static const int s_LONG_CLICK_THRESHOLD;
+    static const int s_MILLISECOND_DISPLAY_DIGITS;
 };
 
 

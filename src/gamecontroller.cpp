@@ -32,6 +32,7 @@ const int GameController::s_DEFAULT_CRAZY_FACE_TIMEOUT{250};
 const int GameController::s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT{500};
 const int GameController::s_DEFAULT_SLEEPY_FACE_TIMEOUT{15000};
 const int GameController::s_LONG_CLICK_THRESHOLD{250};
+const int GameController::s_MILLISECOND_DISPLAY_DIGITS{1};
 
 GameController::GameController() :
     m_numberOfMines{0},
@@ -569,4 +570,9 @@ int GameController::DEFAULT_SLEEPY_FACE_TIMEOUT()
 int GameController::LONG_CLICK_THRESHOLD()
 {
     return GameController::s_LONG_CLICK_THRESHOLD;
+}
+
+int GameController::MILLISECOND_DELAY_DIGITS()
+{
+    return GameController::s_MILLISECOND_DISPLAY_DIGITS;
 }

@@ -193,27 +193,20 @@ long long int EventTimer::totalTime()
     return this->m_totalTime;
 }
 
-std::string EventTimer::toString()
+std::string EventTimer::toString(uint8_t millisecondDigits)
 {
     if (!this->cacheIsValid()) {
         this->validateCache();
         this->update();
     }
     std::string returnString{""};
-    if (this->hours() == 0) {
-        returnString = QMineSweeperUtilities::toString(this->minutes())
-                       + ':'
-                       + QMineSweeperUtilities::toString(this->seconds())
-                       + '.'
-                       + QMineSweeperUtilities::toString(this->milliseconds());
-    } else {
-        returnString = QMineSweeperUtilities::toString(this->hours())
-                       + ':'
-                       + QMineSweeperUtilities::toString(this->minutes())
-                       + ':'
-                       + QMineSweeperUtilities::toString(this->seconds())
-                       + '.'
-                       + QMineSweeperUtilities::toString(this->milliseconds());
+    if (this->hours() != 0) {
+        returnString = QMineSweeperUtilities::toString(this->hours()) + ':';
     }
+    returnString += QMineSweeperUtilities::toString(this->minutes())
+                   + ':'
+                   + QMineSweeperUtilities::toString(this->seconds())
+                   + '.'
+                   + QMineSweeperUtilities::toString(this->milliseconds()).substr(0, millisecondDigits);
     return returnString;
 }

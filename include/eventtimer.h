@@ -53,7 +53,7 @@ public:
     long long int milliseconds();
     bool isPaused() const;
 
-    std::string toString();
+    std::string toString(uint8_t millisecondDigits = 3);
 
 private:
     std::chrono::time_point<platform_clock_t> m_startTime;
