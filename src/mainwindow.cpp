@@ -299,6 +299,11 @@ void MainWindow::displayMine(std::shared_ptr<QMineSweeperButton> msb)
         this->m_gameController->checkForOtherEmptyMines(msb);
     }
 }
+
+/* populateMineField() : The initialization for any new game, adding all QMineSweeperButtons
+ * Iterate through the number of columns and rows and call GameColler::addMineSweeperButton
+ * to populate all of the QMineSweeperButtons. Also, save the stylesheet so it can be quickly
+ * recalled on a new game. The size of the icons and the button itself is also set */
 void MainWindow::populateMineField()
 {
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
@@ -320,12 +325,20 @@ void MainWindow::populateMineField()
     this->m_saveStyleSheet = this->m_gameController->mineSweeperButtonAtIndex(0, 0)->styleSheet();
 }
 
+/* invalidateSizeCaches() : The maximum size of a QMineSweeperButton and the
+ * icon reduction size are both cached for quicker recall. After a new game is
+ * started or the board is resized, this is called to invalidate the caches */
 void MainWindow::invalidateSizeCaches()
 {
     this->m_maxMineSizeCacheIsValid = false;
     this->m_iconReductionSizeCacheIsValid = false;
 }
 
+/* getIconReductionSize() : The size of the icons for the QMineSweeperButtons are
+ * set in relation to the full size of the button, minus a calculated reduction size
+ * This function first checks if the cache for this number is still valid, and if it's
+ * not, calculates the new value. It is dependant on the number of mines, the reduction
+ * size scale factor (platform dependant), and the overall size of the board */
 QSize MainWindow::getIconReductionSize()
 {
     using namespace QMineSweeperUtilities;
@@ -340,6 +353,12 @@ QSize MainWindow::getIconReductionSize()
     return this->m_currentIconReductionSize;
 }
 
+/* getMaximumMineSize() : The maximum size of a QMineSweeperButton is important, to
+ * make sure the entire game can fit on the player's screen. To do this, the lesser
+ * of maximum height or maximum width will be returned from this function, to keep
+ * the QMineSweeperButton geometry as a square, as opposed to a rectangle. This function
+ * first checks if the cache for this number is still valid, and if it's not, calculates the new value.
+ * It is dependant on the available geometry of the screen, as well as the total number of mines */
 QSize MainWindow::getMaxMineSize()
 {
     using namespace QMineSweeperStrings;
@@ -382,6 +401,9 @@ QSize MainWindow::getMaxMineSize()
     return this->m_currentMaxMineSize;
 }
 
+/* resizeResetIcon(): The reset button's icon is set separate from the rest of the
+ * QMineSweeperButton icons, because it can be any size, independant of the rest of
+ * the icons. The value is calculated based upon the size of the adjacent LCDs */
 void MainWindow::resizeResetIcon()
 {
 #if defined(__ANDROID__)
@@ -394,16 +416,25 @@ void MainWindow::resizeResetIcon()
 #endif
 }
 
+/* resetResetButtonIcon() : The reset button icon is changed in response to game events
+ * (mine being displayed, a multiple-empty-mine reveal, etc). This provides a single way
+ * to reset the icon back to the normal smiley face icon */
 void MainWindow::resetResetButtonIcon()
 {
     this->m_ui->resetButton->setIcon(this->m_qmsiPtr->FACE_ICON_SMILEY);
 }
 
+/* setResetButtonIcon() : The reset button icon is changed in response to game events
+ * (mine being displayed, a multiple-empty-mine reveal, etc). This provides a single way
+ * to set the icon to whatever icon is passed into the function */
 void MainWindow::setResetButtonIcon(const QIcon &icon)
 {
     this->m_ui->resetButton->setIcon(icon);
 }
 
+/* displayAllMines() : Called when a game is won or lost, to reveal all of the
+ * QMineSweeperButtons. This also displays any correctly or incorrectly marked
+ * flags, to show the user where they made mistakes or were correct */
 void MainWindow::displayAllMines()
 {
     using namespace QMineSweeperStrings;
@@ -430,21 +461,41 @@ void MainWindow::displayAllMines()
     }
 }
 
+/* saveStyleSheet() : The default Qt-supplied stylesheet for the
+ * QMineSweeperButtons is saved to quickly recall it, this is a
+ * simple member access function for this value */
 QString MainWindow::saveStyleSheet() const
 {
     return this->m_saveStyleSheet;
 }
 
+/* qmsiPtr() : All of the icons used in QMineSweeper are stored in an
+ * instance of QMineSweeperIcons, and all relevant classes are supplied
+ * with a shared_ptr to this instance either via their constructors or
+ * via a late binding dependancy-injection function. This is a simple
+ * member access function for this shared_ptr, in case it needs to be accessed
+ * by an object that does not obtain this shared_ptr */
 std::shared_ptr<QMineSweeperIcons> MainWindow::qmsiPtr() const
 {
     return this->m_qmsiPtr;
 }
 
+/* qmssePtr() : All of the sounds used in QMineSweeper are stored in an
+ * instance of QMineSweeperIcons, and all relevant classes are supplied
+ * with a shared_ptr to this instance either via their constructors or
+ * via a late binding dependancy-injection function. This is a simple
+ * member access function for this shared_ptr, in case it needs to be accessed
+ * by an object that does not obtain this shared_ptr */
 std::shared_ptr<QMineSweeperSoundEffects> MainWindow::qmssePtr() const
 {
     return this->m_qmssePtr;
 }
 
+/* onResetButtonClicked() : When the reset button is clicked, the user is requesting
+ * to reset the current game. First, a gamePaused() signal is emitted, then
+ * if there is a current game in progress, the user is asked via a QMessageBox if they
+ * are sure they want to reset the current game. If so, the game is reset via
+ * the doGameReset() method. If not, a gameResumed() signal is emitted */
 void MainWindow::onResetButtonClicked()
 {
     using namespace QMineSweeperStrings;
@@ -462,6 +513,10 @@ void MainWindow::onResetButtonClicked()
     }
 }
 
+/* doGameReset() : To reset the current game, all of the columns and rows
+ * are iterated through and each QMineSweeperButton is set to a default state,
+ * (not checked, flat, default stylesheet, etc). After all are set, a
+ * resetGame() signal is emitted and the reset button is set to default */
 void MainWindow::doGameReset()
 {
     using namespace QMineSweeperStrings;
@@ -482,6 +537,9 @@ void MainWindow::doGameReset()
     this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);
 }
 
+/* eventLoop() : Called whenever the game timer times out, at the specified interval.
+ * Any periodic things that must be done during the game are called here, such as
+ * updating the visible game timer, and any resizing of the geometry */
 void MainWindow::eventLoop()
 {
     updateVisibleGameTimer();
@@ -489,6 +547,8 @@ void MainWindow::eventLoop()
     //updateGeometry();
 }
 
+/* updateGeomtry() : Convenience function to center and fit the window,
+ * if it is not already set by checking the size against the calculated minimum size */
 void MainWindow::updateGeometry()
 {
     if (this->size() != this->minimumSize()) {

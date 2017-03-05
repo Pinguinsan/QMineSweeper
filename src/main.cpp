@@ -38,12 +38,10 @@ int main(int argc, char *argv[])
     std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
     std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(qmsi, qmsse, gameController, qDesktopWidget)};
     gameController->bindMainWindow(mainWindow);
-    //mainWindow->bindGameController(gameController);
-    //mainWindow->bindQDesktopWidget(qDesktopWidget);
     mainWindow->setupNewGame();
 
     QObject::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
-    mainWindow->setWindowIcon(mainWindow->qmsiPtr()->MINE_ICON_72);
+    mainWindow->setWindowIcon(qmsi->MINE_ICON_72);
     mainWindow->setWindowTitle(MAIN_WINDOW_TITLE);
 #if defined(__ANDROID__)
     mainWindow->showMaximized();
