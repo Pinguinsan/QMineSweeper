@@ -37,6 +37,33 @@ namespace QMineSweeperUtilities
         }
     }
 
+    std::string getPadding(size_t howMuch, char padChar)
+    {
+        std::string returnString{""};
+        for (size_t i = 0; i < howMuch; i++) {
+            returnString += padChar;
+        }
+        return returnString;
+    }
+
+    std::string getPadding(size_t howMuch, const char *padString)
+    {
+        std::string returnString{""};
+        for (size_t i = 0; i < howMuch; i++) {
+            returnString += padString;
+        }
+        return returnString;
+    }
+
+    std::string getPadding(size_t howMuch, const std::string &padString)
+    {
+        std::string returnString{""};
+        for (size_t i = 0; i < howMuch; i++) {
+            returnString += padString;
+        }
+        return returnString;
+    }
+
     int randomBetween(int lowLimit, int highLimit)
     {
         static bool srandSeeded{false};

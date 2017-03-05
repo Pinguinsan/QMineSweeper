@@ -32,7 +32,7 @@ class MineCoordinates
 
 public:
     MineCoordinates(int X, int Y);
-    MineCoordinates(const std::pair<int, int> xy);
+    MineCoordinates(const std::pair<int, int> &xy);
 
     int X() const;
     void setX(int X);

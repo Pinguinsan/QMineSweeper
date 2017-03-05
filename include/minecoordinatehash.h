@@ -26,9 +26,7 @@ class MineCoordinateHash
 public:
     std::size_t operator()(const MineCoordinates &mc) const
     {
-        auto xHash = std::hash<int>()(mc.X());
-        auto yHash = std::hash<int>()(mc.Y());
-        return (xHash ^ (yHash<<1));
+        return (std::hash<int>()(mc.X()) ^ (std::hash<int>()(mc.Y())<<1));
     }
 };
 

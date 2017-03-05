@@ -25,7 +25,7 @@ MineCoordinates::MineCoordinates(int X, int Y) :
 
 }
 
-MineCoordinates::MineCoordinates(const std::pair<int, int> xy) :
+MineCoordinates::MineCoordinates(const std::pair<int, int> &xy) :
     m_x{xy.first},
     m_y{xy.second}
 {

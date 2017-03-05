@@ -92,6 +92,7 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
     connect(this->m_eventTimer.get(), SIGNAL(timeout()), this, SLOT(eventLoop()));
     connect(this->m_gameController.get(), SIGNAL(gameStarted()), this, SLOT(onGameStarted()));
     connect(this, SIGNAL(resetGame()), this->m_gameController.get(), SLOT(onGameReset()));
+    connect(this->m_ui->actionMuteSound, SIGNAL(triggered(bool)), this, SLOT(onActionMuteSoundChecked(bool)));
 
     connect(this->m_gameController.get(), SIGNAL(numberOfMinesRemainingChanged(int)), this, SLOT(updateNumberOfMinesLCD(int)));
     connect(this->m_gameController.get(), SIGNAL(numberOfMovesMadeChanged(int)), this, SLOT(updateNumberOfMovesMadeLCD(int)));
@@ -556,16 +557,27 @@ void MainWindow::updateGeometry()
     }
 }
 
+/* startGameTimer() : Called when a new game is setup up, via the gameStarted() signal.
+ * This timer is to show the player how long they've been playing the current game */
 void MainWindow::startGameTimer()
 {
     this->m_playTimer->start();
 }
 
+/* startUserIdleTimer() : Called after each move made by a player.
+ * The user idle timer keeps track of when the user is idle, and is checked
+ * against a threshold value. If/when the user idle timer crosses the
+ * threshold, the reset icon is changed to a sleepy face */
 void MainWindow::startUserIdleTimer()
 {
     this->m_userIdleTimer->start();
 }
 
+/* updateVisibleGameTimer() : Called whenever the play timer emits it's millisecondChanged
+ * (or equivalent) signal, to update the visible timer to inform the player how long they've
+ * been playing the current game. Before updating, the current game state is checked from
+ * the GameController::gameState() method. If the game is paused or in progress, the timer is updated.
+ * If the game is stopped, the timer is not updated, and the "start new game" dialog is shown instead */
 void MainWindow::updateVisibleGameTimer()
 {
     using namespace QMineSweeperUtilities;
@@ -588,6 +600,10 @@ void MainWindow::updateVisibleGameTimer()
     }
 }
 
+/* updateUserIdleTimer() : If the current game state is not paused or stopped,
+ * the user idle timer is checked, the see if it has crossed the GameControllers
+ * DEFAULT_SLEEPY_FACE_TIMEOUT threshold. If it has, the reset icon is changed to
+ * a sleepy face. If it has not, the method returns */
 void MainWindow::updateUserIdleTimer()
 {
     if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
@@ -606,15 +622,21 @@ void MainWindow::updateUserIdleTimer()
     }
 }
 
-std::string MainWindow::getLCDDisplayPadding(int howMuch)
+/* getLCDPadding() : Both LCDs in the MainWindow must always display 3 digits.
+ * This is a common function to call to get a string object with how many padded
+ * zeroes are requested (ie getLCDPadding(2) returns "00") */
+std::string MainWindow::getLCDPadding(uint8_t howMuch)
 {
-    std::string returnString{""};
-    for (int i = 0; i < howMuch; i++) {
-        returnString += "0";
-    }
-    return returnString;
+    return QMineSweeperUtilities::getPadding(howMuch, '0');
 }
 
+/* updateNumberOfMinesLCD() : The right LCD on the MainWindow shows how
+ * many mines may be remaining in the game, in accordance with how many mines have been flagged
+ * by the user, indiciating that they thing there is a mine there. Whenever this value is updated
+ * via the GameController, GameController emits a numberOfMinesRemainingChanged() signal, which is
+ * hooked by this function. The LCD should always display 3 characters, so the parameter to the
+ * function is checked against powers of 10, and the correct number of 0's are
+ * added before the number is displayed */
 void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
 {
     using namespace QMineSweeperUtilities;
@@ -622,16 +644,21 @@ void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
     if (numberOfMines > 999) {
         this->m_ui->minesRemaining->display(LCD_OVERFLOW_STRING);
     } else if (numberOfMines <= 0) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(3)));
+        this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(3)));
     } else if (numberOfMines < 10) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(2)) + toQString(numberOfMines));
+        this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(2)) + toQString(numberOfMines));
     } else if (numberOfMines < 100) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDDisplayPadding(1)) + toQString(numberOfMines));
+        this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(1)) + toQString(numberOfMines));
     } else {
         this->m_ui->minesRemaining->display(numberOfMines);
     }
 }
 
+/* updateNumberOfMovesMadeLCD() : The left LCD on the MainWindow shows how
+ * many moves have been made by the user. Whenever this is updated via the GameController,
+ * GameController emits a numberOfMovesMadeChanged() signal, which is hooked by this function.
+ * The LCD should always display 3 characters, so the parameter to the function is checked
+ * against powers of 10, and the correct number of 0's are added before the number is displayed */
 void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
 {
     using namespace QMineSweeperUtilities;
@@ -639,25 +666,46 @@ void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
     if (numberOfMovesMade > 999) {
         this->m_ui->numberOfMoves->display(LCD_OVERFLOW_STRING);
     } else if (numberOfMovesMade <= 0) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(3)));
+        this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(3)));
     } else if (numberOfMovesMade < 10) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(2)) + toQString(numberOfMovesMade));
+        this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(2)) + toQString(numberOfMovesMade));
     } else if (numberOfMovesMade < 100) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDDisplayPadding(1)) + toQString(numberOfMovesMade));
+        this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(1)) + toQString(numberOfMovesMade));
     } else {
         this->m_ui->numberOfMoves->display(numberOfMovesMade);
     }
 
 }
 
+/* onMineExplosionEventTriggered() : When a player reveals a mine, a mineExplosionEvent() signal is
+ * emitted by the GameController, and this method is called. All mines are displayed, and the mineExplosionEvent
+ * is re-emitted by MainWindow, indicating that all UI elements of a game over are taken care of */
 void MainWindow::onMineExplosionEventTriggered()
 {
     using namespace QMineSweeperUtilities;
     displayAllMines();
-    this->m_qmssePtr->explosionEffect.play();
+    if (this->m_soundEnabled) {
+        this->m_qmssePtr->explosionEffect.play();
+    }
     emit(mineExplosionEvent());
 }
 
+/* onMuteSoundClicked() : Called when the "Mute Sound" menu option is
+ * clicked. If the option is checked, all sounds from QMineSweeper
+ * are disabled. If not, they are enabled */
+void MainWindow::onActionMuteSoundChecked(bool checked)
+{
+    if (checked) {
+        this->m_soundEnabled = false;
+    } else {
+        this->m_soundEnabled = true;
+    }
+}
+
+/* onChangeBoardSizeActionTriggered() : Called when the "change board size" menu option
+ * is triggered. The current game is first paused, then the user is shown the BoardSize form.
+ * The MainWindow flag m_boardSizeGeometrySet is checked, and if it is false, the geometry for the
+ * BoardSize form is set. If it is true, the geometry is not set. */
 void MainWindow::onChangeBoardSizeActionTriggered()
 {
     using namespace QMineSweeperUtilities;
@@ -689,6 +737,11 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     emit(gamePaused());
 }
 
+/* onBsuiOkayButtonClicked() : When the BoardSize dialog's "ok" button is clicked,
+ * the player has requested to change the board size and start a new game. If there is
+ * an active game, the player is asked if they'd like to stop that game and start a new one.
+ * If they reply that they want to, a new game is setup. Otherwise, the currently
+ * running game is reactivated, including all player timers */
 void MainWindow::onBsuiOkayButtonClicked()
 {
     using namespace QMineSweeperUtilities;

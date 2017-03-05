@@ -21,9 +21,14 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <memory>
 #include <cstdlib>
 #include <ctime>
+#include <cstdio>
+
 #include <QString>
+
+
 
 namespace QMineSweeperUtilities
 {
@@ -42,6 +47,9 @@ namespace QMineSweeperUtilities
 
     std::string toString(const std::string &str);
     std::string toString(const char *str);
+    std::string getPadding(size_t howMuch, char padChar);
+    std::string getPadding(size_t howMuch, const char *padString);
+    std::string getPadding(size_t howMuch, const std::string &padString);
 
     template <typename T>
     QString toQString(const T &convert) { return QString::fromStdString(toString(convert)); }
@@ -53,6 +61,53 @@ namespace QMineSweeperUtilities
     int randomBetween(int lowLimit, int highLimit);
     bool endsWith(const std::string &stringToCheck, const std::string &matchString);
     bool endsWith(const std::string &stringToCheck, char matchChar);
+
+    template<typename ... Args>
+    std::string stringFormat(const std::string& format, Args ... args)
+    {
+        size_t size{std::snprintf(nullptr, 0, format.c_str(), args ...) + 1};
+        std::unique_ptr<char[]> stringBuffer{new char[size]};
+        snprintf(stringBuffer.get(), size, format.c_str(), args ...);
+        return std::string{stringBuffer.get(), stringBuffer.get() + size - 1};
+    }
+
+    template<typename Container>
+    bool isSwitch(const std::string &switchToCheck, const Container &switches) {
+        std::string copyString{switchToCheck};
+        std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+        for (auto &it : switches) {
+            if ((copyString == static_cast<std::string>(it)) &&
+                (copyString.length() == static_cast<std::string>(it).length()) &&
+                (copyString.find(static_cast<std::string>(it)) == 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<typename Container>
+    bool isSwitch(const char *switchToCheck, const Container &switches) {
+        return isSwitch(static_cast<std::string>(switchToCheck), switches);
+    }
+
+    template<typename Container>
+    bool isEqualsSwitch(const std::string &switchToCheck, const Container &switches) {
+        std::string copyString{switchToCheck};
+        std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+        for (auto &it : switches) {
+            std::string copySwitch{static_cast<std::string>(it) + "="};
+            if ((copyString.find(static_cast<std::string>(it) + "=") == 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template<typename Container>
+    bool isEqualsSwitch(const char *switchToCheck, const Container &switches) {
+        return isEqualsSwitch(static_cast<std::string>(switchToCheck), switches);
+    }
+
 
     const long long int constexpr NANOSECONDS_PER_MICROSECOND{1000};
     const long long int constexpr NANOSECONDS_PER_MILLISECOND{1000000};

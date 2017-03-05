@@ -105,16 +105,6 @@ private:
     std::shared_ptr<GameController> m_gameController;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
 
-    static const int s_TASKBAR_HEIGHT;
-    static const int s_GAME_TIMER_INTERVAL;
-    static const double s_DEFAULT_NUMBER_OF_MINES;
-    static const int s_HEIGHT_SCALE_FACTOR;
-    static const int s_WIDTH_SCALE_FACTOR;
-    static const int s_NUMBER_OF_HORIZONTAL_MARGINS;
-    static const int s_NUMBER_OF_VERTIAL_MARGINS;
-    static const int s_DEFAULT_MINE_SIZE_SCALE_FACTOR;
-    static const double s_MINE_ICON_REDUCTION_SCALE_FACTOR;
-
     double m_reductionSizeScaleFactor;
     QString m_saveStyleSheet;
     int m_xPlacement;
@@ -126,6 +116,19 @@ private:
     bool m_iconReductionSizeCacheIsValid;
     bool m_tempPauseFlag;
     bool m_boardSizeGeometrySet;
+    bool m_soundEnabled;
+
+    static const int s_TASKBAR_HEIGHT;
+    static const int s_GAME_TIMER_INTERVAL;
+    static const double s_DEFAULT_NUMBER_OF_MINES;
+    static const int s_HEIGHT_SCALE_FACTOR;
+    static const int s_WIDTH_SCALE_FACTOR;
+    static const int s_NUMBER_OF_HORIZONTAL_MARGINS;
+    static const int s_NUMBER_OF_VERTIAL_MARGINS;
+    static const int s_DEFAULT_MINE_SIZE_SCALE_FACTOR;
+    static const double s_MINE_ICON_REDUCTION_SCALE_FACTOR;
+
+
 
     void hideEvent(QHideEvent *event);
     void showEvent(QShowEvent *event);
@@ -136,8 +139,7 @@ private:
     QSize getMaxMineSize();
     QSize getIconReductionSize();
     void calculateXYPlacement();
-    std::string getLCDDisplayPadding(int howMuch);
-
+    std::string getLCDPadding(uint8_t howMuch);
 signals:
     void resetButtonClicked();
     void resetGame();
@@ -175,6 +177,7 @@ private slots:
 
     void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
     void updateNumberOfMinesLCD(int numberOfMines);
+    void onActionMuteSoundChecked(bool checked);
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H
