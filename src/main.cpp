@@ -34,7 +34,8 @@
 #include "qminesweeperutilities.h"
 #include "gamecontroller.h"
 
-/* The program is organized like this:
+/*
+ * The program is organized like this:
  *     MainWindow - Contains all UI elements, and handling of UI signals
  *     GameController - Single instance class that controls all of the game logic
  *     MineCoordinates - Representing the X,Y coordinates of a button

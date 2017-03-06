@@ -42,7 +42,7 @@ class EventTimer
     using CallbackHandlePair = std::pair<std::future<void>, StandardFunctionCallback>;
 
 public:
-    EventTimer() :
+    EventTimer<ClockType>() :
         m_startTime{platform_clock_t::now()},
         m_endTime{platform_clock_t::now()},
         m_cacheStartTime{platform_clock_t::now()},
@@ -53,8 +53,23 @@ public:
         m_milliseconds{0},
         m_isPaused{false},
         m_monitor{false},
-        m_monitoringAsyncHandle{}
+        m_monitoringAsyncHandle{nullptr}
+    {
 
+    }
+
+    EventTimer<ClockType>(const EventTimer<ClockType> &other) :
+        m_startTime{other.m_startTime},
+        m_endTime{other.m_endTime},
+        m_cacheStartTime{other.m_cacheStartTime},
+        m_totalTime{other.m_totalTime},
+        m_hours{other.m_hours},
+        m_minutes{other.m_minutes},
+        m_seconds{other.m_seconds},
+        m_milliseconds{other.m_milliseconds},
+        m_isPaused{other.m_isPaused},
+        m_monitor{other.m_monitor},
+        m_monitoringAsyncHandle{nullptr}
     {
 
     }
@@ -343,6 +358,13 @@ public:
     void registerHoursChangedCallback(FunctionPointerCallback callback)
     {
         this->registerHoursChangedCallback(static_cast<StandardFunctionCallback>(callback));
+    }
+
+    ~EventTimer<ClockType>()
+    {
+        if (this->m_monitoringAsyncHandle) {
+            this->m_isPaused = true;
+        }
     }
 
 private:
