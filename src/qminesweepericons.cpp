@@ -20,6 +20,10 @@
 
 using namespace QMineSweeperStrings;
 
+/* QMineSweeperIcons() : Constructor, setting up the QIcons used.
+ * This thin wrapper class for the QIcons is necessary because all QObjects
+ * must be instantiated and set up after a QApplication is instantiated, so using them
+ * as static objects is not usable. Thus, this late binding is necessary */
 QMineSweeperIcons::QMineSweeperIcons() :
     MINE_ICON_16{QIcon{MINE_ICON_16_STRING}},
     MINE_ICON_24{QIcon{MINE_ICON_24_STRING}},
@@ -52,6 +56,7 @@ QMineSweeperIcons::QMineSweeperIcons() :
     //Constructor
 }
 
+/* ~QMineSweeperIcons() : Destructor, empty by default */
 QMineSweeperIcons::~QMineSweeperIcons()
 {
     //Destructor

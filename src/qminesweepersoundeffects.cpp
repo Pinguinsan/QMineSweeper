@@ -23,6 +23,10 @@ using namespace QMineSweeperStrings;
 
 const int QMineSweeperSoundEffects::s_EXPLOSION_EFFECT_VOLUME{25};
 
+/* QMineSweeperSoundEffects() : Constructor, setting up the QSoundEffects used.
+ * This thin wrapper class for the QSoundEffects is necessary because all QObjects
+ * must be instantiated and set up after a QApplication is instantiated, so using them
+ * as static objects is not usable. Thus, this late binding is necessary */
 QMineSweeperSoundEffects::QMineSweeperSoundEffects() :
     explosionEffect{},
     m_explosionEffectSource{EXPLOSION_EFFECT_SOURCE_STRING}
@@ -31,6 +35,7 @@ QMineSweeperSoundEffects::QMineSweeperSoundEffects() :
     this->explosionEffect.setVolume(QMineSweeperSoundEffects::s_EXPLOSION_EFFECT_VOLUME);
 }
 
+/* ~QMineSweeperSoundEffects() : Destructor, empty by defaut */
 QMineSweeperSoundEffects::~QMineSweeperSoundEffects()
 {
     //Destructor

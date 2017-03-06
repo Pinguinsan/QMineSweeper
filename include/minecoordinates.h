@@ -41,17 +41,17 @@ public:
     void setY(int Y);
 
     bool operator==(const MineCoordinates &compareObject) const;
-    bool operator==(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator==(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator<(const MineCoordinates &compareObject) const;
-    bool operator<(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator<(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator<=(const MineCoordinates &compareObject) const;
-    bool operator<=(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator<=(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator>(const MineCoordinates &compareObject) const;
-    bool operator>(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator>(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator>=(const MineCoordinates &compareObject) const;
-    bool operator>=(const std::shared_ptr<MineCoordinates> &compareObject) const;
+    bool operator>=(std::shared_ptr<MineCoordinates> compareObject) const;
     friend std::ostream& operator<<(std::ostream &os, const MineCoordinates &mc);
-    friend std::ostream& operator<<(std::ostream &os, const std::shared_ptr<MineCoordinates> &mc);
+    friend std::ostream& operator<<(std::ostream &os, std::shared_ptr<MineCoordinates> mc);
 
     static std::shared_ptr<MineCoordinates> generateRandomMineCoordinatesPtrInBounds(int maxColumn, int maxRow);
     static MineCoordinates generateRandomMineCoordinatesInBounds(int maxColumn, int maxRow);

@@ -18,6 +18,8 @@
 
 #include "minecoordinates.h"
 
+/* MineCoordinates() : Constructor for MineCoordinates using separate
+ * x and y parameters, simply copying these elements to m_x and m_y */
 MineCoordinates::MineCoordinates(int X, int Y) :
     m_x{X},
     m_y{Y}
@@ -25,6 +27,8 @@ MineCoordinates::MineCoordinates(int X, int Y) :
 
 }
 
+/* MineCoordinates() : Constructor for MineCoordinates using a std::pair<int, int>
+ * instance, copying the std::pair::first and std::pair::second elements to m_x and m_y */
 MineCoordinates::MineCoordinates(const std::pair<int, int> &xy) :
     m_x{xy.first},
     m_y{xy.second}
@@ -32,95 +36,145 @@ MineCoordinates::MineCoordinates(const std::pair<int, int> &xy) :
 
 }
 
+/* X() : Member access to the x coordinate of the (x,y) coordinate pair */
 int MineCoordinates::X() const
 {
     return this->m_x;
 }
 
+/* Y() : Member access to the y coordinate of the (x,y) coordinate pair */
 int MineCoordinates::Y() const
 {
     return this->m_y;
 }
 
+/* setX() : Set the x coordinate of the (x,y) coordinate pair */
 void MineCoordinates::setX(int X)
 {
     this->m_x = X;
 }
 
+/* setY() : Set the y coordinate of the (x,y) coordinate pair */
 void MineCoordinates::setY(int Y)
 {
     this->m_y = Y;
 }
 
+/* operator==() : Overloaded operator==, checking equality for two MineCoordinates
+ * instances, passing object by const reference.
+ * Compares the X and Y components of the objects for exact equality*/
 bool MineCoordinates::operator==(const MineCoordinates &compareObject) const
 {
     return ((compareObject.X() == this->m_x) && (compareObject.Y() == this->m_y));
 }
 
-bool MineCoordinates::operator==(const std::shared_ptr<MineCoordinates> &compareObject) const
+/* operator==() : Overloaded operator==, checking equality for two MineCoordinates
+ * instances, passing object by std::shared_ptr.
+ * Compares the X and Y components of the objects for exact equality*/
+bool MineCoordinates::operator==(std::shared_ptr<MineCoordinates> compareObject) const
 {
     return ((compareObject->X() == this->m_x) && (compareObject->Y() == this->m_y));
 }
 
+/* operator<() : Overloaded operator<, checking order of two MineCoordinates
+ * instances, passing object by const reference.
+ * Compares the X component of the objects to see if the current instance is
+ * less than the passed in object*/
 bool MineCoordinates::operator<(const MineCoordinates &compareObject) const
 {
-    return (compareObject.X() > this->m_x);
+    return (this->m_x < compareObject.X());
 }
 
-bool MineCoordinates::operator<(const std::shared_ptr<MineCoordinates> &compareObject) const
+/* operator<() : Overloaded operator<, checking order of two MineCoordinates
+ * instances, passing object by shared_ptr.
+ * Compares the X component of the objects to see if the current instance is
+ * less than the passed in object */
+bool MineCoordinates::operator<(std::shared_ptr<MineCoordinates> compareObject) const
 {
-    return (compareObject->X() > this->m_x);
+    return (this->m_x < compareObject->X());
 }
 
+/* operator<=() : Overloaded operator<=, checking order of two MineCoordinates
+ * instances, passing object by const reference.
+ * Compares the X component of the objects to see if the current instance is
+ * less than or equal to the passed in object */
 bool MineCoordinates::operator<=(const MineCoordinates &compareObject) const
 {
-    return (compareObject.X() >= this->m_x);
+    return (this->m_x <= compareObject.X());
 }
 
-bool MineCoordinates::operator<=(const std::shared_ptr<MineCoordinates> &compareObject) const
+/* operator<=() : Overloaded operator<=, checking order of two MineCoordinates
+ * instances, passing object by shared_ptr.
+ * Compares the X component of the objects to see if the current instance is
+ * less than or equal to the passed in object */
+bool MineCoordinates::operator<=(std::shared_ptr<MineCoordinates> compareObject) const
 {
-    return (compareObject->X() >= this->m_x);
+    return (this->m_x <= compareObject->X());
 }
 
+/* operator>() : Overloaded operator>, checking order of two MineCoordinates
+ * instances, passing object by const reference.
+ * Compares the X component of the objects to see if the current instance is
+ * greater than the passed in object */
 bool MineCoordinates::operator>(const MineCoordinates &compareObject) const
 {
-    return (compareObject.X() < this->m_x);
+    return (this->m_x > compareObject.X());
 }
 
-bool MineCoordinates::operator>(const std::shared_ptr<MineCoordinates> &compareObject) const
+/* operator>() : Overloaded operator>, checking order of two MineCoordinates
+ * instances, passing object by shared_ptr.
+ * Compares the X component of the objects to see if the current instance is
+ * greater than the passed in object */
+bool MineCoordinates::operator>(std::shared_ptr<MineCoordinates> compareObject) const
 {
-    return (compareObject->X() < this->m_x);
+    return (this->m_x > compareObject->X());
 }
 
+/* operator>=() : Overloaded operator>=, checking order of two MineCoordinates
+ * instances, passing object by const reference.
+ * Compares the X component of the objects to see if the current instance is
+ * greater than or equal to the passed in object */
 bool MineCoordinates::operator>=(const MineCoordinates &compareObject) const
 {
-    return (compareObject.X() <= this->m_x);
+    return (this->m_x >= compareObject.X());
 }
 
-bool MineCoordinates::operator>=(const std::shared_ptr<MineCoordinates> &compareObject) const
+/* operator>=() : Overloaded operator>=, checking order of two MineCoordinates
+ * instances, passing object by shared_ptr.
+ * Compares the X component of the objects to see if the current instance is
+ * greater than or equal to the passed in object */
+bool MineCoordinates::operator>=(std::shared_ptr<MineCoordinates> compareObject) const
 {
-    return (compareObject->X() <= this->m_x);
+    return (this->m_x >= compareObject->X());
 }
 
+/* generateRandomMineCoordinatesPtrInBounds() : Generates a random MineCoordinates std::shared_ptr
+ * in accordance with the column and row indexes passed into the function */
 std::shared_ptr<MineCoordinates> MineCoordinates::generateRandomMineCoordinatesPtrInBounds(int maxColumn, int maxRow)
 {
     using namespace QMineSweeperUtilities;
     return std::make_shared<MineCoordinates> (randomBetween(0, maxColumn), randomBetween(0, maxRow));
 }
 
+/* generateRandomMineCoordinatesInBounds() : Generates a random MineCoordinates object
+ * in accordance with the column and row indexes passed into the function */
 MineCoordinates MineCoordinates::generateRandomMineCoordinatesInBounds(int maxColumn, int maxRow)
 {
     using namespace QMineSweeperUtilities;
     return MineCoordinates{randomBetween(0, maxColumn), randomBetween(0, maxRow)};
 }
 
+/* operator<<() : Overloaded operator <<, enabling the pair to be output to
+ * and output stream, passed in by const reference */
 std::ostream& operator<<(std::ostream& os, const MineCoordinates &mc)
 {
     os << "(" << mc.X() << ", " << mc.Y() << ")";
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::shared_ptr<MineCoordinates> &mc)
+/* operator<<() : Overloaded operator <<, enabling the pair to be output to
+ * and output stream, passed in by shared_ptr */
+std::ostream& operator<<(std::ostream& os, std::shared_ptr<MineCoordinates> mc)
 {
     os << "(" << mc->X() << ", " << mc->Y() << ")";
     return os;
