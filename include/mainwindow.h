@@ -42,16 +42,6 @@
 #include "qminesweeperutilities.h"
 #include "qminesweeperstrings.h"
 
-#if (__cplusplus < 201402L) && !defined(_MSC_VER)
-    namespace std {
-    template<typename T, typename... Args>
-        unique_ptr<T> make_unique(Args&&... args)
-        {
-            return unique_ptr<T>(new T(forward<Args>(args)...));
-        }
-    }
-#endif
-
 namespace Ui
 {
     class MainWindow;

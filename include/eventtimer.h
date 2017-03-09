@@ -76,6 +76,9 @@ public:
 
     void start()
     {
+        if (!this->m_isPaused) {
+            return;
+        }
         this->m_totalTime = 0;
         this->m_hours = 0;
         this->m_minutes = 0;
@@ -89,12 +92,9 @@ public:
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 } while (this->m_monitoringAsyncHandle->wait_for(std::chrono::seconds(0)) != std::future_status::ready);
             }
-            this->m_monitoringAsyncHandle = nullptr;
+            this->m_monitoringAsyncHandle.reset();
         }
-        this->m_monitoringAsyncHandle = std::unique_ptr<std::future<void>>(new std::future<void>{std::async(std::launch::async,
-                                                                                                 &EventTimer::monitorTicks,
-                                                                                                 this)});
-
+        this->m_monitoringAsyncHandle = std::unique_ptr<std::future<void>>(new std::future<void>{std::async(std::launch::async, &EventTimer::monitorTicks, this)});
         this->m_startTime = platform_clock_t::now();
         this->m_cacheStartTime = platform_clock_t::now();
         this->m_isPaused = false;
@@ -102,6 +102,7 @@ public:
 
     void restart() 
     { 
+        this->m_isPaused = true;
         return this->start(); 
     }
 

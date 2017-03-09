@@ -71,9 +71,9 @@ public:
     void setHasQuestionMark(bool hasQuestionMark);
     void setIsRevealed(bool isRevealed);
     void setNumberOfSurroundingMines(int numberOfSurroundingMines);
-    void setBlockClicks(bool blockClicks);
     void drawNumberOfSurroundingMines();
-
+    void setBlockClicks(bool blockClicks);
+    bool isBlockingClicks() const;
 signals:
     void leftClicked(std::shared_ptr<QMineSweeperButton> msbp);
     void rightClicked(std::shared_ptr<QMineSweeperButton> msbp);

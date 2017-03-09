@@ -87,8 +87,8 @@ QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& othe
 bool QMineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
 {
     if (pEvent->type() == QEvent::KeyPress)  {
-        QKeyEvent* pKeyEvent = static_cast<QKeyEvent*>(pEvent);
-        int pressedKey = pKeyEvent->key();
+        QKeyEvent* pKeyEvent{static_cast<QKeyEvent*>(pEvent)};
+        int pressedKey{pKeyEvent->key()};
         if ((pressedKey == Qt::Key_Return) || (pressedKey == Qt::Key_Space)) {
             return true;
         }
@@ -105,7 +105,6 @@ bool QMineSweeperButton::operator==(const QMineSweeperButton &other) const
 
 void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
 {
-    //QPushButton::mousePressEvent(mouseEvent);
     if (this->m_blockClicks) {
         return;
     }
@@ -128,6 +127,11 @@ void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
 void QMineSweeperButton::setBlockClicks(bool blockClicks)
 {
     this->m_blockClicks = blockClicks;
+}
+
+bool QMineSweeperButton::isBlockingClicks() const
+{
+    return this->m_blockClicks;
 }
 
 void QMineSweeperButton::doInformLongClick()

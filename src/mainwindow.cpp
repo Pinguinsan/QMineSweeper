@@ -536,6 +536,8 @@ void MainWindow::doGameReset()
     emit(resetGame());
     this->m_ui->resetButton->setIcon(this->m_qmsiPtr->FACE_ICON_SMILEY);
     this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);
+    this->updateNumberOfMinesLCD(this->m_gameController->numberOfMines());
+    this->updateNumberOfMovesMadeLCD(0);
 }
 
 /* eventLoop() : Called whenever the game timer times out, at the specified interval.
@@ -570,7 +572,9 @@ void MainWindow::startGameTimer()
  * threshold, the reset icon is changed to a sleepy face */
 void MainWindow::startUserIdleTimer()
 {
-    this->m_userIdleTimer->start();
+    if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
+        this->m_userIdleTimer->start();
+    }
 }
 
 /* updateVisibleGameTimer() : Called whenever the play timer emits it's millisecondChanged
