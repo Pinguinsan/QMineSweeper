@@ -573,7 +573,7 @@ void MainWindow::startGameTimer()
 void MainWindow::startUserIdleTimer()
 {
     if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
-        this->m_userIdleTimer->start();
+        this->m_userIdleTimer->restart();
     }
 }
 

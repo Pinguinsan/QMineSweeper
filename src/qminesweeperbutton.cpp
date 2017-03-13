@@ -120,7 +120,7 @@ void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
             emit(rightClicked(shared_from_this()));
         }
     }
-    this->m_longClickTimer.start();
+    this->m_longClickTimer.restart();
     QTimer::singleShot(GameController::LONG_CLICK_THRESHOLD(), this, SLOT(doInformLongClick()));
 }
 
