@@ -75,9 +75,6 @@ public:
 
     void start()
     {
-        if (!this->m_isPaused) {
-            return;
-        }
         this->m_totalTime = 0;
         this->m_hours = 0;
         this->m_minutes = 0;
@@ -95,10 +92,10 @@ public:
         this->m_isPaused = false;
     }
 
-    void restart() 
-    { 
+    void restart()
+    {
         this->m_isPaused = true;
-        return this->start(); 
+        return this->start();
     }
 
     void pause()
@@ -110,8 +107,8 @@ public:
     {
         return this->pause();
     }
-    
-    void unpause()
+
+    void resume()
     {
         this->m_isPaused = false;
     }
@@ -164,7 +161,7 @@ public:
                         it.first = std::async(std::launch::async, it.second, updatedHours);
                     }
                 }
-            } 
+            }
             std::this_thread::sleep_for(this->getSleepDuration());
             std::this_thread::yield();
         }
@@ -270,7 +267,7 @@ public:
                         + GeneralUtilities::toString(this->seconds())
                         + '.'
                         + GeneralUtilities::toString(this->milliseconds()).substr(0, millisecondDigits);
-        
+
         return returnString;
     }
 
@@ -282,7 +279,7 @@ public:
         }
         return this->m_hours;
     }
-    
+
     long long int minutes()
     {
         if  (!this->cacheIsValid()) {
@@ -291,7 +288,7 @@ public:
         }
         return this->m_minutes;
     }
-    
+
     long long int seconds()
     {
         if  (!this->cacheIsValid()) {
@@ -300,7 +297,7 @@ public:
         }
         return this->m_seconds;
     }
-    
+
     long long int milliseconds()
     {
         if  (!this->cacheIsValid()) {
@@ -309,12 +306,12 @@ public:
         }
         return this->m_milliseconds;
     }
-    
+
     inline bool isPaused() const
     {
         return this->m_isPaused;
     }
-    
+
     inline bool isRunning() const
     {
         return !this->isPaused();
@@ -381,7 +378,6 @@ private:
     long long int m_seconds;
     long long int m_milliseconds;
     bool m_isPaused;
-    bool m_monitor;
     std::list<CallbackHandlePair> m_registeredMillisecondsChangeCallback;
     std::list<CallbackHandlePair> m_registeredSecondsChangeCallback;
     std::list<CallbackHandlePair> m_registeredMinutesChangeCallback;

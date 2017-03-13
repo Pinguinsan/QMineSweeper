@@ -563,7 +563,7 @@ void MainWindow::updateGeometry()
  * This timer is to show the player how long they've been playing the current game */
 void MainWindow::startGameTimer()
 {
-    this->m_playTimer->start();
+    this->m_playTimer->restart();
 }
 
 /* startUserIdleTimer() : Called after each move made by a player.
@@ -589,7 +589,7 @@ void MainWindow::updateVisibleGameTimer()
     QString gameTime{""};
     if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
         if (this->m_playTimer->isPaused()) {
-            this->m_playTimer->unpause();
+            this->m_playTimer->resume();
         }
         this->m_playTimer->update();
         gameTime = toQString(this->m_playTimer->toString(GameController::MILLISECOND_DELAY_DIGITS()));
@@ -612,7 +612,7 @@ void MainWindow::updateUserIdleTimer()
 {
     if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
         if (this->m_userIdleTimer->isPaused()) {
-            this->m_userIdleTimer->unpause();
+            this->m_userIdleTimer->resume();
         }
         this->m_playTimer->update();
     } else if (!this->m_gameController->initialClickFlag()) {
