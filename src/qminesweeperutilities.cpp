@@ -19,6 +19,27 @@
 
 namespace QMineSweeperUtilities
 {
+
+    static std::unique_ptr<Random> randomDevice = std::unique_ptr<Random>{new Random()};
+
+    Random::Random(std::mt19937::result_type seed) :
+        m_randomEngine{seed}
+    {
+
+    }
+
+    int Random::drawNumber(int min, int max)
+    {
+        return std::uniform_int_distribution<int>{min, max}(this->m_randomEngine);
+    }
+
+    int randomBetween(int lowLimit, int highLimit, bool lowInclusive, bool highInclusive)
+    {
+        int low{lowInclusive ? lowLimit : lowLimit + 1};
+        int high{highInclusive ? highLimit : highLimit - 1};
+        return randomDevice->drawNumber(low, high);
+    }
+
     void logString(const std::string &str) { std::cout << str << std::endl; }
     std::string toString(const std::string &str) { return str; }
     std::string toString(const char *str) { return static_cast<std::string>(str); }
@@ -64,21 +85,6 @@ namespace QMineSweeperUtilities
         return returnString;
     }
 
-    int randomBetween(int lowLimit, int highLimit)
-    {
-        static bool srandSeeded{false};
-        if (!srandSeeded) {
-            srand(time(NULL));
-            srandSeeded = true;
-        }
-        const int divisor{(RAND_MAX/highLimit) + 1};
-        int returnValue{lowLimit - 1};
-        do {
-            returnValue = (rand() / divisor);
-        } while ((returnValue > highLimit) || (returnValue < lowLimit));
-        return returnValue;
-    }
-
     bool endsWith(const std::string &stringToCheck, const std::string &matchString)
     {
         if (matchString.size() > stringToCheck.size()) {
@@ -91,5 +97,4 @@ namespace QMineSweeperUtilities
     {
         return endsWith(stringToCheck, std::string{1, matchChar});
     }
-
 }

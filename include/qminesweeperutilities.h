@@ -25,13 +25,26 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstdio>
+#include <random>
 
 #include <QString>
 
-
-
 namespace QMineSweeperUtilities
 {
+
+    class Random
+    {
+    public:
+        Random() = default;
+        Random(std::mt19937::result_type seed);
+        int drawNumber(int min, int max);
+
+    private:
+        std::mt19937 m_randomEngine{std::random_device{}()};
+    };
+
+    int randomBetween(int lowLimit, int highLimit, bool lowInclusive = false, bool highInclusive = false);
+
     void logString(const std::string &str);
 
     template<typename T>
@@ -58,7 +71,6 @@ namespace QMineSweeperUtilities
     QString toQString(const QString &convert);
 
     int roundIntuitively(double numberToRound);
-    int randomBetween(int lowLimit, int highLimit);
     bool endsWith(const std::string &stringToCheck, const std::string &matchString);
     bool endsWith(const std::string &stringToCheck, char matchChar);
 
@@ -108,6 +120,23 @@ namespace QMineSweeperUtilities
         return isEqualsSwitch(static_cast<std::string>(switchToCheck), switches);
     }
 
+    template<typename ... Args>
+    std::string stringFormat(const char *format, Args ... args)
+    {
+        ssize_t size = std::snprintf(nullptr, 0, format, args ...) + 1;
+        std::unique_ptr<char[]> stringBuffer{new char[size]};
+        snprintf(stringBuffer.get(), size, format, args ...);
+        return std::string{stringBuffer.get(), stringBuffer.get() + size - 1};
+    }
+
+    template<typename ... Args>
+    QString QStringFormat(const char *format, Args ... args)
+    {
+        ssize_t size = std::snprintf(nullptr, 0, format, args ...) + 1;
+        std::unique_ptr<char[]> stringBuffer{new char[size]};
+        snprintf(stringBuffer.get(), size, format, args ...);
+        return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});
+    }
 
     const long long int constexpr NANOSECONDS_PER_MICROSECOND{1000};
     const long long int constexpr NANOSECONDS_PER_MILLISECOND{1000000};

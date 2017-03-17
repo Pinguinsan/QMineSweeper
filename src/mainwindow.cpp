@@ -223,7 +223,10 @@ void MainWindow::onGameWon()
     }
     std::unique_ptr<QMessageBox> winBox{std::make_unique<QMessageBox>()};
     winBox->setWindowTitle(MAIN_WINDOW_TITLE);
-    winBox->setText(WIN_DIALOG_BASE + toQString(this->m_gameController->numberOfMovesMade()) + WIN_DIALOG_MIDDLE + this->statusBar()->currentMessage());
+    winBox->setText(QStringFormat("%s%i%s%s", WIN_DIALOG_BASE,
+                                              this->m_gameController->numberOfMovesMade(),
+                                              WIN_DIALOG_MIDDLE,
+                                              this->statusBar()->currentMessage().toStdString().c_str()));
     winBox->setWindowIcon(this->m_qmsiPtr->MINE_ICON_48);
     winBox->exec();
 }
@@ -650,9 +653,9 @@ void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
     } else if (numberOfMines <= 0) {
         this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(3)));
     } else if (numberOfMines < 10) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(2)) + toQString(numberOfMines));
+        this->m_ui->minesRemaining->display(QStringFormat("%s%i", this->getLCDPadding(2).c_str(), numberOfMines));
     } else if (numberOfMines < 100) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(1)) + toQString(numberOfMines));
+        this->m_ui->minesRemaining->display(QStringFormat("%s%i", this->getLCDPadding(1).c_str(), numberOfMines));
     } else {
         this->m_ui->minesRemaining->display(numberOfMines);
     }
@@ -672,9 +675,9 @@ void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
     } else if (numberOfMovesMade <= 0) {
         this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(3)));
     } else if (numberOfMovesMade < 10) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(2)) + toQString(numberOfMovesMade));
+        this->m_ui->numberOfMoves->display(QStringFormat("%s%i", this->getLCDPadding(2).c_str(), numberOfMovesMade));
     } else if (numberOfMovesMade < 100) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(1)) + toQString(numberOfMovesMade));
+        this->m_ui->numberOfMoves->display(QStringFormat("%s%i", this->getLCDPadding(2).c_str(), numberOfMovesMade));
     } else {
         this->m_ui->numberOfMoves->display(numberOfMovesMade);
     }
@@ -715,10 +718,11 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     using namespace QMineSweeperUtilities;
     using namespace QMineSweeperStrings;
     this->setEnabled(false);
-    this->m_bsui->statusBar->showMessage(RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING
-                                         + toQString(this->m_gameController->numberOfColumns())
-                                         + RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE
-                                         + toQString(this->m_gameController->numberOfRows()));
+    this->m_bsui->statusBar->showMessage(QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING,
+                                                                   this->m_gameController->numberOfColumns(),
+                                                                   RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
+                                                                   this->m_gameController->numberOfRows()));
+
     this->m_bsui->columnsBox->setValue(this->m_gameController->numberOfColumns());
     this->m_bsui->rowsBox->setValue(this->m_gameController->numberOfRows());
 #if defined(__ANDROID__)
@@ -761,11 +765,10 @@ void MainWindow::onBsuiOkayButtonClicked()
         return;
     }
     QMessageBox::StandardButton userReply;
-    QString questionBoxMessage = RESIZE_BOARD_WINDOW_CONFIRMATION_BASE
-            + toQString(maybeNewColumns)
-            + RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE
-            + toQString(maybeNewRows)
-            + RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL;
+    QString questionBoxMessage{QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
+                                                         maybeNewColumns,
+                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
+                                                         maybeNewRows,                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
     userReply = QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No);
     if (userReply == QMessageBox::Yes) {
         this->invalidateSizeCaches();

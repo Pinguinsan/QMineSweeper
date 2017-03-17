@@ -148,22 +148,6 @@ bool MineCoordinates::operator>=(std::shared_ptr<MineCoordinates> compareObject)
     return (this->m_x >= compareObject->X());
 }
 
-/* generateRandomMineCoordinatesPtrInBounds() : Generates a random MineCoordinates std::shared_ptr
- * in accordance with the column and row indexes passed into the function */
-std::shared_ptr<MineCoordinates> MineCoordinates::generateRandomMineCoordinatesPtrInBounds(int maxColumn, int maxRow)
-{
-    using namespace QMineSweeperUtilities;
-    return std::make_shared<MineCoordinates> (randomBetween(0, maxColumn), randomBetween(0, maxRow));
-}
-
-/* generateRandomMineCoordinatesInBounds() : Generates a random MineCoordinates object
- * in accordance with the column and row indexes passed into the function */
-MineCoordinates MineCoordinates::generateRandomMineCoordinatesInBounds(int maxColumn, int maxRow)
-{
-    using namespace QMineSweeperUtilities;
-    return MineCoordinates{randomBetween(0, maxColumn), randomBetween(0, maxRow)};
-}
-
 /* operator<<() : Overloaded operator <<, enabling the pair to be output to
  * and output stream, passed in by const reference */
 std::ostream& operator<<(std::ostream& os, const MineCoordinates &mc)

@@ -213,9 +213,10 @@ bool GameController::isEdgeButton(std::shared_ptr<QMineSweeperButton> msb) const
 
 void GameController::generateRandomMinePlacement(std::shared_ptr<QMineSweeperButton> msb)
 {
+    using namespace QMineSweeperUtilities;
     MineCoordinates potentialMineCoordinates{0,0};
     while (this->m_mineCoordinates.size() < static_cast<unsigned int>(this->m_numberOfMines)) {
-        potentialMineCoordinates = MineCoordinates::generateRandomMineCoordinatesInBounds(this->m_numberOfColumns, this->m_numberOfRows);
+        potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_numberOfColumns), randomBetween(0, this->m_numberOfRows)};
         if (potentialMineCoordinates == *(msb->mineCoordinates().get())) {
             continue;
         } else {
@@ -280,7 +281,7 @@ void GameController::assignAllMines()
 {
     using namespace QMineSweeperStrings;
     for (const std::pair<int, int> &mc : this->m_mineCoordinates) {
-        if (m_mineSweeperButtons.find(mc) != this->m_mineSweeperButtons.end()) {
+        if (this->m_mineSweeperButtons.find(mc) != this->m_mineSweeperButtons.end()) {
             this->m_mineSweeperButtons.at(mc)->setHasMine(true);
         } else {
             throw std::runtime_error(GENERIC_ERROR_MESSAGE);
@@ -407,7 +408,6 @@ void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<QMine
             this->determineNeighborMineCounts();
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
-            errorBox->setWindowTitle(GENERIC_ERROR_MESSAGE);
             errorBox->setText(GENERIC_ERROR_MESSAGE);
             errorBox->setWindowIcon(this->m_mwPtr->qmsiPtr()->MINE_ICON_48);
             errorBox->exec();

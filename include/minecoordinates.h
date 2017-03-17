@@ -53,9 +53,6 @@ public:
     friend std::ostream& operator<<(std::ostream &os, const MineCoordinates &mc);
     friend std::ostream& operator<<(std::ostream &os, std::shared_ptr<MineCoordinates> mc);
 
-    static std::shared_ptr<MineCoordinates> generateRandomMineCoordinatesPtrInBounds(int maxColumn, int maxRow);
-    static MineCoordinates generateRandomMineCoordinatesInBounds(int maxColumn, int maxRow);
-
 private:
     int m_x;
     int m_y;
