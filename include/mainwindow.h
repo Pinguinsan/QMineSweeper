@@ -130,6 +130,7 @@ private:
     QSize getIconReductionSize();
     void calculateXYPlacement();
     std::string getLCDPadding(uint8_t howMuch);
+    void updateVisibleGameTimerTemp(int newValue);
 signals:
     void resetButtonClicked();
     void resetGame();

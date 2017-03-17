@@ -130,35 +130,37 @@ public:
             long long int updatedSeconds{this->seconds()};
             long long int updatedMinutes{this->minutes()};
             long long int updatedHours{this->hours()};
-            if (updatedMilliseconds != currentMilliseconds) {
-                currentMilliseconds = updatedMilliseconds;
-                for (auto &it : this->m_registeredMillisecondsChangeCallback) {
-                    if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                        it.first = std::async(std::launch::async, it.second, updatedMilliseconds);
+            if (!this->isPaused()) {
+                if (updatedMilliseconds != currentMilliseconds) {
+                    currentMilliseconds = updatedMilliseconds;
+                    for (auto &it : this->m_registeredMillisecondsChangeCallback) {
+                        if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                            it.first = std::async(std::launch::async, it.second, updatedMilliseconds);
+                        }
                     }
                 }
-            }
-            if (updatedSeconds != currentSeconds) {
-                currentSeconds = updatedSeconds;
-                for (auto &it : this->m_registeredSecondsChangeCallback) {
-                    if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                        it.first = std::async(std::launch::async, it.second, updatedSeconds);
+                if (updatedSeconds != currentSeconds) {
+                    currentSeconds = updatedSeconds;
+                    for (auto &it : this->m_registeredSecondsChangeCallback) {
+                        if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                            it.first = std::async(std::launch::async, it.second, updatedSeconds);
+                        }
                     }
                 }
-            }
-            if (updatedMinutes != currentMinutes) {
-                currentMinutes = updatedMinutes;
-                for (auto &it : this->m_registeredMinutesChangeCallback) {
-                    if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                        it.first = std::async(std::launch::async, it.second, updatedMinutes);
+                if (updatedMinutes != currentMinutes) {
+                    currentMinutes = updatedMinutes;
+                    for (auto &it : this->m_registeredMinutesChangeCallback) {
+                        if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                            it.first = std::async(std::launch::async, it.second, updatedMinutes);
+                        }
                     }
                 }
-            }
-            if (updatedHours != currentHours) {
-                currentHours = updatedHours;
-                for (auto &it : this->m_registeredHoursChangeCallback) {
-                    if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                        it.first = std::async(std::launch::async, it.second, updatedHours);
+                if (updatedHours != currentHours) {
+                    currentHours = updatedHours;
+                    for (auto &it : this->m_registeredHoursChangeCallback) {
+                        if (it.first.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                            it.first = std::async(std::launch::async, it.second, updatedHours);
+                        }
                     }
                 }
             }

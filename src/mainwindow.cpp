@@ -235,8 +235,8 @@ void MainWindow::onGameWon()
  * Typically called after resizing the UI on the main window */
 void MainWindow::centerAndFitWindow()
 {
-    this->setFixedSize(this->minimumSize());
-    calculateXYPlacement();
+    //this->setFixedSize(this->minimumSize());
+    this->calculateXYPlacement();
     this->move(this->m_xPlacement, this->m_yPlacement);
 }
 
@@ -550,7 +550,7 @@ void MainWindow::eventLoop()
 {
     updateVisibleGameTimer();
     updateUserIdleTimer();
-    //updateGeometry();
+    updateGeometry();
 }
 
 /* updateGeomtry() : Convenience function to center and fit the window,
@@ -558,7 +558,7 @@ void MainWindow::eventLoop()
 void MainWindow::updateGeometry()
 {
     if (this->size() != this->minimumSize()) {
-        centerAndFitWindow();
+        this->centerAndFitWindow();
     }
 }
 
@@ -765,10 +765,11 @@ void MainWindow::onBsuiOkayButtonClicked()
         return;
     }
     QMessageBox::StandardButton userReply;
-    QString questionBoxMessage{QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
+    QString questionBoxMessage{QStringFormat("%s%i%s%i%s", RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
                                                          maybeNewColumns,
                                                          RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
-                                                         maybeNewRows,                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
+                                                         maybeNewRows,
+                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
     userReply = QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No);
     if (userReply == QMessageBox::Yes) {
         this->invalidateSizeCaches();

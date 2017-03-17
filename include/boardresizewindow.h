@@ -28,6 +28,7 @@ public:
 
 signals:
     void aboutToClose();
+    void keyPressEvent(QKeyEvent *event);
 
 public:
     void closeEvent(QCloseEvent *ce)
