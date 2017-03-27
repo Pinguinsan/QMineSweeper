@@ -1,4 +1,15 @@
 # QMineSweeper
-MineSweeper in C++ using the Qt 5.5 framework
+MineSweeper in C++ using the Qt 5.8 framework
 
-Hello, World!
+To install (Linux): 
+
+Open up a terminal shell and clone the source:
+	git clone https://github.com/tlewiscpp/QMineSweeper
+
+Run the install script with the target installation directory as an argument (the directory will be created if it does not exist):
+	./install-qminesweeper.sh ~/QMineSweeperBuild/
+
+
+To install (Windows):
+
+Coming soon! (Sorry Windows users)
