@@ -141,6 +141,6 @@ void displayVersion()
 void interruptHandler(int signalNumber)
 {
     std::cout << std::endl << "Received signal " << signalNumber << " (" << strsignal(signalNumber) << "), exiting " << PROGRAM_NAME << std::endl;
-    _Exit (signalNumber);
+    exit(signalNumber);
 }
 

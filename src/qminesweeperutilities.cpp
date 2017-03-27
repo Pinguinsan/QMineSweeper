@@ -97,4 +97,9 @@ namespace QMineSweeperUtilities
     {
         return endsWith(stringToCheck, std::string{1, matchChar});
     }
+
+    std::string TStringFormat(const char *formatting)
+    {
+        return std::string{formatting};
+    }
 }

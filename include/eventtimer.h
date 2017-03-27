@@ -29,9 +29,8 @@
 #include <thread>
 #include <future>
 #include <list>
+#include <sstream>
 #include <functional>
-#include "generalutilities.h"
-#include "mathutilities.h"
 
 template <typename ClockType = std::chrono::steady_clock>
 class EventTimer
@@ -71,6 +70,14 @@ public:
         m_monitoringAsyncHandle{nullptr}
     {
 
+    }
+
+    template <typename T>
+    std::string TO_STRING(T convert)
+    {
+        std::stringstream ss;
+        ss << convert;
+        return ss.str();
     }
 
     void start()
@@ -171,7 +178,6 @@ public:
 
     void update()
     {
-        using namespace GeneralUtilities;
         if (!this->m_isPaused) {
             this->m_endTime = platform_clock_t::now();
             this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime-this->m_startTime).count();
@@ -198,7 +204,6 @@ public:
 
     long long int totalMicroseconds()
     {
-        using namespace GeneralUtilities;
         if  (!this->cacheIsValid()) {
             this->validateCache();
             this->update();
@@ -217,7 +222,6 @@ public:
 
     long long int totalSeconds()
     {
-        using namespace GeneralUtilities;
         if  (!this->cacheIsValid()) {
             this->validateCache();
             this->update();
@@ -227,7 +231,6 @@ public:
 
     long long int totalMinutes()
     {
-        using namespace GeneralUtilities;
         if  (!this->cacheIsValid()) {
             this->validateCache();
             this->update();
@@ -237,7 +240,6 @@ public:
 
     long long int totalHours()
     {
-        using namespace GeneralUtilities;
         if  (!this->cacheIsValid()) {
             this->validateCache();
             this->update();
@@ -262,13 +264,13 @@ public:
         }
         std::string returnString{""};
         if (this->hours() != 0) {
-            returnString = GeneralUtilities::toString(this->hours()) + ':';
+            returnString = TO_STRING(this->hours()) + ':';
         }
-        returnString += GeneralUtilities::toString(this->minutes())
+        returnString += TO_STRING(this->minutes())
                         + ':'
-                        + GeneralUtilities::toString(this->seconds())
+                        + TO_STRING(this->seconds())
                         + '.'
-                        + GeneralUtilities::toString(this->milliseconds()).substr(0, millisecondDigits);
+                        + TO_STRING(this->milliseconds()).substr(0, millisecondDigits);
 
         return returnString;
     }
@@ -398,6 +400,32 @@ private:
     }
 
     static const int INVALIDATE_CACHE_TIMEOUT{100};
+
+    static const long long int constexpr NANOSECONDS_PER_MICROSECOND{1000};
+    static const long long int constexpr NANOSECONDS_PER_MILLISECOND{1000000};
+    static const long long int constexpr NANOSECONDS_PER_SECOND{1000000000};
+    static const long long int constexpr NANOSECONDS_PER_MINUTE{60000000000};
+    static const long long int constexpr NANOSECONDS_PER_HOUR{3600000000000};
+    static const long long int constexpr NANOSECONDS_PER_DAY {86400000000000};
+
+    static const long long int constexpr MICROSECONDS_PER_MILLISECOND{1000};
+    static const long long int constexpr MICROSECONDS_PER_SECOND{1000000};
+    static const long long int constexpr MICROSECONDS_PER_MINUTE{60000000};
+    static const long long int constexpr MICROSECONDS_PER_HOUR{3600000000};
+    static const long long int constexpr MICROSECONDS_PER_DAY{86400000000};
+
+    static const long long int constexpr MILLISECONDS_PER_SECOND{1000};
+    static const long long int constexpr MILLISECONDS_PER_MINUTE{60000};
+    static const long long int constexpr MILLISECONDS_PER_HOUR{3600000};
+    static const long long int constexpr MILLISECONDS_PER_DAY{86400000};
+
+    static const long long int constexpr SECONDS_PER_MINUTE{60};
+    static const long long int constexpr SECONDS_PER_HOUR{3600};
+
+    static const long long int constexpr MINUTES_PER_HOUR{60};
+    static const long long int constexpr MINUTES_PER_DAY{1440};
+
+    static const long long int constexpr HOURS_PER_DAY{24};
 };
 
 #endif //TJLUTILS_EVENTTIMER_H

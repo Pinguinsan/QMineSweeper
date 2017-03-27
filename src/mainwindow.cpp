@@ -235,7 +235,14 @@ void MainWindow::onGameWon()
  * Typically called after resizing the UI on the main window */
 void MainWindow::centerAndFitWindow()
 {
-    //this->setFixedSize(this->minimumSize());
+    /*
+#if defined(ANDROID)
+    this->setGeometry(this->x(), this->y(), this->minimumWidth(), this->minimumHeight());
+#else
+    this->setFixedSize(this->minimumSize());
+#endif
+    */
+    this->setFixedSize(this->minimumSize());
     this->calculateXYPlacement();
     this->move(this->m_xPlacement, this->m_yPlacement);
 }
