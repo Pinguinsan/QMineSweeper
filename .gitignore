@@ -10,7 +10,7 @@
 *.dll
 *.dylib
 
-*.idea
+.idea/
 
 # Qt-es
 

@@ -14,19 +14,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73e58cc5-19af-4b02-bca9-210dcab85a97" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/mainwindow.cpp.Gv4168" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/mainwindow.cpp.Oj2203" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Android/AndroidManifest.xml" afterPath="$PROJECT_DIR$/Android/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Android/gradle.properties" afterPath="$PROJECT_DIR$/Android/gradle.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Android/local.properties" afterPath="$PROJECT_DIR$/Android/local.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/eventtimer.h" afterPath="$PROJECT_DIR$/include/eventtimer.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/qminesweeperutilities.h" afterPath="$PROJECT_DIR$/include/qminesweeperutilities.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install-qminesweeper.sh" afterPath="$PROJECT_DIR$/install-qminesweeper.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main.cpp" afterPath="$PROJECT_DIR$/src/main.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mainwindow.cpp" afterPath="$PROJECT_DIR$/src/mainwindow.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/qminesweeperutilities.cpp" afterPath="$PROJECT_DIR$/src/qminesweeperutilities.cpp" />
-    </list>
+    <list default="true" id="73e58cc5-19af-4b02-bca9-210dcab85a97" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -44,8 +32,8 @@
       <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1188">
-              <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+            <state relative-caret-position="1044">
+              <caret line="29" column="7" lean-forward="true" selection-start-line="29" selection-start-column="7" selection-end-line="29" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -144,12 +132,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1490579767047</updated>
-      <workItem from="1490579771394" duration="54000" />
+      <workItem from="1490579771394" duration="126000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="54000" />
+    <option name="totallyTimeSpent" value="126000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="34" width="2560" height="1666" extended-state="6" />
@@ -184,8 +172,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1188">
-          <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+        <state relative-caret-position="1044">
+          <caret line="29" column="7" lean-forward="true" selection-start-line="29" selection-start-column="7" selection-end-line="29" selection-end-column="7" />
           <folding />
         </state>
       </provider>
