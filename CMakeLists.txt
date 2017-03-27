@@ -8,6 +8,8 @@ set(SOURCE_BASE ${PROJECT_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -21,7 +23,6 @@ else()
 endif()
 
 if (CYGWIN OR WIN32 OR (NOT X86))
-    set(CMAKE_AUTORCC ON)
     set(GCC_ADDITIONAL_COMPILE_FLAGS "")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_ADDITIONAL_COMPILE_FLAGS}")
 else()
@@ -64,6 +65,7 @@ set (QMINESWEEPER_RESOURCES "${SOURCE_BASE}/resources/icons.qrc"
 
 qt5_wrap_cpp(QMINESWEEPER_HEADERS_MOC "${QMINESWEEPER_HEADERS}")
 qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  "${QMINESWEEPER_FORMS}")
+qt5_add_resources(QMINESWEEPER_RESOURCES_RCC "${QMINESWEEPER_RESOURCES}")
 
 set (QMINESWEEPER_SOURCES_LIB "${QMINESWEEPER_SOURCES}")
 set (QMINESWEEPER_HEADER_LIB "${QMINESWEEPER_HEADERS}")
@@ -74,5 +76,7 @@ add_library (QMINESWEEPER_SHARED_LIB  "${QMINESWEEPER_SOURCES_LIB}"
                                       "${QMINESWEEPER_FORMS_LIB}")
 target_link_libraries (QMINESWEEPER_SHARED_LIB Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Multimedia pthread)
 
-add_executable(QMineSweeper "${QMINESWEEPER_SOURCES}" ${QMINESWEEPER_RESOURCES})
+add_executable(QMineSweeper "${QMINESWEEPER_SOURCES}"
+                            "${QMINESWEEPER_HEADERS}"
+                            "${QMINESWEEPER_RESOURCES_RCC}")
 target_link_libraries (QMineSweeper QMINESWEEPER_SHARED_LIB pthread)
