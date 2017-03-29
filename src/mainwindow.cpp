@@ -46,12 +46,12 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
                        std::shared_ptr<QDesktopWidget> qdwPtr,
                        QWidget *parent) :
     QMainWindow{parent},
-    m_eventTimer{std::make_unique<QTimer>()},
-    m_playTimer{std::make_unique<EventTimer<std::chrono::steady_clock>>()},
-    m_userIdleTimer{std::make_unique<EventTimer<std::chrono::steady_clock>>()},
-    m_bsui{std::make_unique<Ui::BoardResizeWindow>()},
-    m_ui{std::make_unique<Ui::MainWindow>()},
-    m_boardSizeWindow{std::make_unique<BoardResizeWindow>()},
+    m_eventTimer{new QTimer{}},
+    m_playTimer{new SteadyEventTimer{}},
+    m_userIdleTimer{new SteadyEventTimer{}},
+    m_bsui{new Ui::BoardResizeWindow{}},
+    m_ui{new Ui::MainWindow{}},
+    m_boardSizeWindow{new BoardResizeWindow{}},
     m_qmsiPtr{qmsiPtr},
     m_qmssePtr{qmssePtr},
     m_gameController{gcPtr},
@@ -112,7 +112,7 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
     connect(this, SIGNAL(mineExplosionEvent()), this->m_gameController.get(), SLOT(onMineExplosionEventTriggered()));
     connect(this->m_gameController.get(), SIGNAL(mineExplosionEvent()), this, SLOT(onMineExplosionEventTriggered()));
     connect(this->m_boardSizeWindow.get(), SIGNAL(aboutToClose()), this, SLOT(onCustomDialogClosed()));
-    std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
+    std::unique_ptr<QRect> avail{new QRect{this->m_qDesktopWidget->availableGeometry()}};
 
     #if defined(__ANDROID__)
         this->m_reductionSizeScaleFactor = 1;
@@ -221,7 +221,7 @@ void MainWindow::onGameWon()
             tempMsb->setIsRevealed(true);
         }
     }
-    std::unique_ptr<QMessageBox> winBox{std::make_unique<QMessageBox>()};
+    std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MAIN_WINDOW_TITLE);
     winBox->setText(QStringFormat("%s%i%s%s", WIN_DIALOG_BASE,
                                               this->m_gameController->numberOfMovesMade(),
@@ -388,7 +388,7 @@ QSize MainWindow::getMaxMineSize()
         int y{(this->m_qDesktopWidget->availableGeometry().width()-gridSpacingWidth-widthScale)/this->m_gameController->numberOfColumns()};
         if ((x < 5) || (y < 5)) {
             //TODO: Deal with too small to play mines
-            std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
+            std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setWindowTitle(MAIN_WINDOW_TITLE);
             errorBox->setText(GENERIC_ERROR_MESSAGE);
             errorBox->setWindowIcon(this->m_qmsiPtr->MINE_ICON_48);
@@ -901,7 +901,7 @@ int MainWindow::yPlacement() const
  * where the MainWindow must be moved to appear on at the center of the users screen */
 void MainWindow::calculateXYPlacement()
 {
-    std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
+    std::unique_ptr<QRect> avail{new QRect{this->m_qDesktopWidget->availableGeometry()}};
     this->m_xPlacement = (avail->width()/2)-(this->width()/2);
 #if defined(__ANDROID__)
     this->m_yPlacement = avail->height() - this->height();

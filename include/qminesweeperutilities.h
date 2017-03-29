@@ -128,11 +128,18 @@ namespace QMineSweeperUtilities
     template<typename ... Args>
     std::string PStringFormat(const char *format, Args& ... args)
     {
-        ssize_t size = std::snprintf(nullptr, 0, format, args ...) + 1;
+#if defined(__ANDROID__)
+        ssize_t size{snprintf(nullptr, 0, format, args ...) + 1};
+#else
+        ssize_t size{std::snprintf(nullptr, 0, format, args ...) + 1};
+#endif
         std::unique_ptr<char[]> stringBuffer{new char[size]};
         snprintf(stringBuffer.get(), size, format, args ...);
         return std::string{stringBuffer.get(), stringBuffer.get() + size - 1};
     }
+
+    int stringToInt(const std::string &str);
+    int stringToInt(const char *str);
 
     /*Base case to break recursion*/
     std::string TStringFormat(const char *formatting);
@@ -172,7 +179,7 @@ namespace QMineSweeperUtilities
             int regexMatchNumericValue{0};
             try {
                 /*Convert the integer value between the opening and closing braces to an int to compare */
-                regexMatchNumericValue = std::stoi(returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
+                regexMatchNumericValue = stringToInt(returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
                 
                 /*Do not allow negative numbers, although this should never get picked up the regex anyway*/
                 if (regexMatchNumericValue < 0) {

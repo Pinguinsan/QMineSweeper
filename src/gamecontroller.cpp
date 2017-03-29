@@ -368,7 +368,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineS
             assignAllMines();
             determineNeighborMineCounts();
         } catch (std::exception &e) {
-            std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
+            std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setText(GENERIC_ERROR_MESSAGE);
             std::cout << e.what() << std::endl;
             errorBox->exec();
@@ -407,7 +407,7 @@ void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<QMine
             this->assignAllMines();
             this->determineNeighborMineCounts();
         } catch (std::exception &e) {
-            std::unique_ptr<QMessageBox> errorBox{std::make_unique<QMessageBox>()};
+            std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setText(GENERIC_ERROR_MESSAGE);
             errorBox->setWindowIcon(this->m_mwPtr->qmsiPtr()->MINE_ICON_48);
             errorBox->exec();

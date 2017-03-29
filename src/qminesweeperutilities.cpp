@@ -85,6 +85,26 @@ namespace QMineSweeperUtilities
         return returnString;
     }
 
+    int stringToInt(const std::string &str)
+    {
+        std::string copyString{""};
+        std::copy_if(str.begin(), str.end(), std::back_inserter(copyString), [](char c) -> bool { return std::isdigit(c); });
+        if (std::all_of(copyString.begin(), copyString.end(), [](char c) -> bool { return c == '0'; })) {
+            return 0;
+        }
+        int returnValue{atoi(copyString.c_str())};
+        if (!returnValue) {
+            throw std::runtime_error("");
+        } else {
+            return returnValue;
+        }
+    }
+
+    int stringToInt(const char *str)
+    {
+        return stringToInt(std::string{str});
+    }
+
     bool endsWith(const std::string &stringToCheck, const std::string &matchString)
     {
         if (matchString.size() > stringToCheck.size()) {

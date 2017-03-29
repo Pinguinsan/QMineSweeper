@@ -19,7 +19,13 @@
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
-#include <signal.h>
+
+#if defined(_WIN32)
+    #include <signal.h>
+    #include <unistd.h>
+#else
+
+#endif
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -47,19 +53,28 @@
  *     QMineSweeperUtilities - Collection of general utilities (random numbers, etc) used
  */
 
-static const char *PROGRAM_NAME = "QMineSweeper";
-static const char *LONG_PROGRAM_NAME = "QMineSweeper";
-static const char *AUTHOR_NAME = "Tyler Lewis";
-static const int SOFTWARE_MAJOR_VERSION = 0;
-static const int SOFTWARE_MINOR_VERSION = 2;
-static const int SOFTWARE_PATCH_VERSION = 0;
+static const char *PROGRAM_NAME{"QMineSweeper"};
+static const char *LONG_PROGRAM_NAME{"QMineSweeper"};
+static const char *AUTHOR_NAME{"Tyler Lewis"};
+static const int SOFTWARE_MAJOR_VERSION{0};
+static const int SOFTWARE_MINOR_VERSION{2};
+static const int SOFTWARE_PATCH_VERSION{0};
 
 #if defined(__GNUC__)
-    static const int GCC_MAJOR_VERSION = __GNUC__;
-    static const int GCC_MINOR_VERSION = __GNUC_MINOR__;
-    static const int GCC_PATCH_VERSION = __GNUC_PATCHLEVEL__;
+    static const char *COMPILER_NAME{"g++"};
+    static const int COMPILER_MAJOR_VERSION{__GNUC__};
+    static const int COMPILER_MINOR_VERSION{__GNUC_MINOR__};
+    static const int COMPILER_PATCH_VERSION{__GNUC_PATCHLEVEL__};
+#elif defined(_MSC_VER)
+    static const char *COMPILER_NAME{"msvc"};
+    static const int COMPILER_MAJOR_VERSION{_MSC_VER};
+    static const int COMPILER_MINOR_VERSION{0};
+    static const int COMPILER_PATCH_VERSION{0};
 #else
-    #error "The compiler must define __GNUC__ to use this program, but the compiler does not have it defined"
+    static const char *COMPILER_NAME{"unknown"};
+    static const int COMPILER_MAJOR_VERSION{0};
+    static const int COMPILER_MINOR_VERSION{0};
+    static const int COMPILER_PATCH_VERSION{0};
 #endif
 
 const std::list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
@@ -68,6 +83,7 @@ const std::list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--
 void displayHelp();
 void displayVersion();
 void interruptHandler(int signal);
+void installSignalHandlers(void (*signalHandler)(int));
 
 int main(int argc, char *argv[])
 {
@@ -75,13 +91,7 @@ int main(int argc, char *argv[])
     using namespace QMineSweeperUtilities;
     (void)LONG_PROGRAM_NAME;
 
-    //Signal handling stuff
-    struct sigaction sigIntHandler;
-    sigIntHandler.sa_handler = interruptHandler;
-    sigemptyset(&sigIntHandler.sa_mask);
-    sigIntHandler.sa_flags = 0;
-    sigaction(SIGINT, &sigIntHandler, NULL);
-    //End signal handling
+    installSignalHandlers(interruptHandler);
 
      std::cout << std::endl;
      for (int i = 1; i < argc; i++) {
@@ -134,13 +144,50 @@ void displayHelp()
 void displayVersion()
 {
     std::cout << PROGRAM_NAME << ", v" << SOFTWARE_MAJOR_VERSION << "." << SOFTWARE_MINOR_VERSION << "." << SOFTWARE_PATCH_VERSION << std::endl;
-    std::cout << "Written by " << AUTHOR_NAME << ", " << __DATE__ << std::endl;
-    std::cout << "Built with g++ v" << GCC_MAJOR_VERSION << "." << GCC_MINOR_VERSION << "." << GCC_PATCH_VERSION << ", " << __DATE__ << std::endl << std::endl;
+    std::cout << "Written by " << AUTHOR_NAME << std::endl;
+    std::cout << "Built with " << COMPILER_NAME << ", v" << COMPILER_MAJOR_VERSION << "." << COMPILER_MINOR_VERSION << "." << COMPILER_PATCH_VERSION << ", " << __DATE__ << std::endl << std::endl;
 }
+
 
 void interruptHandler(int signalNumber)
 {
-    std::cout << std::endl << "Received signal " << signalNumber << " (" << strsignal(signalNumber) << "), exiting " << PROGRAM_NAME << std::endl;
-    exit(signalNumber);
+#if defined(_WIN32)
+
+#else
+    if ((signalNumber == SIGUSR1) || (signalNumber == SIGUSR2) || (signalNumber == SIGCHLD)) {
+        return;
+    }
+    std::cout << std::endl << "Caught signal " << signalNumber << " (" << std::strerror(errno) << "), exiting " << PROGRAM_NAME << std::endl;
+    exit (signalNumber);
+#endif
 }
+
+void installSignalHandlers(void (*signalHandler)(int))
+{
+#if defined(_WIN32)
+
+#else
+    static struct sigaction signalInterruptHandler;
+    signalInterruptHandler.sa_handler = signalHandler;
+    sigemptyset(&signalInterruptHandler.sa_mask);
+    signalInterruptHandler.sa_flags = 0;
+    sigaction(SIGHUP, &signalInterruptHandler, NULL);
+    sigaction(SIGINT, &signalInterruptHandler, NULL);
+    sigaction(SIGQUIT, &signalInterruptHandler, NULL);
+    sigaction(SIGILL, &signalInterruptHandler, NULL);
+    sigaction(SIGABRT, &signalInterruptHandler, NULL);
+    sigaction(SIGFPE, &signalInterruptHandler, NULL);
+    sigaction(SIGPIPE, &signalInterruptHandler, NULL);
+    sigaction(SIGALRM, &signalInterruptHandler, NULL);
+    sigaction(SIGTERM, &signalInterruptHandler, NULL);
+    sigaction(SIGUSR1, &signalInterruptHandler, NULL);
+    sigaction(SIGUSR2, &signalInterruptHandler, NULL);
+    sigaction(SIGCHLD, &signalInterruptHandler, NULL);
+    sigaction(SIGCONT, &signalInterruptHandler, NULL);
+    sigaction(SIGTSTP, &signalInterruptHandler, NULL);
+    sigaction(SIGTTIN, &signalInterruptHandler, NULL);
+    sigaction(SIGTTOU, &signalInterruptHandler, NULL);
+#endif
+}
+
 
