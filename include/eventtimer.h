@@ -200,13 +200,15 @@ public:
 
     std::string toString(uint8_t millisecondDigits = 3)
     {
-        if (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
+        if ((!this->m_isPaused) && (!this->m_isStopped)) {
+            if (!this->cacheIsValid()) {
+                this->validateCache();
+                this->update();
+            }
         }
         std::string returnString{""};
         if (this->m_hours != 0) {
-            returnString = TO_STRING(m_hours) + ':';
+            returnString = TO_STRING(this->m_hours) + ':';
         }
         returnString += TO_STRING(this->m_minutes)
                         + ':'
