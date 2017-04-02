@@ -21,9 +21,10 @@
 #include <cstdlib>
 
 #if defined(_WIN32)
+    #include <Windows.h>
+#else
     #include <signal.h>
     #include <unistd.h>
-#else
 
 #endif
 
