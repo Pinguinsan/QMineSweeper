@@ -57,8 +57,11 @@ FORMS += forms/mainwindow.ui \
          forms/boardresizewindow.ui
 
 win32 {
+    HEADERS += include/version.h
     RC_FILE += resources/qminesweeper.rc
 }
+
+DISTFILES += CMakeLists.txt
 
 android {
     DISTFILES += Android/AndroidManifest.xml \
