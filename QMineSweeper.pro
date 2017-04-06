@@ -1,7 +1,7 @@
 #**********************************************************************#
 #    QMineSweeper.pro:                                                 #
 #    Project configuration file                                        #
-#    Copyright (c) 2016 - 2017 Tyler Lewis                             #
+#    Copyright (c) 2017 Tyler Lewis                                    #
 #**********************************************************************#
 #    This is a configuration file for QMineSweeper:                    #
 #    https://github.com/tlewiscpp/QMineSweeper                         #
@@ -57,11 +57,8 @@ FORMS += forms/mainwindow.ui \
          forms/boardresizewindow.ui
 
 win32 {
-    HEADERS += include/version.h
     RC_FILE += resources/qminesweeper.rc
 }
-
-DISTFILES += CMakeLists.txt
 
 android {
     DISTFILES += Android/AndroidManifest.xml \
