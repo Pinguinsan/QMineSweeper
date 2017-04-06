@@ -1,10 +1,10 @@
 /***********************************************************************
 *    qminesweeperstrings.cpp:                                          *
 *    Class for holding instances of all strings used in QMineSweeper   *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file holds the implementation of a QMineSweeperStrings class *
 *    QMineSweeperStrings holds instances of all strings used in the    *
 *    game, allowing members to be used, rather than having them        *

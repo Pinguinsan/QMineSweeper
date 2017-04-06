@@ -1,7 +1,7 @@
 /***********************************************************************
 *    eventtimer.h:                                                     *
 *    Class EventTimer, for timing events and getting calculated times  *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for tjlutils:                               *
 *    https://github.com/Pinguinsan/tjlutils                            *

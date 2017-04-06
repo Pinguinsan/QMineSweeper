@@ -1,10 +1,10 @@
 /***********************************************************************
 *    minesweeperbutton.cpp:                                            *
 *    Custom QPushButton serving as the base for a QMineSweeper button  *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file holds the implementation of a custom QPushButton class  *
 *    MineSweeperButton is the base for the game, representing          *
 *    a single mine field object, which houses all relevant information *

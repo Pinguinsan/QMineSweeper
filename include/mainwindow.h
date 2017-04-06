@@ -1,10 +1,10 @@
 /***********************************************************************
 *    mainwindow.h:                                                     *
 *    Main window for displaying the game                               *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
 *    This file holds the declarations of a custom QMainWindow class    *
 *    MainWindow is the default container for a Qt Desktop Application  *

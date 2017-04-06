@@ -1,10 +1,10 @@
 /***********************************************************************
 *    qminesweepericons.cpp:                                            *
 *    Class for holding instances of all icons used in QMineSweeper     *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file holds the implementation of a QMineSweeperIcons class   *
 *    QMineSweeperIcons holds instances of all icons used in the game,  *
 *    allowing members to be called to set icons, rather than having to *

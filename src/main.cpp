@@ -1,10 +1,10 @@
 /***********************************************************************
 *    main.cpp:                                                         *
 *    Only exists to create the main window and set it along            *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
 *                                                                      *
 *    You should have received a copy of the GNU Lesser General         *

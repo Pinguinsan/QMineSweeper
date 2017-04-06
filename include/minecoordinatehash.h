@@ -1,10 +1,10 @@
 /***********************************************************************
 *    minecoordinatehash.h:                                             *
 *    Custom hash function for the MineCoordinates class                *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file contains the implementation of a helper hash function   *
 *    MineCoordinateHash includes an overloaded operator() for use in   *
 *    hashing, so the MineCoordinate object can be used as a key in the *

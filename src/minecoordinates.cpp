@@ -1,10 +1,10 @@
 /***********************************************************************
 *    minecoordinates.cpp:                                              *
 *    Custom pair class that includes the x and y coordinates for mines *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file contains the implementation of a custom pair class      *
 *    MineCoordinates serve as the x and y (or row and column)          *
 *    coordinates for mines, abstracted so as not use use a lot of      *

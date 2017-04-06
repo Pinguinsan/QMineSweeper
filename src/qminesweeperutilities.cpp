@@ -1,10 +1,10 @@
 /***********************************************************************
 *    qminesweeperutilities.cpp                                         *
 *    Namespace for general utilities used by classes in QMineSweeper   *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file holds the implementation for a QMineSweeperUtilities    *
 *    namespace. QMineSweeperUtilities holds utilities shared by all    *
 *    classes, such a delay functions, random functions, etc            *

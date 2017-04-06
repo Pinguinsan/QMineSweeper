@@ -1,10 +1,10 @@
 /***********************************************************************
 *    gamecontroller.cpp:                                               *
 *    Main controlling logic for the game                               *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
 *    This file holds the implementation of a GameController class      *
 *    A GameController object handles all of the click and pause events *

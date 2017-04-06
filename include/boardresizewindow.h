@@ -1,10 +1,10 @@
 /***********************************************************************
 *    customdialog.h:                                                   *
 *    Custom QDialog for sending additional signals                     *
-*    Copyright (c) 2016 Tyler Lewis                                    *
+*    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
-*    https://github.com/Pinguinsan/QMineSweeper                        *
+*    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
 *    This file holds the implementation of a CustomDialog class        *
 *    The CustomDialog is used to override QDialog signals and slots    *
