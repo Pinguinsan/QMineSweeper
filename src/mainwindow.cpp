@@ -14,11 +14,13 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
+#include <QtCore/QDateTime>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_boardresizewindow.h"
 
 /* static const initializations */
+#pragma clang diagnostic push
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};
     const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
@@ -513,7 +515,7 @@ void MainWindow::onResetButtonClicked()
     emit(gamePaused());
     if (!this->m_gameController->gameOver() && !this->m_gameController->initialClickFlag()) {
         QMessageBox::StandardButton userReply;
-        userReply = QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, START_NEW_GAME_PROMPT, QMessageBox::Yes|QMessageBox::No);
+        userReply = static_cast<QMessageBox::StandardButton>(QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, START_NEW_GAME_PROMPT, QMessageBox::Yes|QMessageBox::No));
         if (userReply == QMessageBox::Yes) {
             this->doGameReset();
         } else {
@@ -560,7 +562,7 @@ void MainWindow::eventLoop()
     updateGeometry();
 }
 
-/* updateGeomtry() : Convenience function to center and fit the window,
+/* updateGeometry() : Convenience function to center and fit the window,
  * if it is not already set by checking the size against the calculated minimum size */
 void MainWindow::updateGeometry()
 {
@@ -612,6 +614,36 @@ void MainWindow::updateVisibleGameTimer()
     } else {
         this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);
     }
+}
+
+QString MainWindow::getUserPlayTime(unsigned long elapsedTime)
+{
+    qint64 endTime{QDateTime::currentMSecsSinceEpoch()};
+    qint64 elapsedTime{endTime - this->m_startTime};
+    qint64 hours{elapsedTime/MILLISECONDS_PER_HOUR};
+    qint64 minutes{elapsedTime - (hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
+    qint64 seconds{elapsedTime - (hours * MILLISECONDS_PER_HOUR) - (minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
+       milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_mi
+    QString returnString{""};
+    if (this->m_hours != 0) {
+        returnString = TO_STRING(this->m_hours) + ':';
+    }
+    returnString += TO_STRING(this->m_minutes)
+                    + ':'
+                    + TO_STRING(this->m_seconds)
+                    + '.';
+    long long int millisecond{this->m_milliseconds};
+    std::string millisecondsString{""};
+    if (millisecond < 10) {
+        millisecondsString = "00" + TO_STRING(millisecond);
+    } else if (millisecond < 100) {
+        millisecondsString = "0" + TO_STRING(millisecond);
+    } else {
+        millisecondsString = TO_STRING(millisecond);
+    }
+    returnString += millisecondsString.substr(0, millisecondDigits);
+
+    return returnString;
 }
 
 /* updateUserIdleTimer() : If the current game state is not paused or stopped,
@@ -777,7 +809,7 @@ void MainWindow::onBsuiOkayButtonClicked()
                                                          RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
                                                          maybeNewRows,
                                                          RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
-    userReply = QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No);
+    userReply = static_cast<QMessageBox::StandardButton>(QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No));
     if (userReply == QMessageBox::Yes) {
         this->invalidateSizeCaches();
         emit(boardResize(maybeNewColumns, maybeNewRows));
@@ -910,9 +942,12 @@ void MainWindow::calculateXYPlacement()
 #endif
 }
 
+
 /* ~MainWindow() : Destructor, empty by default, as all ownership is taken care
  * of by c++11's smart pointers (unique_ptr and shared_ptr) */
 MainWindow::~MainWindow()
 {
 
 }
+
+#pragma clang diagnostic pop

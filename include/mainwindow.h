@@ -118,8 +118,6 @@ private:
     static const int s_DEFAULT_MINE_SIZE_SCALE_FACTOR;
     static const double s_MINE_ICON_REDUCTION_SCALE_FACTOR;
 
-
-
     void hideEvent(QHideEvent *event);
     void showEvent(QShowEvent *event);
     void closeEvent(QCloseEvent *event);
@@ -130,7 +128,11 @@ private:
     QSize getIconReductionSize();
     void calculateXYPlacement();
     std::string getLCDPadding(uint8_t howMuch);
-    void updateVisibleGameTimerTemp(int newValue);
+    static const long long int constexpr MILLISECONDS_PER_SECOND{1000};
+    static const long long int constexpr MICROSECONDS_PER_MILLISECOND{1000};
+    static const long long int constexpr MILLISECONDS_PER_MINUTE{60000};
+    static const long long int constexpr MILLISECONDS_PER_HOUR{3600000};
+
 signals:
     void resetButtonClicked();
     void resetGame();
@@ -169,6 +171,8 @@ private slots:
     void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
     void updateNumberOfMinesLCD(int numberOfMines);
     void onActionMuteSoundChecked(bool checked);
+
+    QString getUserPlayTime(unsigned long elapsedTime);
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H

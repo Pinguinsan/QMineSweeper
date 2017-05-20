@@ -311,13 +311,12 @@ private:
     static const long long int constexpr NANOSECONDS_PER_HOUR{3600000000000};
     static const long long int constexpr NANOSECONDS_PER_DAY {86400000000000};
 
-    static const long long int constexpr MICROSECONDS_PER_MILLISECOND{1000};
     static const long long int constexpr MICROSECONDS_PER_SECOND{1000000};
     static const long long int constexpr MICROSECONDS_PER_MINUTE{60000000};
     static const long long int constexpr MICROSECONDS_PER_HOUR{3600000000};
     static const long long int constexpr MICROSECONDS_PER_DAY{86400000000};
-
     static const long long int constexpr MILLISECONDS_PER_SECOND{1000};
+    static const long long int constexpr MICROSECONDS_PER_MILLISECOND{1000};
     static const long long int constexpr MILLISECONDS_PER_MINUTE{60000};
     static const long long int constexpr MILLISECONDS_PER_HOUR{3600000};
     static const long long int constexpr MILLISECONDS_PER_DAY{86400000};
