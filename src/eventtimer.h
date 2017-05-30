@@ -32,6 +32,14 @@
 #include <list>
 #include <functional>
 
+struct TimePoint
+{
+    unsigned long hours;
+    unsigned long minutes;
+    unsigned long seconds;
+    unsigned long milliseconds;
+};
+
 template <typename ClockType = std::chrono::steady_clock>
 class EventTimer
 {
@@ -41,14 +49,12 @@ public:
     EventTimer<ClockType>() :
         m_startTime{platform_clock_t::now()},
         m_endTime{platform_clock_t::now()},
-        m_cacheStartTime{platform_clock_t::now()},
         m_totalTime{0},
         m_hours{0},
         m_minutes{0},
         m_seconds{0},
         m_milliseconds{0},
-        m_isPaused{false},
-        m_isStopped{false}
+        m_isPaused{false}
     {
 
     }
@@ -56,14 +62,12 @@ public:
     EventTimer<ClockType>(const EventTimer<ClockType> &other) :
         m_startTime{other.m_startTime},
         m_endTime{other.m_endTime},
-        m_cacheStartTime{other.m_cacheStartTime},
         m_totalTime{other.m_totalTime},
         m_hours{other.m_hours},
         m_minutes{other.m_minutes},
         m_seconds{other.m_seconds},
         m_milliseconds{other.m_milliseconds},
-        m_isPaused{other.m_isPaused},
-        m_isStopped{other.m_isStopped}
+        m_isPaused{other.m_isPaused}
     {
 
     }
@@ -83,11 +87,9 @@ public:
         this->m_minutes = 0;
         this->m_seconds = 0;
         this->m_milliseconds = 0;
-        this->m_cacheStartTime = platform_clock_t::now();
         this->m_startTime = platform_clock_t::now();
         this->m_endTime = this->m_startTime;
         this->m_isPaused = false;
-        this->m_isStopped = false;
     }
 
     void restart()
@@ -97,36 +99,24 @@ public:
 
     void pause()
     {
-        bool stopped{this->m_isStopped};
-        this->m_isStopped = false;
-        this->m_isPaused = false;
-        this->update();
-        this->m_isStopped = stopped;
-        this->m_isPaused = true;
+        this->stop();
     }
 
     void stop()
     {
-        bool paused{this->m_isPaused};
-        this->m_isPaused = false;
-        this->m_isStopped = false;
-        this->update();
-        this->m_isPaused = paused;
-        this->m_isStopped = true;
+        this->m_isPaused = true;
     }
 
     void resume()
     {
-        if (this->m_isStopped) {
-            return this->start();
-        } else {
-            this->m_isPaused = false;
-        }
+        this->m_isPaused = false;
     }
 
     void update()
     {
-        if ((!this->m_isPaused) && (!this->m_isStopped)) {
+        if (this->m_isPaused)  {
+            this->m_startTime = platform_clock_t::now() - this->m_rawTime;
+        } else {
             this->m_endTime = platform_clock_t::now();
             this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime-this->m_startTime).count();
             this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime - this->m_startTime);
@@ -134,77 +124,60 @@ public:
             this->m_minutes = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
             this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
             this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE) - (this->m_seconds * MILLISECONDS_PER_SECOND));
-        } else if (this->m_isStopped) {
-            this->m_hours = (this->m_totalTime/MILLISECONDS_PER_HOUR);
-            this->m_minutes = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
-            this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
-            this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE) - (this->m_seconds * MILLISECONDS_PER_SECOND));
-        } else {
-            this->m_startTime = platform_clock_t::now() - this->m_rawTime;
         }
     }
 
     long long int totalMicroseconds()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
+        this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) * MICROSECONDS_PER_MILLISECOND);
+    }
+
+    TimePoint timePoint()
+    {
+        this->update();
+        TimePoint returnPoint;
+        returnPoint.hours = this->m_hours;
+        returnPoint.minutes = this->m_minutes;
+        returnPoint.seconds = this->m_seconds;
+        returnPoint.milliseconds = this->m_milliseconds;
+        return returnPoint;
     }
 
     long long int totalMilliseconds()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
+        this->update();
         return this->m_totalTime;
     }
 
     long long int totalSeconds()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
+        this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) / MILLISECONDS_PER_SECOND);
     }
 
     long long int totalMinutes()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
+        this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) / MILLISECONDS_PER_MINUTE);
     }
 
     long long int totalHours()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
+        this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) / MILLISECONDS_PER_HOUR);
     }
 
     long long int totalTime()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
+        this->update();
         return this->m_totalTime;
     }
 
     std::string toString(uint8_t millisecondDigits = 3)
     {
-        if ((!this->m_isPaused) && (!this->m_isStopped)) {
-            if (!this->cacheIsValid()) {
-                this->validateCache();
-                this->update();
-            }
+        if (!this->m_isPaused) {
+            this->update();
         }
         std::string returnString{""};
         if (this->m_hours != 0) {
@@ -230,37 +203,21 @@ public:
 
     long long int hours()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
         return this->m_hours;
     }
 
     long long int minutes()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
         return this->m_minutes;
     }
 
     long long int seconds()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
         return this->m_seconds;
     }
 
     long long int milliseconds()
     {
-        if  (!this->cacheIsValid()) {
-            this->validateCache();
-            this->update();
-        }
         return this->m_milliseconds;
     }
 
@@ -269,20 +226,14 @@ public:
         return this->m_isPaused;
     }
 
-    inline bool isStopped() const
-    {
-        return this->m_isStopped;
-    }
-
     inline bool isRunning() const
     {
-        return ((!this->isPaused()) && (!this->isStopped()));
+        return (!this->isPaused());
     }
 
 private:
     std::chrono::time_point<platform_clock_t> m_startTime;
     std::chrono::time_point<platform_clock_t> m_endTime;
-    std::chrono::time_point<platform_clock_t> m_cacheStartTime;
     std::chrono::milliseconds m_rawTime;
     long long int m_totalTime;
     long long int m_hours;
@@ -291,16 +242,6 @@ private:
     long long int m_milliseconds;
     bool m_isPaused;
     bool m_isStopped;
-
-    inline bool cacheIsValid()
-    {
-        return (std::chrono::duration_cast<std::chrono::milliseconds>(platform_clock_t::now() - this->m_cacheStartTime).count() < EventTimer::INVALIDATE_CACHE_TIMEOUT);
-    }
-
-    inline void validateCache()
-    {
-        this->m_cacheStartTime = platform_clock_t::now();
-    }
 
     static const int INVALIDATE_CACHE_TIMEOUT{100};
 

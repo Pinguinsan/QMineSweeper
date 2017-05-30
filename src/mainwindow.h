@@ -18,29 +18,11 @@
 #define QMINESWEEPER_MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QApplication>
-#include <QWindow>
-#include <QDesktopWidget>
-#include <QString>
-#include <QGridLayout>
-#include <QLCDNumber>
-#include <QRect>
-#include <QTimer>
-#include <QDialog>
-#include <QSound>
-#include <QMediaPlayer>
 
 #include <iostream>
 #include <memory>
 
 #include "eventtimer.h"
-#include "qminesweeperbutton.h"
-#include "qminesweepericons.h"
-#include "gamecontroller.h"
-#include "boardresizewindow.h"
-#include "qminesweepersoundeffects.h"
-#include "qminesweeperutilities.h"
-#include "qminesweeperstrings.h"
 
 namespace Ui
 {
@@ -51,6 +33,15 @@ namespace Ui
 class QMineSweeperButton;
 class GameController;
 class BoardResizeWindow;
+class QMineSweeperIcons;
+class QMineSweeperSoundEffects;
+class QMineSweeperSettingsLoader;
+class QDesktopWidget;
+class QMediaPlayer;
+class QDialog;
+class QWindow;
+class QString;
+class QTimer;
 
 class MainWindow : public QMainWindow
 {
@@ -59,6 +50,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
                         std::shared_ptr<QMineSweeperSoundEffects> qmssePtr,
+                        std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr,
                         std::shared_ptr<GameController> gcPtr,
                         std::shared_ptr<QDesktopWidget> qdwPtr,
                         QWidget *parent = 0);
@@ -72,6 +64,7 @@ public:
     void bindQMineSweeperIcons(std::shared_ptr<QMineSweeperIcons> qmsiPtr);
     void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw);
     void bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundEffects> qmssePtr);
+    void bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr);
     void setResetButtonIcon(const QIcon &icon);
     void drawNumberOfSurroundingMines(std::shared_ptr<QMineSweeperButton> msb);
     int xPlacement() const;
@@ -92,6 +85,7 @@ private:
     std::unique_ptr<QMediaPlayer> m_explosionEffect;
     std::shared_ptr<QMineSweeperIcons> m_qmsiPtr;
     std::shared_ptr<QMineSweeperSoundEffects> m_qmssePtr;
+    std::shared_ptr<QMineSweeperSettingsLoader> m_settingsLoader;
     std::shared_ptr<GameController> m_gameController;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
 
@@ -172,7 +166,6 @@ private slots:
     void updateNumberOfMinesLCD(int numberOfMines);
     void onActionMuteSoundChecked(bool checked);
 
-    QString getUserPlayTime(unsigned long elapsedTime);
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H

@@ -20,6 +20,15 @@
 
 #include "gamecontroller.h"
 
+#include <QString>
+#include <QMessageBox>
+
+#include "qminesweeperbutton.h"
+#include "minecoordinates.h"
+#include "mainwindow.h"
+#include "qminesweepericons.h"
+#include "qminesweeperutilities.h"
+
 const double GameController::s_DEFAULT_NUMBER_OF_MINES{81.0};
 const int GameController::s_GAME_TIMER_INTERVAL{100};
 const std::pair<double, double> GameController::s_CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
@@ -34,12 +43,12 @@ const int GameController::s_DEFAULT_SLEEPY_FACE_TIMEOUT{15000};
 const int GameController::s_LONG_CLICK_THRESHOLD{250};
 const int GameController::s_MILLISECOND_DISPLAY_DIGITS{1};
 
-GameController::GameController() :
+GameController::GameController(int columnCount, int rowCount) :
     m_numberOfMines{0},
     m_userDisplayNumberOfMines{0},
     m_initialClickFlag{true},
-    m_numberOfColumns{9},
-    m_numberOfRows{9},
+    m_numberOfColumns{columnCount},
+    m_numberOfRows{rowCount},
     m_numberOfMovesMade{0},
     m_gameState{GameState::GAME_INACTIVE},
     m_gameOver{false},

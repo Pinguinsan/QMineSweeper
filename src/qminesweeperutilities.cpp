@@ -122,4 +122,45 @@ namespace QMineSweeperUtilities
     {
         return std::string{formatting};
     }
+
+    std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip)
+    {
+        std::string returnString{stringToStrip};
+        if (returnString.find(whatToStrip) == std::string::npos) {
+            return returnString;
+        }
+        size_t foundPosition{stringToStrip.find(whatToStrip)};
+        if (foundPosition == 0) {
+            returnString = returnString.substr(whatToStrip.length());
+        } else if (foundPosition == (returnString.length() - whatToStrip.length())) {
+            returnString = returnString.substr(0, foundPosition);
+        } else {
+            returnString = returnString.substr(0, foundPosition) + returnString.substr(foundPosition+whatToStrip.length());
+        }
+        return returnString;
+    }
+
+    std::string stripFromString(const std::string &stringToStrip, char whatToStrip)
+    {
+        return stripFromString(stringToStrip, std::string(1, whatToStrip));
+    }
+
+
+    std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip)
+       {
+           std::string returnString = stringToStrip;
+           if (returnString.find(whatToStrip) == std::string::npos) {
+               return returnString;
+           }
+           while (returnString.find(whatToStrip) != std::string::npos) {
+               returnString = stripFromString(returnString, whatToStrip);
+           }
+           return returnString;
+       }
+
+       std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip)
+       {
+           return stripAllFromString(stringToStrip, std::string(1, whatToStrip));
+       }
+
 }

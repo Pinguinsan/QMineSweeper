@@ -21,9 +21,8 @@
 #ifndef QMINESWEEPER_GAMECONTROLLER_H
 #define QMINESWEEPER_GAMECONTROLLER_H
 
-#include <QString>
-#include <QMessageBox>
 #include <QObject>
+
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -32,17 +31,12 @@
 #include <sstream>
 #include <set>
 
-#include "qminesweeperbutton.h"
-#include "minecoordinates.h"
-#include "mainwindow.h"
-#include "qminesweepericons.h"
 #include "minecoordinatehash.h"
-#include "qminesweeperutilities.h"
 
 class QMineSweeperButton;
-class MineCoordinateHash;
 class MineCoordinates;
 class MainWindow;
+class QString;
 
 enum class GameState {
     GAME_ACTIVE,
@@ -56,7 +50,7 @@ class GameController : public QObject
     Q_OBJECT
 public:
 
-    GameController();
+    GameController(int columnCount, int rowCount);
     GameController(const GameController &other) = delete;
     GameController(GameController && other) = delete;
 

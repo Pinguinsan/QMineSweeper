@@ -19,6 +19,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
+#include <utility>
 
 #if defined(_WIN32)
     #include <Windows.h>
@@ -38,6 +39,7 @@
 #include "qminesweepericons.h"
 #include "qminesweeperstrings.h"
 #include "qminesweepersoundeffects.h"
+#include "qminesweepersettingsloader.h"
 #include "qminesweeperutilities.h"
 #include "gamecontroller.h"
 
@@ -52,6 +54,7 @@
  *     QMineSweeperSounds - Single instance class that holds all of the common sounds used
  *     QMineSweeperStrings - Single instance class that holds all of the common strings used
  *     QMineSweeperUtilities - Collection of general utilities (random numbers, etc) used
+ *     QMineSweeperSettingsLoader - Single instance class that holds all settings from a configuration file
  */
 
 static const char *PROGRAM_NAME{"QMineSweeper"};
@@ -80,11 +83,17 @@ static const int SOFTWARE_PATCH_VERSION{0};
 
 const std::list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
 const std::list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
+const std::list<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
+const std::list<char> KNOWN_DIMENSIONS_SEPARATORS{'x', ',', '.'};
 
 void displayHelp();
 void displayVersion();
 void interruptHandler(int signal);
 void installSignalHandlers(void (*signalHandler)(int));
+
+bool containsSeparator(const char *testString);
+std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions);
+std::pair<int, int> tryParseDimensions(const char *maybeDimensions);
 
 int main(int argc, char *argv[])
 {
@@ -95,30 +104,88 @@ int main(int argc, char *argv[])
     installSignalHandlers(interruptHandler);
 
      std::cout << std::endl;
-     for (int i = 1; i < argc; i++) {
-         if (isSwitch(argv[i], HELP_SWITCHES)) {
+     for (auto iter = argv + 1; iter != (argv + argc); iter++) {
+         if (isSwitch(*iter, HELP_SWITCHES)) {
              displayHelp();
              return 0;
-         } else if (isSwitch(argv[i], VERSION_SWITCHES)) {
+         } else if (isSwitch(*iter, VERSION_SWITCHES)) {
              displayVersion();
              return 0;
-         } else {
-            std::cout << "Invalid switch : " << argv[i] << ", skipping" << std::endl;
          }
      }
      displayVersion();
+     int columnCount{-1};
+     int rowCount{-1};
+
+     for (auto iter = argv + 1; iter != (argv + argc); iter++) {
+         if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
+            if (iter + 1) {
+                if (rowCount != -1) {
+                    std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
+                    continue;
+                }
+                std::pair<int, int> dimensions{tryParseDimensions(*(iter + 1))};
+
+                if (dimensions.second == -1) {
+                    std::cout << "Switch \"" << *iter << "\" accepted, but value \"" << *(iter + 1) << " is not a valid dimension specification, skipping option" << std::endl;
+                    continue;
+                } else {
+                    columnCount = dimensions.first;
+                    rowCount = dimensions.second;
+                }
+                iter++;
+            } else {
+                std::cout << "Switch \"" << *iter << "\" accepted, but no dimensions were specified after, skipping option" << std::endl;
+            }
+         } else if (isEqualsSwitch(*iter, DIMENSIONS_SWITCHES)) {
+             if (rowCount != -1) {
+                 std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
+                 continue;
+             }
+             std::string copyString{*iter};
+             size_t foundPosition{copyString.find('=')};
+             size_t foundEnd{copyString.substr(foundPosition).find(" ")};
+             if (copyString.substr(foundPosition+1, (foundEnd - foundPosition)) == "") {
+                 std::cout << "WARNING: Switch \"" << *iter << "\" accepted, but no dimensions we specified after, skipping option" << std::endl;
+             } else {
+                 std::pair<int, int> dimensions{tryParseDimensions(stripAllFromString(copyString.substr(foundPosition+1, (foundEnd - foundPosition)), "\""))};
+                 if (dimensions.second == -1) {
+                     std::cout << "Switch \"" << *iter << "\" accepted, but value \"" << stripAllFromString(copyString.substr(foundPosition+1, (foundEnd - foundPosition)), "\"") << "\" is not a valid dimension specification, skipping option" << std::endl;
+                 } else {
+                     columnCount = dimensions.first;
+                     rowCount = dimensions.second;
+                 }
+             }
+         } else if (containsSeparator(*iter)) {
+             if (rowCount != -1) {
+                 std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
+                 continue;
+             }
+             std::pair<int, int> dimensions{tryParseDimensions(*iter)};
+             columnCount = dimensions.first;
+             rowCount = dimensions.second;
+         } else {
+            std::cout << "Invalid switch : " << *iter << ", skipping" << std::endl;
+         }
+     }
+     if (rowCount == -1) {
+         columnCount = QMineSweeperSettingsLoader::DEFAULT_COLUMN_COUNT();
+         rowCount = QMineSweeperSettingsLoader::DEFAULT_ROW_COUNT();
+     }
+     std::cout << "Beginning game with dimensions (" << columnCount << "x" << rowCount << ")" << std::endl;
 
     QApplication qApplication(argc, argv);
-    std::shared_ptr<QMineSweeperIcons> qmsi{std::make_shared<QMineSweeperIcons>()};
-    std::shared_ptr<QMineSweeperSoundEffects> qmsse{std::make_shared<QMineSweeperSoundEffects>()};
-    std::shared_ptr<GameController> gameController{std::make_shared<GameController>()};
+    std::shared_ptr<QMineSweeperIcons> gameIcons{std::make_shared<QMineSweeperIcons>()};
+    std::shared_ptr<QMineSweeperSoundEffects> soundEffects{std::make_shared<QMineSweeperSoundEffects>()};
+    std::shared_ptr<QMineSweeperSettingsLoader> settingsLoader{std::make_shared<QMineSweeperSettingsLoader>()};
+    std::shared_ptr<GameController> gameController{std::make_shared<GameController>(columnCount, rowCount)};
     std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
-    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(qmsi, qmsse, gameController, qDesktopWidget)};
+    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons, soundEffects, settingsLoader, gameController, qDesktopWidget)};
     gameController->bindMainWindow(mainWindow);
     mainWindow->setupNewGame();
 
     QObject::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
-    mainWindow->setWindowIcon(qmsi->MINE_ICON_72);
+    mainWindow->setWindowIcon(gameIcons->MINE_ICON_72);
     mainWindow->setWindowTitle(MAIN_WINDOW_TITLE);
 #if defined(__ANDROID__)
     mainWindow->showMaximized();
@@ -136,10 +203,16 @@ int main(int argc, char *argv[])
 
 void displayHelp()
 {
-    std::cout << "Usage: " << PROGRAM_NAME << " [options]" << std::endl << std::endl;
+    std::cout << "Usage: " << PROGRAM_NAME << " [options]=(ColumnsxRows)" << std::endl << std::endl;
     std::cout << "Options: " << std::endl;
     std::cout << "    -h, --h, -help, --help: Display this help text" << std::endl;
     std::cout << "    -v, --v, -version, --version: Display the version" << std::endl;
+    std::cout << "    -d, --d, -dimensions, --dimensions: Set the number of columns" << std::endl;
+    std::cout << "Example: " << std::endl;
+    std::cout << "    To start a 14x9 game, any of the following command line options would work:" << std::endl;
+    std::cout << "    QMineSweeper --dimensions 14x9" << std::endl;
+    std::cout << "    QMineSweeper --dimensions=14x9" << std::endl;
+    std::cout << "    QMineSweeper 14x9" << std::endl;
 }
 
 void displayVersion()
@@ -149,6 +222,43 @@ void displayVersion()
     std::cout << "Built with " << COMPILER_NAME << ", v" << COMPILER_MAJOR_VERSION << "." << COMPILER_MINOR_VERSION << "." << COMPILER_PATCH_VERSION << ", " << __DATE__ << std::endl << std::endl;
 }
 
+std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
+{
+    std::string stringCopy{maybeDimensions};
+    std::transform(stringCopy.begin(), stringCopy.end(), stringCopy.begin(), ::tolower);
+    char divider{'\0'};
+    for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
+        if (stringCopy.find(it) != std::string::npos) {
+            divider = it;
+        }
+    }
+    size_t foundDividerPosition{stringCopy.find(divider)};
+    try {
+        int maybeColumns{std::stoi(stringCopy.substr(0, foundDividerPosition))};
+        int maybeRows{std::stoi(stringCopy.substr(foundDividerPosition + 1))};
+        return std::make_pair(maybeColumns, maybeRows);
+    } catch (std::exception &e) {
+        (void)e;
+        return std::make_pair(-1, -1);
+    }
+}
+
+std::pair<int, int> tryParseDimensions(const char *maybeDimensions)
+{
+    return tryParseDimensions(std::string{maybeDimensions});
+}
+
+bool containsSeparator(const char *testString)
+{
+    std::string copyString{testString};
+    std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+    for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
+        if (copyString.find(it) != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void interruptHandler(int signalNumber)
 {

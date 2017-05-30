@@ -245,6 +245,11 @@ namespace QMineSweeperUtilities
         snprintf(stringBuffer.get(), size, format, args ...);
         return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});
     }
+
+    std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip);
+    std::string stripFromString(const std::string &stringToStrip, char whatToStrip);
+    std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip);
+    std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip);
 }
 
 #endif //QMINESWEEPER_QMINESWEEPERUTILITIES_H

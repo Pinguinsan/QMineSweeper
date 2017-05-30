@@ -23,22 +23,21 @@ QT       += core gui widgets multimedia
 
 CONFIG += c++14
 
-INCLUDEPATH += include/
-
 TARGET   = QMineSweeper
 TEMPLATE = app
 
-HEADERS += include/mainwindow.h \
-           include/gamecontroller.h \
-           include/minecoordinates.h \
-           include/qminesweepericons.h \
-           include/minecoordinatehash.h \
-           include/eventtimer.h \
-           include/qminesweeperutilities.h \
-           include/qminesweepersoundeffects.h \
-           include/qminesweeperstrings.h \
-           include/boardresizewindow.h \
-           include/qminesweeperbutton.h
+HEADERS += src/mainwindow.h \
+           src/gamecontroller.h \
+           src/minecoordinates.h \
+           src/qminesweepericons.h \
+           src/minecoordinatehash.h \
+           src/eventtimer.h \
+           src/qminesweeperutilities.h \
+           src/qminesweepersoundeffects.h \
+           src/qminesweeperstrings.h \
+           src/boardresizewindow.h \
+           src/qminesweeperbutton.h \
+    src/qminesweepersettingsloader.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
@@ -48,7 +47,8 @@ SOURCES += src/main.cpp \
            src/qminesweeperutilities.cpp \
            src/qminesweepersoundeffects.cpp \
            src/qminesweeperstrings.cpp \
-           src/qminesweeperbutton.cpp
+           src/qminesweeperbutton.cpp \
+    src/qminesweepersettingsloader.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc

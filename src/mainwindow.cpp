@@ -14,13 +14,31 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include <QtCore/QDateTime>
+#include <QMediaPlayer>
+#include <QGridLayout>
+#include <QLCDNumber>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QWindow>
+#include <QString>
+#include <QRect>
+#include <QTimer>
+#include <QDialog>
+
+#include "qminesweeperbutton.h"
+#include "qminesweepericons.h"
+#include "gamecontroller.h"
+#include "boardresizewindow.h"
+#include "qminesweepersoundeffects.h"
+#include "qminesweeperutilities.h"
+#include "qminesweeperstrings.h"
+#include "qminesweepersettingsloader.h"
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_boardresizewindow.h"
 
 /* static const initializations */
-#pragma clang diagnostic push
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};
     const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
@@ -44,6 +62,7 @@
  * relevant events are hooked (QObject::connect()) to set up the game to play */
 MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
                        std::shared_ptr<QMineSweeperSoundEffects> qmssePtr,
+                       std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr,
                        std::shared_ptr<GameController> gcPtr,
                        std::shared_ptr<QDesktopWidget> qdwPtr,
                        QWidget *parent) :
@@ -56,6 +75,7 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> qmsiPtr,
     m_boardSizeWindow{new BoardResizeWindow{}},
     m_qmsiPtr{qmsiPtr},
     m_qmssePtr{qmssePtr},
+    m_settingsLoader{qmsslPtr},
     m_gameController{gcPtr},
     m_qDesktopWidget{qdwPtr},
     m_xPlacement{0},
@@ -616,36 +636,6 @@ void MainWindow::updateVisibleGameTimer()
     }
 }
 
-QString MainWindow::getUserPlayTime(unsigned long elapsedTime)
-{
-    qint64 endTime{QDateTime::currentMSecsSinceEpoch()};
-    qint64 elapsedTime{endTime - this->m_startTime};
-    qint64 hours{elapsedTime/MILLISECONDS_PER_HOUR};
-    qint64 minutes{elapsedTime - (hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
-    qint64 seconds{elapsedTime - (hours * MILLISECONDS_PER_HOUR) - (minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
-       milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_mi
-    QString returnString{""};
-    if (this->m_hours != 0) {
-        returnString = TO_STRING(this->m_hours) + ':';
-    }
-    returnString += TO_STRING(this->m_minutes)
-                    + ':'
-                    + TO_STRING(this->m_seconds)
-                    + '.';
-    long long int millisecond{this->m_milliseconds};
-    std::string millisecondsString{""};
-    if (millisecond < 10) {
-        millisecondsString = "00" + TO_STRING(millisecond);
-    } else if (millisecond < 100) {
-        millisecondsString = "0" + TO_STRING(millisecond);
-    } else {
-        millisecondsString = TO_STRING(millisecond);
-    }
-    returnString += millisecondsString.substr(0, millisecondDigits);
-
-    return returnString;
-}
-
 /* updateUserIdleTimer() : If the current game state is not paused or stopped,
  * the user idle timer is checked, the see if it has crossed the GameControllers
  * DEFAULT_SLEEPY_FACE_TIMEOUT threshold. If it has, the reset icon is changed to
@@ -888,6 +878,16 @@ void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundE
     this->m_qmssePtr = qmssePtr;
 }
 
+/* bindQMineSweeperSettingsLoader() : Convenience function for late binding of a shared_ptr
+ * to the QMineSweeperSettingsLoader instance, to support dependancy injection for MainWindow,
+ * as this shared_ptr is passed in via the constructor */
+void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr)
+{
+    this->m_settingsLoader.reset();
+    this->m_settingsLoader = qmsslPtr;
+}
+
+
 /* drawNumberOfSurroundingMines() : Called when a mine is about to be displayed
  * Queries the shared_ptr passed in for it's number of surrounding mines, then
  * uses the shared_ptr to the QMineSweeperIcons instance to set the graphic on the
@@ -949,5 +949,3 @@ MainWindow::~MainWindow()
 {
 
 }
-
-#pragma clang diagnostic pop
