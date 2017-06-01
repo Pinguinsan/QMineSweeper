@@ -35,6 +35,18 @@
 
 namespace QMineSweeperUtilities
 {
+    QString getUserConfigurationFilePath();
+    QString getConfigurationFilePath();
+    void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath);
+    QString getProgramSettingsDirectory();
+    QString getInstallDirectory();
+    void checkOrCreateProgramSettingsDirectory();
+    QString getLogFilePath();
+    QString getLogFileName();
+
+    QString getOSVersion();
+    QString getBuildArchitecture();
+    QString getCurrentArchitecture();
 
     class Random
     {

@@ -17,6 +17,11 @@
 
 #include "qminesweeperbutton.h"
 
+#include "qminesweepericons.h"
+#include "mainwindow.h"
+#include "minecoordinates.h"
+#include "qminesweeperutilities.h"
+#include "gamecontroller.h"
 
 QMineSweeperButton::QMineSweeperButton(int columnIndex, int rowIndex, QWidget *parent) :
     QPushButton{parent},
@@ -29,12 +34,11 @@ QMineSweeperButton::QMineSweeperButton(int columnIndex, int rowIndex, QWidget *p
     m_rowIndex{rowIndex},
     m_isBeingLongClicked{false},
     m_blockClicks{false},
-    m_longClickTimer{}
+    m_longClickTimer{new SteadyEventTimer{}}
 {
    //Row and column validity is checked by GameController
    this->installEventFilter(this);
-}                                         
-
+}
 
 QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
     QPushButton{static_cast<QWidget*>(other->parent())},
@@ -47,9 +51,9 @@ QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
     m_rowIndex{other->rowIndex()},
     m_isBeingLongClicked{false},
     m_blockClicks{false},
-    m_longClickTimer{}
+    m_longClickTimer{new SteadyEventTimer{}}
 {
-    this->installEventFilter(this);
+    this->initialize();
 }
 
 QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
@@ -63,9 +67,9 @@ QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
     m_rowIndex{std::move(other.rowIndex())},
     m_isBeingLongClicked{false},
     m_blockClicks{false},
-    m_longClickTimer{}
+    m_longClickTimer{new SteadyEventTimer{}}
 {
-   this->installEventFilter(this);
+    this->initialize();
 }
 
 QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& other) :
@@ -81,8 +85,20 @@ QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& othe
     m_blockClicks{std::move(other->m_blockClicks)},
     m_longClickTimer{std::move(other->m_longClickTimer)}
 {
+    this->initialize();
+}
+
+void QMineSweeperButton::initialize()
+{
     this->installEventFilter(this);
 }
+
+/*
+int QMineSweeperButton::heightForWidth(int width) const
+{
+    return width;
+}
+*/
 
 bool QMineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
 {
@@ -113,14 +129,14 @@ void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
     }
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            emit(leftClicked(shared_from_this()));
+            emit(leftClicked(this));
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            emit(rightClicked(shared_from_this()));
+            emit(rightClicked(this));
         }
     }
-    this->m_longClickTimer.restart();
+    this->m_longClickTimer->restart();
     QTimer::singleShot(GameController::LONG_CLICK_THRESHOLD(), this, SLOT(doInformLongClick()));
 }
 
@@ -153,26 +169,26 @@ void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
         this->m_isRevealed = true;
     }
     this->setStyleSheet("");
-    this->m_longClickTimer.update();
+    this->m_longClickTimer->update();
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            if ((this->m_longClickTimer.totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
-                emit (longLeftClickReleased(shared_from_this()));
+            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+                emit (longLeftClickReleased(this));
             } else {
-                emit(leftClickReleased(shared_from_this()));
+                emit(leftClickReleased(this));
             }
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            if ((this->m_longClickTimer.totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
-                emit longLeftClickReleased(shared_from_this());
+            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+                emit longLeftClickReleased(this);
             } else {
-                emit(rightClickReleased(shared_from_this()));
+                emit(rightClickReleased(this));
             }
         }
     }
     this->m_isBeingLongClicked = false;
-    //this->m_longClickTimer.stop();
+    //this->m_longClickTimer->stop();
 }
 
 
@@ -247,5 +263,10 @@ void QMineSweeperButton::setNumberOfSurroundingMines(int numberOfSurroundingMine
     } else {
         this->m_numberOfSurroundingMines = numberOfSurroundingMines;
     }
+}
+
+QMineSweeperButton::~QMineSweeperButton()
+{
+
 }
 

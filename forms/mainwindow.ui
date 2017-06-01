@@ -14,10 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="centralWidgetGridLayout">
-    <property name="spacing">
-     <number>6</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QFrame" name="titleFrame">
       <property name="sizePolicy">
@@ -1020,7 +1017,7 @@
      <x>0</x>
      <y>0</y>
      <width>526</width>
-     <height>22</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1039,6 +1036,8 @@
      </property>
      <addaction name="actionEnglish"/>
      <addaction name="actionSpanish"/>
+     <addaction name="actionFrench"/>
+     <addaction name="actionJapanese"/>
     </widget>
     <addaction name="actionBoardSize"/>
     <addaction name="actionMuteSound"/>
@@ -1138,6 +1137,22 @@
    </property>
    <property name="text">
     <string>Spanish</string>
+   </property>
+  </action>
+  <action name="actionFrench">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>French</string>
+   </property>
+  </action>
+  <action name="actionJapanese">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Japanese</string>
    </property>
   </action>
  </widget>

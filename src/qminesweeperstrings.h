@@ -58,6 +58,16 @@ namespace QMineSweeperStrings
     extern const char *STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING;
     extern const char *LCD_OVERFLOW_STRING;
 
+    extern const char *ENGLISH_STRING;
+    extern const char *FRENCH_STRING;
+    extern const char *SPANISH_STRING;
+    extern const char *JAPANESE_STRING;
+
+    extern const char *ENGLISH_TRANSLATION_PATH;
+    extern const char *FRENCH_TRANSLATION_PATH;
+    extern const char *SPANISH_TRANSLATION_PATH;
+    extern const char *JAPANESE_TRANSLATION_PATH;
+
     extern const char *MINE_ICON_16_STRING;
     extern const char *MINE_ICON_24_STRING;
     extern const char *MINE_ICON_32_STRING;

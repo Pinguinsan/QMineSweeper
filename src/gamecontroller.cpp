@@ -23,11 +23,15 @@
 #include <QString>
 #include <QMessageBox>
 
+
+#include <sstream>
+
 #include "qminesweeperbutton.h"
 #include "minecoordinates.h"
 #include "mainwindow.h"
 #include "qminesweepericons.h"
 #include "qminesweeperutilities.h"
+#include "globaldefinitions.h"
 
 const double GameController::s_DEFAULT_NUMBER_OF_MINES{81.0};
 const int GameController::s_GAME_TIMER_INTERVAL{100};
@@ -52,7 +56,7 @@ GameController::GameController(int columnCount, int rowCount) :
     m_numberOfMovesMade{0},
     m_gameState{GameState::GAME_INACTIVE},
     m_gameOver{false},
-    m_mwPtr{nullptr},
+    m_mainWindow{nullptr},
     m_totalButtonCount{this->m_numberOfColumns*this->m_numberOfRows},
     m_unopenedMineCount{this->m_numberOfColumns*this->m_numberOfRows}
 {
@@ -61,16 +65,17 @@ GameController::GameController(int columnCount, int rowCount) :
             static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.first)) :
             static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.second));
     this->m_userDisplayNumberOfMines = this->m_numberOfMines;
+    this->connect(this, &GameController::gamePaused, this, &GameController::onGamePaused);
 }
 
 void GameController::onMineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msb)
 {
-    connect(msb.get(), SIGNAL(leftClicked(std::shared_ptr<QMineSweeperButton>)), this, SLOT(onMineSweeperButtonLeftClicked(std::shared_ptr<QMineSweeperButton>)));
-    connect(msb.get(), SIGNAL(rightClicked(std::shared_ptr<QMineSweeperButton>)), this, SLOT(onMineSweeperButtonRightClicked(std::shared_ptr<QMineSweeperButton>)));
-    connect(msb.get(), SIGNAL(leftClickReleased(std::shared_ptr<QMineSweeperButton>)), this, SLOT(onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineSweeperButton>)));
-    connect(msb.get(), SIGNAL(rightClickReleased(std::shared_ptr<QMineSweeperButton>)), this, SLOT(onMineSweeperButtonRightClickReleased(std::shared_ptr<QMineSweeperButton>)));
-    connect(msb.get(), SIGNAL(longLeftClickReleased(std::shared_ptr<QMineSweeperButton>)), this, SLOT(onMineSweeperButtonLongLeftClickReleased(std::shared_ptr<QMineSweeperButton>)));
-    connect(msb.get(), SIGNAL(longRightClickReleased(std::shared_ptr<QMineSweeperButton>)), this, SLOT(onMineSweeperButtonLongLeftClickReleased(std::shared_ptr<QMineSweeperButton>)));
+    this->connect(msb.get(), &QMineSweeperButton::leftClicked, this, &GameController::onMineSweeperButtonLeftClicked);
+    this->connect(msb.get(), &QMineSweeperButton::rightClicked, this, &GameController::onMineSweeperButtonRightClicked);
+    this->connect(msb.get(), &QMineSweeperButton::leftClickReleased, this, &GameController::onMineSweeperButtonLeftClickReleased);
+    this->connect(msb.get(), &QMineSweeperButton::rightClickReleased, this, &GameController::onMineSweeperButtonRightClickReleased);
+    this->connect(msb.get(), &QMineSweeperButton::longLeftClickReleased, this, &GameController::onMineSweeperButtonLongLeftClickReleased);
+    this->connect(msb.get(), &QMineSweeperButton::longRightClickReleased, this, &GameController::onMineSweeperButtonLongLeftClickReleased);
 }
 
 
@@ -177,7 +182,7 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
     try {
         this->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QMineSweeperButton> (new QMineSweeperButton{columnIndex, rowIndex, nullptr})));
     } catch (std::exception &e) {
-        std::cout << STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING << e.what() << std::endl;
+        LOG_WARNING() << QString{STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING}.arg(e.what());
     }
 }
 
@@ -198,35 +203,35 @@ std::shared_ptr<QMineSweeperButton> GameController::mineSweeperButtonAtIndex(int
 
 void GameController::startResetIconTimer(unsigned int howLong, const QIcon &icon) const
 {
-    this->m_mwPtr->setResetButtonIcon(icon);
-    QTimer::singleShot(howLong, this->m_mwPtr.get(), SLOT(resetResetButtonIcon()));
+    this->m_mainWindow->setResetButtonIcon(icon);
+    QTimer::singleShot(static_cast<int>(howLong), this->m_mainWindow.get(), SLOT(resetResetButtonIcon()));
 }
 
 
-bool GameController::isCornerButton(std::shared_ptr<QMineSweeperButton> msb) const
+bool GameController::isCornerButton(std::shared_ptr<QMineSweeperButton> msbp) const
 {
-    return (((msb->columnIndex() == 0) && (msb->rowIndex() == 0)) ||
-            ((msb->columnIndex() == 0) && (msb->rowIndex() == this->m_numberOfRows - 1)) ||
-            ((msb->columnIndex() == this->m_numberOfColumns - 1) && (msb->rowIndex() == 0)) ||
-            ((msb->columnIndex() == this->m_numberOfColumns - 1) && (msb->rowIndex() == this->m_numberOfRows - 1)));
+    return (((msbp->columnIndex() == 0) && (msbp->rowIndex() == 0)) ||
+            ((msbp->columnIndex() == 0) && (msbp->rowIndex() == this->m_numberOfRows - 1)) ||
+            ((msbp->columnIndex() == this->m_numberOfColumns - 1) && (msbp->rowIndex() == 0)) ||
+            ((msbp->columnIndex() == this->m_numberOfColumns - 1) && (msbp->rowIndex() == this->m_numberOfRows - 1)));
 }
 
-bool GameController::isEdgeButton(std::shared_ptr<QMineSweeperButton> msb) const
+bool GameController::isEdgeButton(std::shared_ptr<QMineSweeperButton> msbp) const
 {
-    return ((msb->columnIndex() == 0) ||
-            (msb->columnIndex() == this->m_numberOfColumns - 1) ||
-            (msb->rowIndex() == 0) ||
-            (msb->rowIndex() == this->m_numberOfRows - 1));
+    return ((msbp->columnIndex() == 0) ||
+            (msbp->columnIndex() == this->m_numberOfColumns - 1) ||
+            (msbp->rowIndex() == 0) ||
+            (msbp->rowIndex() == this->m_numberOfRows - 1));
 }
 
 
-void GameController::generateRandomMinePlacement(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::generateRandomMinePlacement(std::shared_ptr<QMineSweeperButton> msbp)
 {
     using namespace QMineSweeperUtilities;
     MineCoordinates potentialMineCoordinates{0,0};
     while (this->m_mineCoordinates.size() < static_cast<unsigned int>(this->m_numberOfMines)) {
         potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_numberOfColumns), randomBetween(0, this->m_numberOfRows)};
-        if (potentialMineCoordinates == *(msb->mineCoordinates().get())) {
+        if (potentialMineCoordinates == *(msbp->mineCoordinates().get())) {
             continue;
         } else {
             this->m_mineCoordinates.emplace(std::make_pair(potentialMineCoordinates.X(), potentialMineCoordinates.Y()));
@@ -332,11 +337,11 @@ bool GameController::mineInBounds(int columnIndex, int rowIndex) const
 }
 
 
- void GameController::checkForOtherEmptyMines(std::shared_ptr<QMineSweeperButton> msb)
+ void GameController::checkForOtherEmptyMines(std::shared_ptr<QMineSweeperButton> msbp)
  {
-    for (int columnI = msb->columnIndex() - 1; columnI <= msb->columnIndex() + 1; columnI++) {
-        for (int rowI = msb->rowIndex() - 1; rowI <= msb->rowIndex() + 1; rowI++) {
-            if ((columnI == msb->columnIndex()) && (rowI == msb->rowIndex())) {
+    for (int columnI = msbp->columnIndex() - 1; columnI <= msbp->columnIndex() + 1; columnI++) {
+        for (int rowI = msbp->rowIndex() - 1; rowI <= msbp->rowIndex() + 1; rowI++) {
+            if ((columnI == msbp->columnIndex()) && (rowI == msbp->rowIndex())) {
                 continue;
             } else if (mineInBounds(columnI, rowI)) {
                 MineCoordinates minePairCheck{ columnI, rowI };
@@ -344,33 +349,33 @@ bool GameController::mineInBounds(int columnIndex, int rowIndex) const
                     (!this->m_mineSweeperButtons.at(minePairCheck)->isChecked()) &&
                     (!this->m_mineSweeperButtons.at(minePairCheck)->hasQuestionMark()) &&
                     (!this->m_mineSweeperButtons.at(minePairCheck)->hasFlag())) {
-                    this->m_mwPtr->displayMine(this->m_mineSweeperButtons.at(minePairCheck));
+                    this->m_mainWindow->displayMine(this->m_mineSweeperButtons.at(minePairCheck));
                 }
             }
         }
     }
 }
 
-void GameController::onMineSweeperButtonLeftClicked(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::onMineSweeperButtonLeftClicked(QMineSweeperButton *msbp)
 {
-    Q_UNUSED(msb);
+    Q_UNUSED(msbp);
     emit(userIsNoLongerIdle());
 }
 
-void GameController::onMineSweeperButtonRightClicked(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::onMineSweeperButtonRightClicked(QMineSweeperButton *msbp)
 {
-    Q_UNUSED(msb);
+    Q_UNUSED(msbp);
     emit(userIsNoLongerIdle());
 }
 
-void GameController::onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::onMineSweeperButtonLeftClickReleased(QMineSweeperButton *msbp)
 {
     using namespace QMineSweeperStrings;
     if (this->m_gameOver) {
         return;
     }
     if (this->m_initialClickFlag) {
-        this->generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msb));
+        this->generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msbp));
         this->m_initialClickFlag = false;
         this->m_gameState = GameState::GAME_ACTIVE;
         try {
@@ -385,25 +390,25 @@ void GameController::onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineS
         this->m_gameState = GameState::GAME_ACTIVE;
         emit(gameStarted());
     }    
-    if ((msb->hasFlag()) || (msb->hasQuestionMark())) {
-        msb->setChecked(false);
-    } else if (msb->hasMine()) {
+    if ((msbp->hasFlag()) || (msbp->hasQuestionMark())) {
+        msbp->setChecked(false);
+    } else if (msbp->hasMine()) {
         emit(mineExplosionEvent());
-    } else if (msb->isChecked() || msb->isRevealed()) {
+    } else if (msbp->isChecked() || msbp->isRevealed()) {
 
     } else {
         incrementNumberOfMovesMade();
-        this->m_mwPtr->displayMine(msb);
-        if (msb->numberOfSurroundingMines() == 0) {
-            startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mwPtr->qmsiPtr()->FACE_ICON_BIG_SMILEY);
+        this->m_mainWindow->displayMine(std::make_shared<QMineSweeperButton>(msbp));
+        if (msbp->numberOfSurroundingMines() == 0) {
+            startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_BIG_SMILEY);
         } else {
-            startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mwPtr->qmsiPtr()->FACE_ICON_WINKY);
+            startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_WINKY);
         }
     }
     emit(userIsNoLongerIdle());
 }
 
-void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::onMineSweeperButtonRightClickReleased(QMineSweeperButton *msbp)
 {
     using namespace QMineSweeperUtilities;
     using namespace QMineSweeperStrings;
@@ -411,14 +416,14 @@ void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<QMine
         return;
     }
     if (this->m_initialClickFlag) {
-        generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msb));
+        generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msbp));
         try {
             this->assignAllMines();
             this->determineNeighborMineCounts();
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setText(GENERIC_ERROR_MESSAGE);
-            errorBox->setWindowIcon(this->m_mwPtr->qmsiPtr()->MINE_ICON_48);
+            errorBox->setWindowIcon(this->m_mainWindow->qmsiPtr()->MINE_ICON_48);
             errorBox->exec();
             logString(e.what());
             exit(EXIT_FAILURE);
@@ -427,34 +432,34 @@ void GameController::onMineSweeperButtonRightClickReleased(std::shared_ptr<QMine
         this->m_gameState = GameState::GAME_ACTIVE;
         emit(gameStarted());
     }
-    if (msb->isChecked() || msb->isRevealed()) {
+    if (msbp->isChecked() || msbp->isRevealed()) {
         //
-    } else if (msb->hasFlag()) {
-        msb->setHasFlag(false);
-        msb->setHasQuestionMark(true);
-        msb->setIcon(this->m_mwPtr->qmsiPtr()->STATUS_ICON_QUESTION);
+    } else if (msbp->hasFlag()) {
+        msbp->setHasFlag(false);
+        msbp->setHasQuestionMark(true);
+        msbp->setIcon(this->m_mainWindow->qmsiPtr()->STATUS_ICON_QUESTION);
         incrementUserMineCountDisplay();
-    } else if (msb->hasQuestionMark()) {
-        msb->setHasQuestionMark(false);
-        msb->setIcon(this->m_mwPtr->qmsiPtr()->COUNT_MINES_0);
+    } else if (msbp->hasQuestionMark()) {
+        msbp->setHasQuestionMark(false);
+        msbp->setIcon(this->m_mainWindow->qmsiPtr()->COUNT_MINES_0);
     } else {
-        msb->setHasFlag(true);
-        msb->setIcon(this->m_mwPtr->qmsiPtr()->STATUS_ICON_FLAG);
+        msbp->setHasFlag(true);
+        msbp->setIcon(this->m_mainWindow->qmsiPtr()->STATUS_ICON_FLAG);
         decrementUserMineCountDisplay();
     }
-    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, this->m_mwPtr->qmsiPtr()->FACE_ICON_CRAZY);
+    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_CRAZY);
     emit(userIsNoLongerIdle());
 }
 
 
-void GameController::onMineSweeperButtonLongLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::onMineSweeperButtonLongLeftClickReleased(QMineSweeperButton *msbp)
 {
-    return this->onMineSweeperButtonRightClickReleased(msb);
+    return this->onMineSweeperButtonRightClickReleased(msbp);
 }
 
-void GameController::onMineSweeperButtonLongRightClickReleased(std::shared_ptr<QMineSweeperButton> msb)
+void GameController::onMineSweeperButtonLongRightClickReleased(QMineSweeperButton *msbp)
 {
-    return this->onMineSweeperButtonRightClickReleased(msb);
+    return this->onMineSweeperButtonRightClickReleased(msbp);
 }
 
 void GameController::onMineDisplayed()
@@ -474,12 +479,13 @@ void GameController::onContextMenuActive()
     if (this->m_gameState == GameState::GAME_ACTIVE) {
         this->m_gameState = GameState::GAME_PAUSED;
         emit(gamePaused());
+        this->gamePaused();
     }
 }
 
 void GameController::onContextMenuInactive()
 {
-    if ((this->m_gameState == GameState::GAME_PAUSED) && (!this->m_mwPtr->boardResizeDialogVisible())) {
+    if ((this->m_gameState == GameState::GAME_PAUSED) && (!this->m_mainWindow->boardResizeDialogVisible())) {
         this->m_gameState = GameState::GAME_ACTIVE;
         emit(gameResumed());
     }
@@ -492,8 +498,8 @@ GameState GameController::gameState() const
 
 void GameController::bindMainWindow(std::shared_ptr<MainWindow> mw)
 {
-    this->m_mwPtr.reset();
-    this->m_mwPtr = mw;
+    this->m_mainWindow.reset();
+    this->m_mainWindow = mw;
 }
 
 int GameController::numberOfMovesMade() const
@@ -584,4 +590,9 @@ int GameController::LONG_CLICK_THRESHOLD()
 int GameController::MILLISECOND_DELAY_DIGITS()
 {
     return GameController::s_MILLISECOND_DISPLAY_DIGITS;
+}
+
+GameController::~GameController()
+{
+
 }

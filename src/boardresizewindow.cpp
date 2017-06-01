@@ -1,12 +1,12 @@
 /***********************************************************************
-*    boardresizewindow.h:                                              *
+*    boardresizewindow.cpp:                                            *
 *    Custom QDialog for settings the board dimensions                  *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
-*    This is a header file for QMineSweeper:                           *
+*    This is a source file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of a BoardResizeWindow class     *
+*    This file holds the implementation of a BoardResizeWindow class   *
 *    The BoardResizeWindow is used to change the size of the game board*
 *                                                                      *
 *    You should have received a copy of the GNU Lesser General         *
@@ -14,23 +14,10 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
+#include "boardresizewindow.h"
 
-#ifndef QMINESWEEPER_BOARDRESIZEWINDOW_H
-#define QMINESWEEPER_BOARDRESIZEWINDOW_H
-
-#include <QMainWindow>
-
-class BoardResizeWindow : public QMainWindow
+void BoardResizeWindow::closeEvent(QCloseEvent *ce)
 {
-    Q_OBJECT
-public:
-
-signals:
-    void aboutToClose();
-    void keyPressEvent(QKeyEvent *event);
-
-public:
-    void closeEvent(QCloseEvent *ce);
-};
-
-#endif //QMINESWEEPER_BOARDRESIZEWINDOW_H
+    emit (aboutToClose());
+    QMainWindow::closeEvent(ce);
+}

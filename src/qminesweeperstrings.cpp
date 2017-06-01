@@ -52,8 +52,17 @@ namespace QMineSweeperStrings
     const char *GREATER_THAN_8_STRING{" > 8)"};
     const char *COLUMN_INDEX_NEGATIVE_STRING{"ERROR: Argument to setRowIndex(int) cannot be negative ("};
     const char *ROW_INDEX_NEGATIVE_STRING{"ERROR: Argument to setRowIndex(int) cannot be negative ("};
-    const char *STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING{"Standard exception caught in addMineSweeperButton(int, int): "};
+    const char *STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING{"Standard exception caught in addMineSweeperButton(int, int): %1"};
     const char *LCD_OVERFLOW_STRING{"999"};
+    const char *ENGLISH_STRING{"English"};
+    const char *FRENCH_STRING{"French"};
+    const char *SPANISH_STRING{"Spanish"};
+    const char *JAPANESE_STRING{"Japanese"};
+
+    const char *ENGLISH_TRANSLATION_PATH{":/translations/english.qm"};
+    const char *FRENCH_TRANSLATION_PATH{":/translations/french.qm"};
+    const char *SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};
+    const char *JAPANESE_TRANSLATION_PATH{":/translations/japanese.qm"};
 
     const char *MINE_ICON_16_STRING{":/mine-icons/png/mine-icons/16-qminesweeper.png"};
     const char *MINE_ICON_24_STRING{":/mine-icons/png/mine-icons/24-qminesweeper.png"};

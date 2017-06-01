@@ -24,23 +24,21 @@
 
 #include <QPushButton>
 #include <QLabel>
+
 #include <QMouseEvent>
 #include <QMessageBox>
-#include <QImage>
 #include <QTimer>
 #include <QIcon>
+#include "eventtimer.h"
+
 #include <memory>
 #include <string>
 
-#include "qminesweepericons.h"
-#include "mainwindow.h"
-#include "minecoordinates.h"
-#include "qminesweeperutilities.h"
-#include "gamecontroller.h"
-#include "eventtimer.h"
+class QMouseEvent;
+class MineCoordinates;
+class QMineSweeperIcons;
 
-
-class QMineSweeperButton : public QPushButton, public std::enable_shared_from_this<QMineSweeperButton>
+class QMineSweeperButton : public QPushButton
 {
     Q_OBJECT
 public:
@@ -50,9 +48,12 @@ public:
     QMineSweeperButton(QMineSweeperButton *other);
     QMineSweeperButton(QMineSweeperButton &&other);
     QMineSweeperButton(std::shared_ptr<QMineSweeperButton> &other);
+    virtual ~QMineSweeperButton();
 
     bool operator==(const QMineSweeperButton &other) const;
     bool eventFilter(QObject *pObject, QEvent *pEvent) override;
+    //int heightForWidth(int width) const override;
+
 
     /*Member access functions*/
     int rowIndex() const;
@@ -75,12 +76,12 @@ public:
     void setBlockClicks(bool blockClicks);
     bool isBlockingClicks() const;
 signals:
-    void leftClicked(std::shared_ptr<QMineSweeperButton> msbp);
-    void rightClicked(std::shared_ptr<QMineSweeperButton> msbp);
-    void leftClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
-    void longLeftClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
-    void rightClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
-    void longRightClickReleased(std::shared_ptr<QMineSweeperButton> msbp);
+    void leftClicked(QMineSweeperButton *msbp);
+    void rightClicked(QMineSweeperButton *msbp);
+    void leftClickReleased(QMineSweeperButton *msbp);
+    void longLeftClickReleased(QMineSweeperButton *msbp);
+    void rightClickReleased(QMineSweeperButton *msbp);
+    void longRightClickReleased(QMineSweeperButton *msbp);
 
 protected slots:
     void mousePressEvent(QMouseEvent *mouseEvent) override;
@@ -98,7 +99,8 @@ private:
     int m_rowIndex;
     bool m_isBeingLongClicked;
     bool m_blockClicks;
-    EventTimer<std::chrono::steady_clock> m_longClickTimer;
+    std::unique_ptr<SteadyEventTimer> m_longClickTimer;
+    void initialize();
 };
 
 #endif //QMINESWEEPER_MINESWEEPERBUTTON_H

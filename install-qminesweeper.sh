@@ -29,7 +29,7 @@ dependancyLibName="lib$dependancyRootName.so"
 libDir="/usr/lib/"
 dependancy="$libDir/$dependancyLibName"
 dependancyRootName="tjlutils"
-dependancySource="https://github.com/Pinguinsan/$dependancyRootName"
+dependancySource="https://github.com/tlewiscpp/$dependancyRootName"
 dependancyInstallCommand="$dependancyRootName-install.sh"
 
 function bailout() {
@@ -307,7 +307,7 @@ if [[ -z "$dependancyResult" ]]; then
     buildDependancy || { echo "Building dependancy failed, bailing out"; exit 1; }
 fi
 doCygwinCheck
-runCmake "$filePath" || { echo "cmake failed, bailing out"; exit 1; }
+runQmake "$filePath" || { echo "cmake failed, bailing out"; exit 1; }
 runMake || { echo "make failed, bailing out"; exit 1; }
 generateDesktopFile || { echo "Could not generate desktop file, bailing out"; exit 1; }
 copyFile "$buildDir/$desktopFileName" "$appDir" || { echo "Could not copy desktop file to application directory, bailing out"; exit 1; }

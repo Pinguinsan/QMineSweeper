@@ -37,7 +37,8 @@ HEADERS += src/mainwindow.h \
            src/qminesweeperstrings.h \
            src/boardresizewindow.h \
            src/qminesweeperbutton.h \
-    src/qminesweepersettingsloader.h
+    src/qminesweepersettingsloader.h \
+    src/globaldefinitions.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
@@ -48,16 +49,19 @@ SOURCES += src/main.cpp \
            src/qminesweepersoundeffects.cpp \
            src/qminesweeperstrings.cpp \
            src/qminesweeperbutton.cpp \
-    src/qminesweepersettingsloader.cpp
+    src/qminesweepersettingsloader.cpp \
+    src/boardresizewindow.cpp
 
 RESOURCES += resources/icons.qrc \
-             resources/sounds.qrc
+             resources/sounds.qrc \
+    resources/translations.qrc
 
 FORMS += forms/mainwindow.ui \
          forms/boardresizewindow.ui
 
 win32 {
     RC_FILE += resources/qminesweeper.rc
+    HEADERS += version.h
 }
 
 android {

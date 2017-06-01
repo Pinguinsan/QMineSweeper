@@ -33,6 +33,7 @@
 #include <QDesktopWidget>
 #include <QString>
 #include <QRect>
+#include <QDateTime>
 
 #include "mainwindow.h"
 #include "qminesweeperbutton.h"
@@ -42,6 +43,7 @@
 #include "qminesweepersettingsloader.h"
 #include "qminesweeperutilities.h"
 #include "gamecontroller.h"
+#include "globaldefinitions.h"
 
 /*
  * The program is organized like this:
@@ -172,7 +174,9 @@ int main(int argc, char *argv[])
          columnCount = QMineSweeperSettingsLoader::DEFAULT_COLUMN_COUNT();
          rowCount = QMineSweeperSettingsLoader::DEFAULT_ROW_COUNT();
      }
-     std::cout << "Beginning game with dimensions (" << columnCount << "x" << rowCount << ")" << std::endl;
+    LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
+    QMineSweeperUtilities::checkOrCreateProgramSettingsDirectory();
+    //TODO: Load language from config file
 
     QApplication qApplication(argc, argv);
     std::shared_ptr<QMineSweeperIcons> gameIcons{std::make_shared<QMineSweeperIcons>()};
@@ -180,13 +184,18 @@ int main(int argc, char *argv[])
     std::shared_ptr<QMineSweeperSettingsLoader> settingsLoader{std::make_shared<QMineSweeperSettingsLoader>()};
     std::shared_ptr<GameController> gameController{std::make_shared<GameController>(columnCount, rowCount)};
     std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
-    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons, soundEffects, settingsLoader, gameController, qDesktopWidget)};
+    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons,
+                                                                        soundEffects,
+                                                                        settingsLoader,
+                                                                        gameController,
+                                                                        qDesktopWidget,
+                                                                        QMineSweeperSettingsLoader::DEFAULT_LANGUAGE())};
     gameController->bindMainWindow(mainWindow);
     mainWindow->setupNewGame();
 
     QObject::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
     mainWindow->setWindowIcon(gameIcons->MINE_ICON_72);
-    mainWindow->setWindowTitle(MAIN_WINDOW_TITLE);
+    mainWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
 #if defined(__ANDROID__)
     mainWindow->showMaximized();
     mainWindow->setFixedSize(mainWindow->minimumSize());
@@ -199,27 +208,6 @@ int main(int argc, char *argv[])
     mainWindow->centerAndFitWindow();
 #endif
     return qApplication.exec();
-}
-
-void displayHelp()
-{
-    std::cout << "Usage: " << PROGRAM_NAME << " [options]=(ColumnsxRows)" << std::endl << std::endl;
-    std::cout << "Options: " << std::endl;
-    std::cout << "    -h, --h, -help, --help: Display this help text" << std::endl;
-    std::cout << "    -v, --v, -version, --version: Display the version" << std::endl;
-    std::cout << "    -d, --d, -dimensions, --dimensions: Set the number of columns" << std::endl;
-    std::cout << "Example: " << std::endl;
-    std::cout << "    To start a 14x9 game, any of the following command line options would work:" << std::endl;
-    std::cout << "    QMineSweeper --dimensions 14x9" << std::endl;
-    std::cout << "    QMineSweeper --dimensions=14x9" << std::endl;
-    std::cout << "    QMineSweeper 14x9" << std::endl;
-}
-
-void displayVersion()
-{
-    std::cout << PROGRAM_NAME << ", v" << SOFTWARE_MAJOR_VERSION << "." << SOFTWARE_MINOR_VERSION << "." << SOFTWARE_PATCH_VERSION << std::endl;
-    std::cout << "Written by " << AUTHOR_NAME << std::endl;
-    std::cout << "Built with " << COMPILER_NAME << ", v" << COMPILER_MAJOR_VERSION << "." << COMPILER_MINOR_VERSION << "." << COMPILER_PATCH_VERSION << ", " << __DATE__ << std::endl << std::endl;
 }
 
 std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
@@ -301,4 +289,91 @@ void installSignalHandlers(void (*signalHandler)(int))
 #endif
 }
 
+void displayVersion()
+{
+    using namespace QMineSweeperUtilities;
+    LOG_INFO() << QString{"%1, v%2.%3.%4"}.arg(PROGRAM_NAME, QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION));
+    LOG_INFO() << QString{"Written by %1"}.arg(AUTHOR_NAME);
+    LOG_INFO() << QString{"Built with %1 v%2.%3.%4, %5"}.arg(COMPILER_NAME, QS_NUMBER(COMPILER_MAJOR_VERSION), QS_NUMBER(COMPILER_MINOR_VERSION), QS_NUMBER(COMPILER_PATCH_VERSION), __DATE__);
+    LOG_INFO() << QString{"Build architecture: %1"}.arg(getBuildArchitecture());
+    LOG_INFO() << QString{"Current detected architecture: %1"}.arg(getCurrentArchitecture());
+    LOG_INFO() << QString{"Detected OS version: %1"}.arg(getOSVersion());
+}
+
+
+void displayHelp()
+{
+    std::cout << "Usage: " << PROGRAM_NAME << " [options]=(ColumnsxRows)" << std::endl << std::endl;
+    std::cout << "Options: " << std::endl;
+    std::cout << "    -h, --h, -help, --help: Display this help text" << std::endl;
+    std::cout << "    -v, --v, -version, --version: Display the version" << std::endl;
+    std::cout << "    -d, --d, -dimensions, --dimensions: Set the number of columns" << std::endl;
+    std::cout << "Example: " << std::endl;
+    std::cout << "    To start a 14x9 game, any of the following command line options would work:" << std::endl;
+    std::cout << "    QMineSweeper --dimensions 14x9" << std::endl;
+    std::cout << "    QMineSweeper --dimensions=14x9" << std::endl;
+    std::cout << "    QMineSweeper 14x9" << std::endl;
+}
+
+template <typename StringType, typename FileStringType>
+void logToFile(const StringType &str, const FileStringType &filePath)
+{
+    QFile qFile{filePath};
+    QString stringCopy{str};
+    if (qFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        if (qFile.write(str.toStdString().c_str(), str.length()) == -1) {
+            throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(str, filePath).toStdString());
+        }
+    } else {
+        throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (could not open file)"}.arg(str, filePath).toStdString());
+    }
+
+}
+
+void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg{msg.toLocal8Bit()};
+    QString logContext{""};
+    auto *outputStream = &std::cout;
+
+    switch (type) {
+    case QtDebugMsg:
+        logContext = "Debug: ";
+        outputStream = &std::cout;
+        break;
+    case QtInfoMsg:
+        logContext = "Info: ";
+        outputStream = &std::clog;
+        break;
+    case QtWarningMsg:
+        logContext = "Warning: ";
+        outputStream = &std::cout;
+        break;
+    case QtCriticalMsg:
+        logContext = "Critical: ";
+        outputStream = &std::cerr;
+        break;
+    case QtFatalMsg:
+        logContext = "Fatal: ";
+        outputStream = &std::cerr;
+        abort();
+    }
+    QString logMessage{QString{"[%1] - %2 %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().toString(), logContext, localMsg.constData(), context.file, QS_NUMBER(context.line), context.function)};
+
+    bool addLineEnding{true};
+    static const QList<const char *> LINE_ENDINGS{"\r\n", "\r", "\n", "\n\r"};
+    for (const auto &it : LINE_ENDINGS) {
+        if (logMessage.endsWith(it)) {
+            addLineEnding = false;
+        }
+    }
+    if (addLineEnding) {
+        logMessage.append("\n");
+    }
+    if (outputStream) {
+        *outputStream << logMessage.toStdString();
+    }
+    logToFile(logMessage, QMineSweeperUtilities::getLogFileName());
+
+}
 

@@ -23,13 +23,12 @@
 
 #include <QObject>
 
-#include <unordered_map>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <memory>
-#include <sstream>
 #include <set>
+#include <unordered_map>
 
 #include "minecoordinatehash.h"
 
@@ -44,6 +43,8 @@ enum class GameState {
     GAME_PAUSED
 };
 
+using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QMineSweeperButton>, MineCoordinateHash>;
+
 class GameController : public QObject
 {
 
@@ -52,7 +53,8 @@ public:
 
     GameController(int columnCount, int rowCount);
     GameController(const GameController &other) = delete;
-    GameController(GameController && other) = delete;
+    GameController(GameController &&other) = delete;
+    virtual ~GameController();
 
     /*Member access*/
     bool initialClickFlag() const;
@@ -109,14 +111,15 @@ public:
     static int LONG_CLICK_THRESHOLD();
     static int MILLISECOND_DELAY_DIGITS();
 
+
 public slots:
-    void onMineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msb);
-    void onMineSweeperButtonLeftClicked(std::shared_ptr<QMineSweeperButton> msb);
-    void onMineSweeperButtonRightClicked(std::shared_ptr<QMineSweeperButton> msb);
-    void onMineSweeperButtonLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb);
-    void onMineSweeperButtonRightClickReleased(std::shared_ptr<QMineSweeperButton> msb);
-    void onMineSweeperButtonLongLeftClickReleased(std::shared_ptr<QMineSweeperButton> msb);
-    void onMineSweeperButtonLongRightClickReleased(std::shared_ptr<QMineSweeperButton> msb);
+    void onMineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msbp);
+    void onMineSweeperButtonLeftClicked(QMineSweeperButton *msbp);
+    void onMineSweeperButtonRightClicked(QMineSweeperButton *msbp);
+    void onMineSweeperButtonLeftClickReleased(QMineSweeperButton *msbp);
+    void onMineSweeperButtonRightClickReleased(QMineSweeperButton *msbp);
+    void onMineSweeperButtonLongLeftClickReleased(QMineSweeperButton *msbp);
+    void onMineSweeperButtonLongRightClickReleased(QMineSweeperButton *msbp);
     void onGameReset();
     void onContextMenuActive();
     void onContextMenuInactive();
@@ -139,7 +142,7 @@ signals:
 
 private:
     std::set<std::pair<int, int>> m_mineCoordinates;
-    std::unordered_map<MineCoordinates, std::shared_ptr<QMineSweeperButton>, MineCoordinateHash> m_mineSweeperButtons;
+    ButtonContainer m_mineSweeperButtons;
     int m_numberOfMines;
     int m_userDisplayNumberOfMines;
     bool m_initialClickFlag;
@@ -148,7 +151,7 @@ private:
     int m_numberOfMovesMade;
     GameState m_gameState;
     bool m_gameOver;
-    std::shared_ptr<MainWindow> m_mwPtr;
+    std::shared_ptr<MainWindow> m_mainWindow;
     int m_totalButtonCount;
     int m_unopenedMineCount;
 
