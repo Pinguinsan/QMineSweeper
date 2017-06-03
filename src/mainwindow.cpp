@@ -298,9 +298,10 @@ void MainWindow::onGameWon()
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_BIG_SMILEY);
     this->m_gameController->setGameOver(true);
 
+
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
         for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
-            std::shared_ptr<QMineSweeperButton> tempMsb = this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex);
+            std::shared_ptr<QMineSweeperButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
             if(tempMsb->hasMine()) {
                 if (tempMsb->hasFlag()) {
                     tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
@@ -418,9 +419,7 @@ void MainWindow::populateMineField()
             this->m_gameController->addMineSweeperButton(columnIndex, rowIndex);
             std::shared_ptr<QMineSweeperButton> tempPtr{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
             this->m_ui->mineFrameGridLayout->addWidget(tempPtr.get(), rowIndex, columnIndex, 1, 1);
-            //tempPtr->setFixedSize(getMaxMineSize());
-            QSize maxMineSize{getMaxMineSize()};
-            tempPtr->setGeometry(tempPtr->x(), tempPtr->y(), maxMineSize.height(), maxMineSize.width());
+            tempPtr->setFixedSize(getMaxMineSize());
             emit(mineSweeperButtonCreated(tempPtr));
 #if defined(__ANDROID__)
             tempPtr->setIconSize(tempPtr->size());

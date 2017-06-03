@@ -186,10 +186,15 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
     }
 }
 
+ButtonContainer &GameController::mineSweeperButtons() 
+{
+    return this->m_mineSweeperButtons;
+}
+
 std::shared_ptr<QMineSweeperButton> GameController::mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const
 {
     using namespace QMineSweeperStrings;
-    if (mineInBounds(coordinates) && (m_mineSweeperButtons.find(coordinates) != m_mineSweeperButtons.end())) {
+    if (this->mineInBounds(coordinates) && (this->m_mineSweeperButtons.find(coordinates) != m_mineSweeperButtons.end())) {
         return this->m_mineSweeperButtons.at(coordinates);
     } else {
         throw std::runtime_error(GENERIC_ERROR_MESSAGE);

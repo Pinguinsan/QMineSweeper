@@ -73,6 +73,7 @@ public:
     void setNumberOfMinesRemaining(int userDisplayNumberOfMines);
     void startResetIconTimer(unsigned int howLong, const QIcon &icon) const;
 
+    ButtonContainer &mineSweeperButtons();
     std::shared_ptr<QMineSweeperButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
     std::shared_ptr<QMineSweeperButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
     bool coordinatePairExists(const MineCoordinates &coordinatesToCheck) const;

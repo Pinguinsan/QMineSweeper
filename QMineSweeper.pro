@@ -54,7 +54,7 @@ SOURCES += src/main.cpp \
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc \
-    resources/translations.qrc
+             resources/translations.qrc
 
 FORMS += forms/mainwindow.ui \
          forms/boardresizewindow.ui

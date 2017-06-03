@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 3.2)
 project(QMineSweeper CXX)
 
 set(CMAKE_BUILD_TYPE Release)
-set(SOURCE_BASE ${PROJECT_SOURCE_DIR})
+set(SOURCE_ROOT ${PROJECT_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -25,42 +25,49 @@ if (CYGWIN OR WIN32 OR (NOT X86))
     set(GCC_ADDITIONAL_COMPILE_FLAGS "")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_ADDITIONAL_COMPILE_FLAGS}")
 else()
-    set(GCC_ADDITIONAL_COMPILE_FLAGS "-fsanitize=undefined -frecord-gcc-switches")
+    set(GCC_ADDITIONAL_COMPILE_FLAGS "-fsanitize=undefined")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_ADDITIONAL_COMPILE_FLAGS}")
 endif()
 
-include_directories("${SOURCE_BASE}/include")
-
-
-set (QMINESWEEPER_SOURCES "${SOURCE_BASE}/src/main.cpp"
-                            "${SOURCE_BASE}/src/mainwindow.cpp"
-                            "${SOURCE_BASE}/src/gamecontroller.cpp"
-                            "${SOURCE_BASE}/src/minecoordinates.cpp"
-                            "${SOURCE_BASE}/src/qminesweepericons.cpp"
-                            "${SOURCE_BASE}/src/qminesweeperutilities.cpp"
-                            "${SOURCE_BASE}/src/qminesweepersoundeffects.cpp"
-                            "${SOURCE_BASE}/src/qminesweeperstrings.cpp"
-                            "${SOURCE_BASE}/src/qminesweeperbutton.cpp")
+set (QMINESWEEPER_SOURCES "${SOURCE_ROOT}/src/main.cpp"
+                          "${SOURCE_ROOT}/src/mainwindow.cpp"
+                          "${SOURCE_ROOT}/src/gamecontroller.cpp"
+                          "${SOURCE_ROOT}/src/minecoordinates.cpp"
+                          "${SOURCE_ROOT}/src/qminesweepericons.cpp"
+                          "${SOURCE_ROOT}/src/qminesweeperutilities.cpp"
+                          "${SOURCE_ROOT}/src/qminesweepersoundeffects.cpp"
+                          "${SOURCE_ROOT}/src/qminesweeperstrings.cpp"
+                          "${SOURCE_ROOT}/src/qminesweeperbutton.cpp"
+                          "${SOURCE_ROOT}/src/qminesweepersettingsloader.cpp"
+                          "${SOURCE_ROOT}/src/boardresizewindow.cpp")
 
     
-set (QMINESWEEPER_HEADERS "${SOURCE_BASE}/include/boardresizewindow.h"
-                           "${SOURCE_BASE}/include/minecoordinates.h"
-                            "${SOURCE_BASE}/include/qminesweeperbutton.h"
-                            "${SOURCE_BASE}/include/eventtimer.h"          
-                            "${SOURCE_BASE}/include/qminesweepericons.h"
-                            "${SOURCE_BASE}/include/gamecontroller.h"      
-                            "${SOURCE_BASE}/include/mainwindow.h"          
-                            "${SOURCE_BASE}/include/qminesweeperstrings.h"
-                            "${SOURCE_BASE}/include/minecoordinatehash.h" 
-                            "${SOURCE_BASE}/include/qminesweeperutilities.h"
-                            "${SOURCE_BASE}/include/qminesweepersoundeffects.h")
+set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
+                          "${SOURCE_ROOT}/src/gamecontroller.h"
+                          "${SOURCE_ROOT}/src/minecoordinates.h"
+                          "${SOURCE_ROOT}/src/qminesweepericons.h"
+                          "${SOURCE_ROOT}/src/minecoordinatehash.h"
+                          "${SOURCE_ROOT}/src/eventtimer.h"
+                          "${SOURCE_ROOT}/src/qminesweeperutilities.h"
+                          "${SOURCE_ROOT}/src/qminesweepersoundeffects.h"
+                          "${SOURCE_ROOT}/src/qminesweeperstrings.h"
+                          "${SOURCE_ROOT}/src/boardresizewindow.h"
+                          "${SOURCE_ROOT}/src/qminesweeperbutton.h"
+                          "${SOURCE_ROOT}/src/qminesweepersettingsloader.h"
+                          "${SOURCE_ROOT}/src/globaldefinitions.h")
 
 
-set (QMINESWEEPER_FORMS "${SOURCE_BASE}/forms/mainwindow.ui"
-                        "${SOURCE_BASE}/forms/boardresizewindow.ui")
+if (WIN32)
+    set (QMINESWEEPER_HEADERS "${QMINESWEEPER_HEADERS} ${SOURCE_ROOT}/src/version.h")
+endif()
 
-set (QMINESWEEPER_RESOURCES "${SOURCE_BASE}/resources/icons.qrc"
-                            "${SOURCE_BASE}/resources/sounds.qrc")
+
+set (QMINESWEEPER_FORMS "${SOURCE_ROOT}/forms/mainwindow.ui"
+                        "${SOURCE_ROOT}/forms/boardresizewindow.ui")
+
+set (QMINESWEEPER_RESOURCES "${SOURCE_ROOT}/resources/icons.qrc"
+                            "${SOURCE_ROOT}/resources/sounds.qrc"
+                            "${SOURCE_ROOT}/resources/translations.qrc")
 
 qt5_wrap_cpp(QMINESWEEPER_HEADERS_MOC "${QMINESWEEPER_HEADERS}")
 qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  "${QMINESWEEPER_FORMS}")
