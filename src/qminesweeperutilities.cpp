@@ -100,13 +100,13 @@ namespace QMineSweeperUtilities
         }
         bool newSettingsFileOpen{fileToCreate.open(QIODevice::OpenModeFlag::WriteOnly)};
         if (!newSettingsFileOpen) {
-            throw std::runtime_error(QString{"Unable to open new settings file %1, the binary for QXyzTester may be corrupt, a reinstall is recommended (errorString = %2)"}.arg(systemSettingsFilePath, fileToCreate.errorString()).toStdString());
+            throw std::runtime_error(QString{"Unable to open new settings file %1, the binary for QMineSweeper may be corrupt, a reinstall is recommended (errorString = %2)"}.arg(systemSettingsFilePath, fileToCreate.errorString()).toStdString());
         }
         fileToCreate.write(bundledSettingsFile.readAll());
         LOG_INFO() << QString{"Systemwide settings file at %1 successfuly recreated from bundled default settings"}.arg(systemSettingsFilePath);
 
         /*
-        QString userSettingsPath{QXyzTesterUtilities::getUserConfigurationFilePath()};
+        QString userSettingsPath{QMineSweeperUtilities::getUserConfigurationFilePath()};
         QFile userFileToCreate{userSettingsPath};
         bool userSettingsFileOpen{userFileToCreate.open(QIODevice::WriteOnly)};
         if (!userSettingsFileOpen) {
@@ -132,12 +132,12 @@ namespace QMineSweeperUtilities
         QString additionalSettingsPath{""};
         #if defined(_WIN32)
             if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-                additionalSettingsPath += "\\AppData\\Local\\QXyzTester\\";
+                additionalSettingsPath += "\\AppData\\Local\\QMineSweeper\\";
             } else {
-                additionalSettingsPath += "\\QXyzTester\\";
+                additionalSettingsPath += "\\QMineSweeper\\";
             }
         #else
-            additionalSettingsPath += "/.local/share/QXyzTester/";
+            additionalSettingsPath += "/.local/share/QMineSweeper/";
         #endif
         programSettingsDirectory = homeDirectory + additionalSettingsPath;
         return programSettingsDirectory;
@@ -148,12 +148,12 @@ namespace QMineSweeperUtilities
     {
     #if defined(_WIN32)
         if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-            return "C:\\Program Files (x86)\\QXyzTester\\";
+            return "C:\\Program Files (x86)\\QMineSweeper\\";
         } else {
-            return "C:\\QXyzTester\\";
+            return "C:\\QMineSweeper\\";
         }
     #else
-        return "/opt/QXyzTester/";
+        return "/opt/QMineSweeper/";
     #endif
     }
 

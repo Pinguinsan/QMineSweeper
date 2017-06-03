@@ -298,7 +298,23 @@ void MainWindow::onGameWon()
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_BIG_SMILEY);
     this->m_gameController->setGameOver(true);
 
-
+    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+        std::shared_ptr<QMineSweeperButton> tempMsb{it.second};
+        if(tempMsb->hasMine()) {
+            if (tempMsb->hasFlag()) {
+                tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
+                tempMsb->setChecked(true);
+            } else {
+                tempMsb->setIcon(this->m_gameIcons->MINE_ICON_72);
+                tempMsb->setChecked(true);
+                tempMsb->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
+            }
+        } else if (tempMsb->hasFlag()) {
+            tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
+            tempMsb->setChecked(true);
+        }
+        tempMsb->setIsRevealed(true);
+    }
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
         for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
             std::shared_ptr<QMineSweeperButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};

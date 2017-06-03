@@ -73,8 +73,16 @@ qt5_wrap_cpp(QMINESWEEPER_HEADERS_MOC "${QMINESWEEPER_HEADERS}")
 qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  "${QMINESWEEPER_FORMS}")
 qt5_add_resources(QMINESWEEPER_RESOURCES_RCC "${QMINESWEEPER_RESOURCES}")
 
+set (QMINESWEEPER_SOURCES_LIB "${QMINESWEEPER_SOURCES}")
+set (QMINESWEEPER_HEADER_LIB "${QMINESWEEPER_HEADERS}")
+set (QMINESWEEPER_FORMS_LIB  "${QMINESWEEPER_FORMS}")
+
+add_library (QMINESWEEPER_SHARED_LIB  "${QMINESWEEPER_SOURCES_LIB}"
+                                      "${QMINESWEEPER_HEADER_LIB}"
+                                      "${QMINESWEEPER_FORMS_LIB}")
+target_link_libraries (QMINESWEEPER_SHARED_LIB Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Multimedia pthread)
+
 add_executable(QMineSweeper "${QMINESWEEPER_SOURCES}"
                             "${QMINESWEEPER_HEADERS}"
-                            "${QMINESWEEPER_FORMS}"
                             "${QMINESWEEPER_RESOURCES_RCC}")
-target_link_libraries (QMineSweeper Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Multimedia pthread)
+target_link_libraries (QMineSweeper QMINESWEEPER_SHARED_LIB pthread)
