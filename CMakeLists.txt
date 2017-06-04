@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.2) 
 project(QMineSweeper CXX)
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 set(SOURCE_ROOT ${PROJECT_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
