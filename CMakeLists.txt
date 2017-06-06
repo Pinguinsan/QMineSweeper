@@ -58,7 +58,7 @@ set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
 
 
 if (WIN32)
-    set (QMINESWEEPER_HEADERS "${QMINESWEEPER_HEADERS} ${SOURCE_ROOT}/src/version.h")
+    set (QMINESWEEPER_HEADERS ${QMINESWEEPER_HEADERS} ${SOURCE_ROOT}/src/version.h)
 endif()
 
 
