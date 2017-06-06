@@ -90,11 +90,11 @@ public:
     void clearRandomMinePlacement();
     void assignAllMines();
     void determineNeighborMineCounts();
-    void generateRandomMinePlacement(std::shared_ptr<QMineSweeperButton> msb);
-    void checkForOtherEmptyMines(std::shared_ptr<QMineSweeperButton> msb);
+    void generateRandomMinePlacement(QMineSweeperButton *msb);
+    void checkForOtherEmptyMines(QMineSweeperButton *msb);
 
-    bool isCornerButton(std::shared_ptr<QMineSweeperButton> msb) const;
-    bool isEdgeButton(std::shared_ptr<QMineSweeperButton> msb) const;
+    bool isCornerButton(QMineSweeperButton *msb) const;
+    bool isEdgeButton(QMineSweeperButton *msb) const;
     GameState gameState() const;
     int totalButtonCount() const;
 

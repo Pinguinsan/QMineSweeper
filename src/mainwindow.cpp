@@ -413,7 +413,7 @@ void MainWindow::onGameResumed()
  * of surrounding mines is drawn (the push button icon is set to the correct number
  * of surrounding mines), then a mineDisplayed() signal is emitted, to inform anything
  * connected that a mine is being displayed, then recursively check for other empty mines */
-void MainWindow::displayMine(std::shared_ptr<QMineSweeperButton> msb)
+void MainWindow::displayMine(QMineSweeperButton* msb)
 {
     drawNumberOfSurroundingMines(msb);
     msb->setFlat(true);
@@ -425,7 +425,7 @@ void MainWindow::displayMine(std::shared_ptr<QMineSweeperButton> msb)
 }
 
 /* populateMineField() : The initialization for any new game, adding all QMineSweeperButtons
- * Iterate through the number of columns and rows and call GameColler::addMineSweeperButton
+ * Iterate through the number of columns and rows and call GameController::addMineSweeperButton
  * to populate all of the QMineSweeperButtons. Also, save the stylesheet so it can be quickly
  * recalled on a new game. The size of the icons and the button itself is also set */
 void MainWindow::populateMineField()
@@ -983,7 +983,7 @@ void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSett
  * Queries the shared_ptr passed in for it's number of surrounding mines, then
  * uses the shared_ptr to the QMineSweeperIcons instance to set the graphic on the
  * QMineSweeperButton to the correct number via chained else-ifs */
-void MainWindow::drawNumberOfSurroundingMines(std::shared_ptr<QMineSweeperButton> msb)
+void MainWindow::drawNumberOfSurroundingMines(QMineSweeperButton *msb)
 {
     if (msb->numberOfSurroundingMines() == 0) {
         msb->setIcon(this->m_gameIcons->COUNT_MINES_0);

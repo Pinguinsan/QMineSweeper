@@ -213,7 +213,7 @@ void GameController::startResetIconTimer(unsigned int howLong, const QIcon &icon
 }
 
 
-bool GameController::isCornerButton(std::shared_ptr<QMineSweeperButton> msbp) const
+bool GameController::isCornerButton(QMineSweeperButton *msbp) const
 {
     return (((msbp->columnIndex() == 0) && (msbp->rowIndex() == 0)) ||
             ((msbp->columnIndex() == 0) && (msbp->rowIndex() == this->m_numberOfRows - 1)) ||
@@ -221,7 +221,7 @@ bool GameController::isCornerButton(std::shared_ptr<QMineSweeperButton> msbp) co
             ((msbp->columnIndex() == this->m_numberOfColumns - 1) && (msbp->rowIndex() == this->m_numberOfRows - 1)));
 }
 
-bool GameController::isEdgeButton(std::shared_ptr<QMineSweeperButton> msbp) const
+bool GameController::isEdgeButton(QMineSweeperButton *msbp) const
 {
     return ((msbp->columnIndex() == 0) ||
             (msbp->columnIndex() == this->m_numberOfColumns - 1) ||
@@ -230,7 +230,7 @@ bool GameController::isEdgeButton(std::shared_ptr<QMineSweeperButton> msbp) cons
 }
 
 
-void GameController::generateRandomMinePlacement(std::shared_ptr<QMineSweeperButton> msbp)
+void GameController::generateRandomMinePlacement(QMineSweeperButton *msbp)
 {
     using namespace QMineSweeperUtilities;
     MineCoordinates potentialMineCoordinates{0,0};
@@ -342,7 +342,7 @@ bool GameController::mineInBounds(int columnIndex, int rowIndex) const
 }
 
 
- void GameController::checkForOtherEmptyMines(std::shared_ptr<QMineSweeperButton> msbp)
+ void GameController::checkForOtherEmptyMines(QMineSweeperButton *msbp)
  {
     for (int columnI = msbp->columnIndex() - 1; columnI <= msbp->columnIndex() + 1; columnI++) {
         for (int rowI = msbp->rowIndex() - 1; rowI <= msbp->rowIndex() + 1; rowI++) {
@@ -354,7 +354,7 @@ bool GameController::mineInBounds(int columnIndex, int rowIndex) const
                     (!this->m_mineSweeperButtons.at(minePairCheck)->isChecked()) &&
                     (!this->m_mineSweeperButtons.at(minePairCheck)->hasQuestionMark()) &&
                     (!this->m_mineSweeperButtons.at(minePairCheck)->hasFlag())) {
-                    this->m_mainWindow->displayMine(this->m_mineSweeperButtons.at(minePairCheck));
+                    this->m_mainWindow->displayMine(this->m_mineSweeperButtons.at(minePairCheck).get());
                 }
             }
         }
@@ -380,7 +380,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QMineSweeperButton *ms
         return;
     }
     if (this->m_initialClickFlag) {
-        this->generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msbp));
+        this->generateRandomMinePlacement(msbp);
         this->m_initialClickFlag = false;
         this->m_gameState = GameState::GAME_ACTIVE;
         try {
@@ -403,7 +403,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QMineSweeperButton *ms
 
     } else {
         incrementNumberOfMovesMade();
-        this->m_mainWindow->displayMine(std::make_shared<QMineSweeperButton>(msbp));
+        this->m_mainWindow->displayMine(msbp);
         if (msbp->numberOfSurroundingMines() == 0) {
             startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_BIG_SMILEY);
         } else {
@@ -421,7 +421,7 @@ void GameController::onMineSweeperButtonRightClickReleased(QMineSweeperButton *m
         return;
     }
     if (this->m_initialClickFlag) {
-        generateRandomMinePlacement(std::make_shared<QMineSweeperButton>(msbp));
+        generateRandomMinePlacement(msbp);
         try {
             this->assignAllMines();
             this->determineNeighborMineCounts();

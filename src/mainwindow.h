@@ -62,14 +62,14 @@ public:
     void populateMineField();
     void displayAllMines();
     void resizeResetIcon();
-    void displayMine(std::shared_ptr<QMineSweeperButton> msb);
+    void displayMine(QMineSweeperButton *msb);
     void bindGameController(std::shared_ptr<GameController> gc);
     void bindQMineSweeperIcons(std::shared_ptr<QMineSweeperIcons> qmsiPtr);
     void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw);
     void bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundEffects> qmssePtr);
     void bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr);
     void setResetButtonIcon(const QIcon &icon);
-    void drawNumberOfSurroundingMines(std::shared_ptr<QMineSweeperButton> msb);
+    void drawNumberOfSurroundingMines(QMineSweeperButton *msb);
     void setLanguage(QMineSweeperSettingsLoader::SupportedLanguage newLanguage);
     int xPlacement() const;
     int yPlacement() const;
