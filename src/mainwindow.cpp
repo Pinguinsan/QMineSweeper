@@ -866,17 +866,17 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     this->m_boardResizeUi->lblRows->setText(QS_NUMBER(this->m_gameController->numberOfRows()));
 #if defined(__ANDROID__)
     if (!this->m_boardSizeGeometrySet) {
-        this->m_boardResizeUi->okayButton->setFixedSize(this->m_boardResizeUi->okayButton->size()*4);
-        this->m_boardResizeUi->cancelButton->setFixedSize(this->m_boardResizeUi->cancelButton->size()*4);
+        this->m_boardResizeUi->btnOkay->setFixedSize(this->m_boardResizeUi->btnOkay->size()*4);
+        this->m_boardResizeUi->btnCancel->setFixedSize(this->m_boardResizeUi->btnOkay->size()*4);
         this->m_boardSizeWindow->setFixedHeight(this->m_qDesktopWidget->availableGeometry().height() / 5);
         this->m_boardSizeWindow->setFixedWidth(this->m_qDesktopWidget->availableGeometry().width());
         QFont font;
         font.setPointSize(font.pointSize() + 50);
-        this->m_boardResizeUi->columnsBox->setFont(font);
-        this->m_boardResizeUi->rowsBox->setFont(font);
+        this->m_boardResizeUi->lblColumns->setFont(font);
+        this->m_boardResizeUi->lblRows->setFont(font);
 
-        this->m_boardResizeUi->columnsBox->setFixedSize(this->m_boardResizeUi->columnsBox->size()*4);
-        this->m_boardResizeUi->rowsBox->setFixedSize(this->m_boardResizeUi->rowsBox->size()*4);
+        this->m_boardResizeUi->lblColumns->setFixedSize(this->m_boardResizeUi->lblColumns->size()*4);
+        this->m_boardResizeUi->lblRows->setFixedSize(this->m_boardResizeUi->lblRows->size()*4);
         this->m_boardSizeGeometrySet = true;
     }
 #endif
