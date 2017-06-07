@@ -23,7 +23,7 @@
 #include <memory>
 
 #include "eventtimer.h"
-#include "qminesweepersettingsloader.h"
+#include "qmssettingsloader.h"
 
 namespace Ui
 {
@@ -31,12 +31,12 @@ namespace Ui
     class BoardResizeWindow;
 }
 
-class QMineSweeperButton;
+class QmsButton;
 class GameController;
 class BoardResizeWindow;
-class QMineSweeperIcons;
-class QMineSweeperSoundEffects;
-class QMineSweeperApplicationSettings;
+class QmsIcons;
+class QmsSoundEffects;
+class QmsApplicationSettings;
 class QDesktopWidget;
 class QMediaPlayer;
 class QDialog;
@@ -52,35 +52,35 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
-                           std::shared_ptr<QMineSweeperSoundEffects> gameSoundEffects,
-                           std::shared_ptr<QMineSweeperSettingsLoader> settingsLoader,
+    explicit MainWindow(std::shared_ptr<QmsIcons> gameIcons,
+                           std::shared_ptr<QmsSoundEffects> gameSoundEffects,
+                           std::shared_ptr<QmsSettingsLoader> settingsLoader,
                            std::shared_ptr<GameController> gameController,
                            std::shared_ptr<QDesktopWidget> desktopWidget,
-                           QMineSweeperSettingsLoader::SupportedLanguage initialDisplayLanguage,
+                           QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
                            QWidget *parent = nullptr);
     ~MainWindow();
 
     void populateMineField();
     void displayAllMines();
     void resizeResetIcon();
-    void displayMine(QMineSweeperButton *msb);
+    void displayMine(QmsButton *msb);
     void bindGameController(std::shared_ptr<GameController> gc);
-    void bindQMineSweeperIcons(std::shared_ptr<QMineSweeperIcons> qmsiPtr);
+    void bindQMineSweeperIcons(std::shared_ptr<QmsIcons> qmsiPtr);
     void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw);
-    void bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundEffects> qmssePtr);
-    void bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr);
+    void bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> qmssePtr);
+    void bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoader> qmsslPtr);
     void setResetButtonIcon(const QIcon &icon);
-    void drawNumberOfSurroundingMines(QMineSweeperButton *msb);
-    void setLanguage(QMineSweeperSettingsLoader::SupportedLanguage newLanguage);
+    void drawNumberOfSurroundingMines(QmsButton *msb);
+    void setLanguage(QmsSettingsLoader::SupportedLanguage newLanguage);
     int xPlacement() const;
     int yPlacement() const;
     void centerAndFitWindow();
     bool boardResizeDialogVisible();
 
-    QMineSweeperApplicationSettings collectApplicationSettings() const;
-    std::shared_ptr<QMineSweeperIcons> qmsiPtr() const;
-    std::shared_ptr<QMineSweeperSoundEffects> qmssePtr() const;
+    QmsApplicationSettings collectApplicationSettings() const;
+    std::shared_ptr<QmsIcons> qmsiPtr() const;
+    std::shared_ptr<QmsSoundEffects> qmssePtr() const;
     QString saveStyleSheet() const;
 
 private:
@@ -93,14 +93,14 @@ private:
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
     std::unique_ptr<QMediaPlayer> m_soundEffects;
-    std::shared_ptr<QMineSweeperIcons> m_gameIcons;
-    std::shared_ptr<QMineSweeperSoundEffects> m_gameSoundEffects;
-    std::shared_ptr<QMineSweeperSettingsLoader> m_settingsLoader;
+    std::shared_ptr<QmsIcons> m_gameIcons;
+    std::shared_ptr<QmsSoundEffects> m_gameSoundEffects;
+    std::shared_ptr<QmsSettingsLoader> m_settingsLoader;
     std::shared_ptr<GameController> m_gameController;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
 
 
-    QMineSweeperSettingsLoader::SupportedLanguage m_language;
+    QmsSettingsLoader::SupportedLanguage m_language;
     double m_reductionSizeScaleFactor;
     QString m_saveStyleSheet;
     int m_xPlacement;
@@ -148,7 +148,7 @@ signals:
     void gameResumed();
     void mineDisplayed();
     void winEvent();
-    void mineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msb);
+    void mineSweeperButtonCreated(std::shared_ptr<QmsButton> msb);
 
 public slots:
     void resetResetButtonIcon();

@@ -1,12 +1,12 @@
 /***********************************************************************
-*    qminesweepericons.h:                                              *
+*    qmsicons.h:                                                       *
 *    Class for holding instances of all icons used in QMineSweeper     *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the declarations of a QMineSweeperIcons class     *
-*    QMineSweeperIcons holds instances of all icons used in the game,  *
+*    This file holds the declarations of a QmsIcons class              *
+*    QmsIcons holds instances of all icons used in the game,           *
 *    allowing members to be called to set icons, rather than having to *
 *    use a raw filename string to access the icon on disk              *
 *    The source code is released under the LGPL                        *
@@ -16,18 +16,16 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_QMINESWEEPERICONS_H
-#define QMINESWEEPER_QMINESWEEPERICONS_H
+#ifndef QMINESWEEPER_QMSICONS_H
+#define QMINESWEEPER_QMSICONS_H
 
-#include <QString>
 #include <QIcon>
-#include "qminesweeperstrings.h"
 
-class QMineSweeperIcons
+class QmsIcons
 {
 public:
-    QMineSweeperIcons();
-    ~QMineSweeperIcons();
+    QmsIcons();
+    ~QmsIcons();
 
     const QIcon MINE_ICON_16;
     const QIcon MINE_ICON_24;
@@ -61,4 +59,4 @@ public:
     const QIcon STATUS_ICON_FLAG_X;
 };
 
-#endif // QMINESWEEPER_QMINESWEEPERICON_H
+#endif // QMINESWEEPER_QMSRICONS_H

@@ -1,12 +1,12 @@
 /***********************************************************************
-*    minesweeperbutton.h:                                              *
+*    qmsbutton.h:                                                      *
 *    Custom QPushButton serving as the base for a QMineSweeper button  *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
 *    This file holds the declarations of a custom QPushButton class    *
-*    MineSweeperButton is the base for the game, representing          *
+*    QmsButton is the base for the game, representing                  *
 *    a single mine field object, which houses all relevant information *
 *    The source code is released under the LGPL                        *
 *                                                                      *
@@ -15,8 +15,8 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_MINESWEEPERBUTTON_H
-#define QMINESWEEPER_MINESWEEPERBUTTON_H
+#ifndef QMINESWEEPER_QMSBUTTON_H
+#define QMINESWEEPER_QMSBUTTON_H
 
 #if defined(__ANDROID__)
     #include <QTouchEvent>
@@ -36,21 +36,21 @@
 
 class QMouseEvent;
 class MineCoordinates;
-class QMineSweeperIcons;
+class QmsIcons;
 
-class QMineSweeperButton : public QPushButton
+class QmsButton : public QPushButton
 {
     Q_OBJECT
 public:
-    QMineSweeperButton() = delete;
-    QMineSweeperButton(int columnIndex, int rowIndex, QWidget *parent);
-    QMineSweeperButton(const QMineSweeperButton &other);
-    QMineSweeperButton(QMineSweeperButton *other);
-    QMineSweeperButton(QMineSweeperButton &&other);
-    QMineSweeperButton(std::shared_ptr<QMineSweeperButton> &other);
-    virtual ~QMineSweeperButton();
+    QmsButton() = delete;
+    QmsButton(int columnIndex, int rowIndex, QWidget *parent);
+    QmsButton(const QmsButton &other);
+    QmsButton(QmsButton *other);
+    QmsButton(QmsButton &&other);
+    QmsButton(std::shared_ptr<QmsButton> &other);
+    virtual ~QmsButton();
 
-    bool operator==(const QMineSweeperButton &other) const;
+    bool operator==(const QmsButton &other) const;
     bool eventFilter(QObject *pObject, QEvent *pEvent) override;
     //int heightForWidth(int width) const override;
 
@@ -76,12 +76,12 @@ public:
     void setBlockClicks(bool blockClicks);
     bool isBlockingClicks() const;
 signals:
-    void leftClicked(QMineSweeperButton *msbp);
-    void rightClicked(QMineSweeperButton *msbp);
-    void leftClickReleased(QMineSweeperButton *msbp);
-    void longLeftClickReleased(QMineSweeperButton *msbp);
-    void rightClickReleased(QMineSweeperButton *msbp);
-    void longRightClickReleased(QMineSweeperButton *msbp);
+    void leftClicked(QmsButton *msbp);
+    void rightClicked(QmsButton *msbp);
+    void leftClickReleased(QmsButton *msbp);
+    void longLeftClickReleased(QmsButton *msbp);
+    void rightClickReleased(QmsButton *msbp);
+    void longRightClickReleased(QmsButton *msbp);
 
 protected slots:
     void mousePressEvent(QMouseEvent *mouseEvent) override;
@@ -103,4 +103,4 @@ private:
     void initialize();
 };
 
-#endif //QMINESWEEPER_MINESWEEPERBUTTON_H
+#endif //QMINESWEEPER_QMSBUTTON_H

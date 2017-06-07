@@ -29,30 +29,30 @@ TEMPLATE = app
 HEADERS += src/mainwindow.h \
            src/gamecontroller.h \
            src/minecoordinates.h \
-           src/qminesweepericons.h \
            src/minecoordinatehash.h \
            src/eventtimer.h \
-           src/qminesweeperutilities.h \
-           src/qminesweepersoundeffects.h \
-           src/qminesweeperstrings.h \
            src/boardresizewindow.h \
-           src/qminesweeperbutton.h \
-    src/qminesweepersettingsloader.h \
     src/globaldefinitions.h \
-    src/qminesweeperapplicationsettings.h
+    src/qmsapplicationsettings.h \
+    src/qmsbutton.h \
+    src/qmsicons.h \
+    src/qmssettingsloader.h \
+    src/qmssoundeffects.h \
+    src/qmsstrings.h \
+    src/qmsutilities.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
            src/gamecontroller.cpp \
            src/minecoordinates.cpp \
-           src/qminesweepericons.cpp \
-           src/qminesweeperutilities.cpp \
-           src/qminesweepersoundeffects.cpp \
-           src/qminesweeperstrings.cpp \
-           src/qminesweeperbutton.cpp \
-    src/qminesweepersettingsloader.cpp \
     src/boardresizewindow.cpp \
-    src/qminesweeperapplicationsettings.cpp
+    src/qmsapplicationsettings.cpp \
+    src/qmsbutton.cpp \
+    src/qmsicons.cpp \
+    src/qmssettingsloader.cpp \
+    src/qmssoundeffects.cpp \
+    src/qmsstrings.cpp \
+    src/qmsutilities.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc \

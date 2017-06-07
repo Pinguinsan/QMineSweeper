@@ -1,12 +1,12 @@
 /***********************************************************************
-*    qminesweeperutilities.cpp                                         *
+*    qmsutilities.cpp                                                  *
 *    Namespace for general utilities used by classes in QMineSweeper   *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the implementation for a QMineSweeperUtilities    *
-*    namespace. QMineSweeperUtilities holds utilities shared by all    *
+*    This file holds the implementation for a QmsUtilities             *
+*    namespace. QmsUtilities holds utilities shared by all             *
 *    classes, such a delay functions, random functions, etc            *
 *    The source code is released under the LGPL                        *
 *                                                                      *
@@ -15,13 +15,13 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qminesweeperutilities.h"
+#include "qmsutilities.h"
 #include "globaldefinitions.h"
 
 #include <QDateTime>
 #include <QDir>
 
-namespace QMineSweeperUtilities
+namespace QmsUtilities
 {
 
     static QString installDirectory{""};

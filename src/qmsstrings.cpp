@@ -1,5 +1,5 @@
 /***********************************************************************
-*    qminesweeperstrings.cpp:                                          *
+*    qmsstrings.cpp:                                          *
 *    Class for holding instances of all strings used in QMineSweeper   *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
@@ -16,9 +16,9 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qminesweeperstrings.h"
+#include "qmsstrings.h"
 
-namespace QMineSweeperStrings
+namespace QmsStrings
 {
     const char *MAIN_WINDOW_TITLE{"QMineSweeper"};
     const char *GENERIC_ERROR_MESSAGE{"Something has gone terribly wrong and the application must exit"};
@@ -36,7 +36,7 @@ namespace QMineSweeperStrings
     const char *UNCOVERED_NON_MINE_STYLESHEET{"color: rgb(200, 170, 255); background-color: rgb(200, 170, 255);"};
     const char *UNCOVERED_MINE_STYLESHEET{"color: rgb(255, 0, 0); background-color: rgb(255, 0, 0);"};
     const char *LONG_CLICKED_MINE_STYLESHEET{"color: rgb(0, 255, 0); background-color: rgb(0, 255, 0);"};
-    const char *CONFIGURATION_FILE_NAME{"qminesweeper.config"};
+    const char *CONFIGURATION_FILE_NAME{"qms.config"};
     #if (defined(_WIN32) || defined(__CYGWIN__))
         const char *DEFAULT_CONFIGUATION_FILE{""};
     #else
@@ -64,14 +64,14 @@ namespace QMineSweeperStrings
     const char *SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};
     const char *JAPANESE_TRANSLATION_PATH{":/translations/japanese.qm"};
 
-    const char *MINE_ICON_16_STRING{":/mine-icons/png/mine-icons/16-qminesweeper.png"};
-    const char *MINE_ICON_24_STRING{":/mine-icons/png/mine-icons/24-qminesweeper.png"};
-    const char *MINE_ICON_32_STRING{":/mine-icons/png/mine-icons/32-qminesweeper.png"};
-    const char *MINE_ICON_48_STRING{":/mine-icons/png/mine-icons/48-qminesweeper.png"};
-    const char *MINE_ICON_64_STRING{":/mine-icons/png/mine-icons/64-qminesweeper.png"};
-    const char *MINE_ICON_72_STRING{":/mine-icons/png/mine-icons/72-qminesweeper.png"};
-    const char *MINE_ICON_96_STRING{":/mine-icons/png/mine-icons/96-qminesweeper.png"};
-    const char *MINE_ICON_128_STRING{":/mine-icons/png/mine-icons/128-qminesweeper.png"};
+    const char *MINE_ICON_16_STRING{":/mine-icons/png/mine-icons/16-qms.png"};
+    const char *MINE_ICON_24_STRING{":/mine-icons/png/mine-icons/24-qms.png"};
+    const char *MINE_ICON_32_STRING{":/mine-icons/png/mine-icons/32-qms.png"};
+    const char *MINE_ICON_48_STRING{":/mine-icons/png/mine-icons/48-qms.png"};
+    const char *MINE_ICON_64_STRING{":/mine-icons/png/mine-icons/64-qms.png"};
+    const char *MINE_ICON_72_STRING{":/mine-icons/png/mine-icons/72-qms.png"};
+    const char *MINE_ICON_96_STRING{":/mine-icons/png/mine-icons/96-qms.png"};
+    const char *MINE_ICON_128_STRING{":/mine-icons/png/mine-icons/128-qms.png"};
     const char *FACE_ICON_BIG_SMILEY_STRING{":/face-icons/png/face-icons/big-smiley-face.png"};
     const char *FACE_ICON_CRAZY_STRING{":/face-icons/png/face-icons/crazy-face.png"};
     const char *FACE_ICON_FROWNY_STRING{":/face-icons/png/face-icons/frowny-face.png"};

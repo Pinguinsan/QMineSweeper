@@ -1,12 +1,12 @@
 /***********************************************************************
-*    qminesweepersoundeffects.h:                                       *
+*    qmssoundeffects.h:                                                *
 *    Class for holding instances of all sounds used in QMineSweeper    *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the declarations of a QMineSweeperSoundEffects    *
-*    class. QMineSweeperSoundEffects holds instances of all sound      *
+*    This file holds the declarations of a QmsSoundEffects             *
+*    class. QmsSoundEffects holds instances of all sound               *
 *    effects used in the game, allowing members to be called to        *
 *    play sounds, rather than having to use a raw filename string to   *
 *    access the sound effect on disk, thus allowing low-latency effects*
@@ -17,22 +17,21 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_QMINESWEEPERSOUNDEFFECTS_H
-#define QMINESWEEPER_QMINESWEEPERSOUNDEFFECTS_H
+#ifndef QMINESWEEPER_QMSSOUNDEFFECTS_H
+#define QMINESWEEPER_QMSSOUNDEFFECTS_H
 
-#include <QSoundEffect>
+
 #include <QMediaPlayer>
-#include <QString>
-#include <QUrl>
+class QString;
 
-#include "qminesweeperutilities.h"
-#include "qminesweeperstrings.h"
+#include "qmsutilities.h"
+#include "qmsstrings.h"
 
-class QMineSweeperSoundEffects
+class QmsSoundEffects
 {
 public:
-    QMineSweeperSoundEffects();
-    ~QMineSweeperSoundEffects();
+    QmsSoundEffects();
+    ~QmsSoundEffects();
 
     QMediaPlayer explosionEffect;
 
@@ -43,4 +42,4 @@ private:
 
 };
 
-#endif //QMINESWEEPER_QMINESWEEPERSOUNDEFFECTS_H
+#endif //QMINESWEEPER_QMSSOUNDEFFECTS_H

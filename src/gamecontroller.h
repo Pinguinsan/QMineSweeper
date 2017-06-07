@@ -32,7 +32,7 @@
 
 #include "minecoordinatehash.h"
 
-class QMineSweeperButton;
+class QmsButton;
 class MineCoordinates;
 class MainWindow;
 class QString;
@@ -43,7 +43,7 @@ enum class GameState {
     GAME_PAUSED
 };
 
-using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QMineSweeperButton>, MineCoordinateHash>;
+using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
 
 class GameController : public QObject
 {
@@ -74,8 +74,8 @@ public:
     void startResetIconTimer(unsigned int howLong, const QIcon &icon) const;
 
     ButtonContainer &mineSweeperButtons();
-    std::shared_ptr<QMineSweeperButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
-    std::shared_ptr<QMineSweeperButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
+    std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
+    std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
     bool coordinatePairExists(const MineCoordinates &coordinatesToCheck) const;
     bool mineInBounds(const MineCoordinates &coordinatesToCheck) const;
     bool mineInBounds(int columnIndex, int rowIndex) const;
@@ -90,11 +90,11 @@ public:
     void clearRandomMinePlacement();
     void assignAllMines();
     void determineNeighborMineCounts();
-    void generateRandomMinePlacement(QMineSweeperButton *msb);
-    void checkForOtherEmptyMines(QMineSweeperButton *msb);
+    void generateRandomMinePlacement(QmsButton *msb);
+    void checkForOtherEmptyMines(QmsButton *msb);
 
-    bool isCornerButton(QMineSweeperButton *msb) const;
-    bool isEdgeButton(QMineSweeperButton *msb) const;
+    bool isCornerButton(QmsButton *msb) const;
+    bool isEdgeButton(QmsButton *msb) const;
     GameState gameState() const;
     int totalButtonCount() const;
 
@@ -114,13 +114,13 @@ public:
 
 
 public slots:
-    void onMineSweeperButtonCreated(std::shared_ptr<QMineSweeperButton> msbp);
-    void onMineSweeperButtonLeftClicked(QMineSweeperButton *msbp);
-    void onMineSweeperButtonRightClicked(QMineSweeperButton *msbp);
-    void onMineSweeperButtonLeftClickReleased(QMineSweeperButton *msbp);
-    void onMineSweeperButtonRightClickReleased(QMineSweeperButton *msbp);
-    void onMineSweeperButtonLongLeftClickReleased(QMineSweeperButton *msbp);
-    void onMineSweeperButtonLongRightClickReleased(QMineSweeperButton *msbp);
+    void onMineSweeperButtonCreated(std::shared_ptr<QmsButton> msbp);
+    void onMineSweeperButtonLeftClicked(QmsButton *msbp);
+    void onMineSweeperButtonRightClicked(QmsButton *msbp);
+    void onMineSweeperButtonLeftClickReleased(QmsButton *msbp);
+    void onMineSweeperButtonRightClickReleased(QmsButton *msbp);
+    void onMineSweeperButtonLongLeftClickReleased(QmsButton *msbp);
+    void onMineSweeperButtonLongRightClickReleased(QmsButton *msbp);
     void onGameReset();
     void onContextMenuActive();
     void onContextMenuInactive();

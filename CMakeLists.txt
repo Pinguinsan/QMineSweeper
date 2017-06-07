@@ -39,6 +39,7 @@ set (QMINESWEEPER_SOURCES "${SOURCE_ROOT}/src/main.cpp"
                           "${SOURCE_ROOT}/src/qminesweeperstrings.cpp"
                           "${SOURCE_ROOT}/src/qminesweeperbutton.cpp"
                           "${SOURCE_ROOT}/src/qminesweepersettingsloader.cpp"
+                          "${SOURCE_ROOT}/src/qminesweeperapplicationsettings.cpp"
                           "${SOURCE_ROOT}/src/boardresizewindow.cpp")
 
     
@@ -54,6 +55,7 @@ set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
                           "${SOURCE_ROOT}/src/boardresizewindow.h"
                           "${SOURCE_ROOT}/src/qminesweeperbutton.h"
                           "${SOURCE_ROOT}/src/qminesweepersettingsloader.h"
+                          "${SOURCE_ROOT}/src/qminesweeperapplicationsettings.h"
                           "${SOURCE_ROOT}/src/globaldefinitions.h")
 
 

@@ -5,8 +5,8 @@
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the declarations for a QMineSweeperUtilities      *
-*    namespace. QMineSweeperUtilities holds utilities shared by all    *
+*    This file holds the declarations for a QmsUtilities               *
+*    namespace. QmsUtilities holds utilities shared by all             *
 *    classes, such a delay functions, random functions, etc            *
 *    The source code is released under the LGPL                        *
 *                                                                      *
@@ -15,14 +15,15 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_QMINESWEEPERUTILITIES_H
-#define QMINESWEEPER_QMINESWEEPERUTILITIES_H
+#ifndef QMINESWEEPER_QMSUTILITIES_H
+#define QMINESWEEPER_QMSUTILITIES_H
 
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <memory>
 #include <cstdlib>
+
 #include <ctime>
 #include <vector>
 #include <tuple>
@@ -33,7 +34,7 @@
 
 #include <QString>
 
-namespace QMineSweeperUtilities
+namespace QmsUtilities
 {
     QString getUserConfigurationFilePath();
     QString getConfigurationFilePath();
@@ -264,4 +265,4 @@ namespace QMineSweeperUtilities
     std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip);
 }
 
-#endif //QMINESWEEPER_QMINESWEEPERUTILITIES_H
+#endif //QMINESWEEPER_QMSUTILITIES_H

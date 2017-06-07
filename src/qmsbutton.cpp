@@ -15,15 +15,15 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qminesweeperbutton.h"
-
-#include "qminesweepericons.h"
+#include "qmsbutton.h"
+#include "qmsicons.h"
+#include "qmsutilities.h"
 #include "mainwindow.h"
 #include "minecoordinates.h"
-#include "qminesweeperutilities.h"
 #include "gamecontroller.h"
+#include "qmsstrings.h"
 
-QMineSweeperButton::QMineSweeperButton(int columnIndex, int rowIndex, QWidget *parent) :
+QmsButton::QmsButton(int columnIndex, int rowIndex, QWidget *parent) :
     QPushButton{parent},
     m_hasMine{false},
     m_hasFlag{false},
@@ -40,7 +40,7 @@ QMineSweeperButton::QMineSweeperButton(int columnIndex, int rowIndex, QWidget *p
    this->installEventFilter(this);
 }
 
-QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
+QmsButton::QmsButton(QmsButton *other) :
     QPushButton{static_cast<QWidget*>(other->parent())},
     m_hasMine{other->hasMine()},
     m_hasFlag{other->hasFlag()},
@@ -56,7 +56,7 @@ QMineSweeperButton::QMineSweeperButton(QMineSweeperButton *other) :
     this->initialize();
 }
 
-QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
+QmsButton::QmsButton(QmsButton &&other) :
     QPushButton{static_cast<QWidget*>(std::move(other.parent()))},
     m_hasMine{std::move(other.hasMine())},
     m_hasFlag{std::move(other.hasFlag())},
@@ -72,7 +72,7 @@ QMineSweeperButton::QMineSweeperButton(QMineSweeperButton &&other) :
     this->initialize();
 }
 
-QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& other) :
+QmsButton::QmsButton(std::shared_ptr<QmsButton>& other) :
     QPushButton{static_cast<QWidget*>(other->parent())},
     m_hasMine{std::move(other->m_hasMine)},
     m_hasFlag{std::move(other->m_hasFlag)},
@@ -88,7 +88,7 @@ QMineSweeperButton::QMineSweeperButton(std::shared_ptr<QMineSweeperButton>& othe
     this->initialize();
 }
 
-void QMineSweeperButton::initialize()
+void QmsButton::initialize()
 {
     this->installEventFilter(this);
 }
@@ -100,7 +100,7 @@ int QMineSweeperButton::heightForWidth(int width) const
 }
 */
 
-bool QMineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
+bool QmsButton::eventFilter(QObject *pObject, QEvent *pEvent)
 {
     if (pEvent->type() == QEvent::KeyPress)  {
         QKeyEvent* pKeyEvent{static_cast<QKeyEvent*>(pEvent)};
@@ -114,12 +114,12 @@ bool QMineSweeperButton::eventFilter(QObject *pObject, QEvent *pEvent)
     return true;
 }
 
-bool QMineSweeperButton::operator==(const QMineSweeperButton &other) const
+bool QmsButton::operator==(const QmsButton &other) const
 {
     return ((this->m_columnIndex == other.columnIndex()) && (this->m_rowIndex == other.rowIndex()));
 }
 
-void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
+void QmsButton::mousePressEvent(QMouseEvent *mouseEvent)
 {
     if (this->m_blockClicks) {
         return;
@@ -140,28 +140,28 @@ void QMineSweeperButton::mousePressEvent(QMouseEvent *mouseEvent)
     QTimer::singleShot(GameController::LONG_CLICK_THRESHOLD(), this, SLOT(doInformLongClick()));
 }
 
-void QMineSweeperButton::setBlockClicks(bool blockClicks)
+void QmsButton::setBlockClicks(bool blockClicks)
 {
     this->m_blockClicks = blockClicks;
 }
 
-bool QMineSweeperButton::isBlockingClicks() const
+bool QmsButton::isBlockingClicks() const
 {
     return this->m_blockClicks;
 }
 
-void QMineSweeperButton::doInformLongClick()
+void QmsButton::doInformLongClick()
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     if (this->isDown()) {
         this->setStyleSheet(LONG_CLICKED_MINE_STYLESHEET);
         this->m_isBeingLongClicked = true;
     }
 }
 
-void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
+void QmsButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     if (this->m_blockClicks) {
         return;
     }
@@ -192,70 +192,70 @@ void QMineSweeperButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
 }
 
 
-void QMineSweeperButton::setHasMine(bool hasMine)
+void QmsButton::setHasMine(bool hasMine)
 {
     this->m_hasMine = hasMine;
 }
 
-void QMineSweeperButton::setHasQuestionMark(bool hasQuestionMark)
+void QmsButton::setHasQuestionMark(bool hasQuestionMark)
 {
     this->m_hasQuestionMark = hasQuestionMark;
 }
 
-void QMineSweeperButton::setHasFlag(bool hasFlag)
+void QmsButton::setHasFlag(bool hasFlag)
 {
     this->m_hasFlag = hasFlag;
 }
 
-void QMineSweeperButton::setIsRevealed(bool isRevealed)
+void QmsButton::setIsRevealed(bool isRevealed)
 {
     this->m_isRevealed = isRevealed;
 }
 
-bool QMineSweeperButton::isRevealed() const
+bool QmsButton::isRevealed() const
 {
     return this->m_isRevealed;
 }
 
-bool QMineSweeperButton::hasMine() const
+bool QmsButton::hasMine() const
 {
     return this->m_hasMine;
 }
 
-bool QMineSweeperButton::hasFlag() const
+bool QmsButton::hasFlag() const
 {
     return m_hasFlag;
 }
 
-bool QMineSweeperButton::hasQuestionMark() const
+bool QmsButton::hasQuestionMark() const
 {
     return m_hasQuestionMark;
 }
 
-int QMineSweeperButton::columnIndex() const
+int QmsButton::columnIndex() const
 {
     return this->m_columnIndex;
 }
 
-int QMineSweeperButton::rowIndex() const
+int QmsButton::rowIndex() const
 {
     return this->m_rowIndex;
 }
 
-std::shared_ptr<MineCoordinates> QMineSweeperButton::mineCoordinates() const
+std::shared_ptr<MineCoordinates> QmsButton::mineCoordinates() const
 {
     return std::make_shared<MineCoordinates>(this->m_columnIndex, this->m_rowIndex);
 }
 
-int QMineSweeperButton::numberOfSurroundingMines() const
+int QmsButton::numberOfSurroundingMines() const
 {
     return this->m_numberOfSurroundingMines;
 }
 
-void QMineSweeperButton::setNumberOfSurroundingMines(int numberOfSurroundingMines)
+void QmsButton::setNumberOfSurroundingMines(int numberOfSurroundingMines)
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     if (numberOfSurroundingMines < 0) {
         throw std::runtime_error(NUMBER_OF_SURROUND_MINES_NEGATIVE_STRING + toString(numberOfSurroundingMines) + LESS_THAN_ZERO_STRING);
     } else if (numberOfSurroundingMines > 8) {
@@ -265,7 +265,7 @@ void QMineSweeperButton::setNumberOfSurroundingMines(int numberOfSurroundingMine
     }
 }
 
-QMineSweeperButton::~QMineSweeperButton()
+QmsButton::~QmsButton()
 {
 
 }

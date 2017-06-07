@@ -28,16 +28,16 @@
 #include <QTranslator>
 #include <QSettings>
 
-#include "qminesweeperbutton.h"
-#include "qminesweepericons.h"
+#include "qmsbutton.h"
+#include "qmsicons.h"
 #include "gamecontroller.h"
 #include "boardresizewindow.h"
-#include "qminesweepersoundeffects.h"
-#include "qminesweeperutilities.h"
-#include "qminesweeperstrings.h"
-#include "qminesweepersettingsloader.h"
+#include "qmssoundeffects.h"
+#include "qmsutilities.h"
+#include "qmsstrings.h"
+#include "qmssettingsloader.h"
 #include "globaldefinitions.h"
-#include "qminesweeperapplicationsettings.h"
+#include "qmsapplicationsettings.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -65,12 +65,12 @@
 /* MainWindow() : Constructor, passing in shared_ptrs to all of
  * the relevant media and logic controllers. All UI stuff if initialized and
  * relevant events are hooked (QObject::this->connect()) to set up the game to play */
-MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
-                       std::shared_ptr<QMineSweeperSoundEffects> gameSoundEffects,
-                       std::shared_ptr<QMineSweeperSettingsLoader> settingsLoader,
+MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
+                       std::shared_ptr<QmsSoundEffects> gameSoundEffects,
+                       std::shared_ptr<QmsSettingsLoader> settingsLoader,
                        std::shared_ptr<GameController> gameController,
                        std::shared_ptr<QDesktopWidget> desktopWidget,
-                       QMineSweeperSettingsLoader::SupportedLanguage initialDisplayLanguage,
+                       QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
                        QWidget *parent) :
     QMainWindow{parent},
     m_eventTimer{new QTimer{}},
@@ -95,7 +95,7 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
     m_tempPauseFlag{false},
     m_boardSizeGeometrySet{false}
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     this->m_ui->setupUi(this);
     this->setLanguage(this->m_language);
     this->m_boardResizeUi->setupUi(this->m_boardSizeWindow.get());
@@ -183,9 +183,9 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
  * This method collects all of the application settings that may or may not
  * have been changed throughout the course of the gameplay, for purpose of
  * passing them to QMineSweeperSettingsLoader to write them to peristant storage. */
-QMineSweeperApplicationSettings MainWindow::collectApplicationSettings() const
+QmsApplicationSettings MainWindow::collectApplicationSettings() const
 {
-    QMineSweeperApplicationSettings returnSettings;
+    QmsApplicationSettings returnSettings;
     returnSettings.setNumberOfColumns(this->m_gameController->numberOfColumns());
     returnSettings.setNumberOfRows(this->m_gameController->numberOfRows());
     return returnSettings;
@@ -195,21 +195,21 @@ QMineSweeperApplicationSettings MainWindow::collectApplicationSettings() const
  * a button click on the main UI or from a configuration file).
  * First checks if the language is already set to the passed in language
  * parameter, and if it is not, sets the language and retranslates the UI*/
-void MainWindow::setLanguage(QMineSweeperSettingsLoader::SupportedLanguage language)
+void MainWindow::setLanguage(QmsSettingsLoader::SupportedLanguage language)
 {
     //TODO: Retranslate all non-ui set strings
     if (this->m_language == language) {
-        LOG_DEBUG() << QString{"Attempted to set language to %1, but that language is already loaded"}.arg(QMineSweeperSettingsLoader::languageToString(language));
+        LOG_DEBUG() << QString{"Attempted to set language to %1, but that language is already loaded"}.arg(QmsSettingsLoader::languageToString(language));
     } else {
         const char *targetTranslationFile{};
-        if (language == QMineSweeperSettingsLoader::SupportedLanguage::English) {
-            targetTranslationFile = QMineSweeperStrings::ENGLISH_TRANSLATION_PATH;
-        } else if (language == QMineSweeperSettingsLoader::SupportedLanguage::French) {
-            targetTranslationFile = QMineSweeperStrings::FRENCH_TRANSLATION_PATH;
-        } else if (language == QMineSweeperSettingsLoader::SupportedLanguage::Spanish) {
-            targetTranslationFile = QMineSweeperStrings::SPANISH_TRANSLATION_PATH;
-        } else if (language == QMineSweeperSettingsLoader::SupportedLanguage::Japanese) {
-            targetTranslationFile = QMineSweeperStrings::JAPANESE_TRANSLATION_PATH;
+        if (language == QmsSettingsLoader::SupportedLanguage::English) {
+            targetTranslationFile = QmsStrings::ENGLISH_TRANSLATION_PATH;
+        } else if (language == QmsSettingsLoader::SupportedLanguage::French) {
+            targetTranslationFile = QmsStrings::FRENCH_TRANSLATION_PATH;
+        } else if (language == QmsSettingsLoader::SupportedLanguage::Spanish) {
+            targetTranslationFile = QmsStrings::SPANISH_TRANSLATION_PATH;
+        } else if (language == QmsSettingsLoader::SupportedLanguage::Japanese) {
+            targetTranslationFile = QmsStrings::JAPANESE_TRANSLATION_PATH;
         } else {
             LOG_DEBUG() << "Language action checked, but it was not a known QAction (this should never happen)";
             return;
@@ -231,13 +231,13 @@ void MainWindow::onLanguageSelected(bool checked)
     checkedAction->dumpObjectTree();
     checkedAction->dumpObjectInfo();
     if (checkedAction == this->m_ui->actionEnglish) {
-        this->setLanguage(QMineSweeperSettingsLoader::SupportedLanguage::English);
+        this->setLanguage(QmsSettingsLoader::SupportedLanguage::English);
     } else if (checkedAction == this->m_ui->actionFrench) {
-        this->setLanguage(QMineSweeperSettingsLoader::SupportedLanguage::French);
+        this->setLanguage(QmsSettingsLoader::SupportedLanguage::French);
     } else if (checkedAction == this->m_ui->actionSpanish) {
-        this->setLanguage(QMineSweeperSettingsLoader::SupportedLanguage::Spanish);
+        this->setLanguage(QmsSettingsLoader::SupportedLanguage::Spanish);
     } else if (checkedAction == this->m_ui->actionJapanese) {
-        this->setLanguage(QMineSweeperSettingsLoader::SupportedLanguage::Japanese);
+        this->setLanguage(QmsSettingsLoader::SupportedLanguage::Japanese);
     } else {
         LOG_DEBUG() << "Language action checked, but it was not a known QAction (this should never happen)";
     }
@@ -278,7 +278,7 @@ void MainWindow::hideEvent(QHideEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     (void)event;
-    QMineSweeperSettingsLoader::saveApplicationSettings(this->collectApplicationSettings());
+    QmsSettingsLoader::saveApplicationSettings(this->collectApplicationSettings());
     /*
     emit(gamePaused());
     QMessageBox::StandardButton userReply;
@@ -313,13 +313,13 @@ void MainWindow::onCustomDialogClosed()
  * a mine was correctly marked, red x if a flag was incorrectly marked, etc */
 void MainWindow::onGameWon()
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_BIG_SMILEY);
     this->m_gameController->setGameOver(true);
 
     for (auto &it : this->m_gameController->mineSweeperButtons()) {
-        std::shared_ptr<QMineSweeperButton> tempMsb{it.second};
+        std::shared_ptr<QmsButton> tempMsb{it.second};
         if(tempMsb->hasMine()) {
             if (tempMsb->hasFlag()) {
                 tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
@@ -337,7 +337,7 @@ void MainWindow::onGameWon()
     }
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
         for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
-            std::shared_ptr<QMineSweeperButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
+            std::shared_ptr<QmsButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
             if(tempMsb->hasMine()) {
                 if (tempMsb->hasFlag()) {
                     tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
@@ -433,7 +433,7 @@ void MainWindow::onGameResumed()
  * of surrounding mines is drawn (the push button icon is set to the correct number
  * of surrounding mines), then a mineDisplayed() signal is emitted, to inform anything
  * connected that a mine is being displayed, then recursively check for other empty mines */
-void MainWindow::displayMine(QMineSweeperButton* msb)
+void MainWindow::displayMine(QmsButton* msb)
 {
     drawNumberOfSurroundingMines(msb);
     msb->setFlat(true);
@@ -453,7 +453,7 @@ void MainWindow::populateMineField()
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
         for (int columnIndex = 0; columnIndex <this->m_gameController->numberOfColumns(); columnIndex++) {
             this->m_gameController->addMineSweeperButton(columnIndex, rowIndex);
-            std::shared_ptr<QMineSweeperButton> tempPtr{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
+            std::shared_ptr<QmsButton> tempPtr{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
             this->m_ui->mineFrameGridLayout->addWidget(tempPtr.get(), rowIndex, columnIndex, 1, 1);
             tempPtr->setFixedSize(getMaxMineSize());
             emit(mineSweeperButtonCreated(tempPtr));
@@ -485,7 +485,7 @@ void MainWindow::invalidateSizeCaches()
  * size scale factor (platform dependant), and the overall size of the board */
 QSize MainWindow::getIconReductionSize()
 {
-    using namespace QMineSweeperUtilities;
+    using namespace QmsUtilities;
     if (!this->m_iconReductionSizeCacheIsValid) {
         int reductionSize{roundIntuitively(this->m_reductionSizeScaleFactor - (this->m_gameController->totalButtonCount() + this->m_gameController->DEFAULT_NUMBER_OF_MINES()))};
         if (reductionSize <= 0) {
@@ -505,7 +505,7 @@ QSize MainWindow::getIconReductionSize()
  * It is dependant on the available geometry of the screen, as well as the total number of mines */
 QSize MainWindow::getMaxMineSize()
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     if (!this->m_maxMineSizeCacheIsValid) {
         int defaultMineSize{this->m_qDesktopWidget->availableGeometry().height()/this->s_DEFAULT_MINE_SIZE_SCALE_FACTOR};
         this->m_currentDefaultMineSize = QSize{defaultMineSize, defaultMineSize};
@@ -580,12 +580,12 @@ void MainWindow::setResetButtonIcon(const QIcon &icon)
  * flags, to show the user where they made mistakes or were correct */
 void MainWindow::displayAllMines()
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_FROWNY);
     this->m_gameController->setGameOver(true);
     for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
         for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
-            std::shared_ptr<QMineSweeperButton> tempMsb = this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex);
+            std::shared_ptr<QmsButton> tempMsb = this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex);
             if(tempMsb->hasMine()) {
                 if (tempMsb->hasFlag()) {
                     tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
@@ -618,7 +618,7 @@ QString MainWindow::saveStyleSheet() const
  * via a late binding dependancy-injection function. This is a simple
  * member access function for this shared_ptr, in case it needs to be accessed
  * by an object that does not obtain this shared_ptr */
-std::shared_ptr<QMineSweeperIcons> MainWindow::qmsiPtr() const
+std::shared_ptr<QmsIcons> MainWindow::qmsiPtr() const
 {
     return this->m_gameIcons;
 }
@@ -629,7 +629,7 @@ std::shared_ptr<QMineSweeperIcons> MainWindow::qmsiPtr() const
  * via a late binding dependancy-injection function. This is a simple
  * member access function for this shared_ptr, in case it needs to be accessed
  * by an object that does not obtain this shared_ptr */
-std::shared_ptr<QMineSweeperSoundEffects> MainWindow::qmssePtr() const
+std::shared_ptr<QmsSoundEffects> MainWindow::qmssePtr() const
 {
     return this->m_gameSoundEffects;
 }
@@ -641,7 +641,7 @@ std::shared_ptr<QMineSweeperSoundEffects> MainWindow::qmssePtr() const
  * the doGameReset() method. If not, a gameResumed() signal is emitted */
 void MainWindow::onResetButtonClicked()
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     emit(gamePaused());
     if (!this->m_gameController->gameOver() && !this->m_gameController->initialClickFlag()) {
         QMessageBox::StandardButton userReply;
@@ -662,11 +662,11 @@ void MainWindow::onResetButtonClicked()
  * resetGame() signal is emitted and the reset button is set to default */
 void MainWindow::doGameReset()
 {
-    using namespace QMineSweeperStrings;
+    using namespace QmsStrings;
     this->m_boardSizeWindow->hide();
     for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
         for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-            std::shared_ptr<QMineSweeperButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
+            std::shared_ptr<QmsButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
             tempMsb->setChecked(false);
             tempMsb->setFlat(false);
             tempMsb->setStyleSheet(this->m_saveStyleSheet);
@@ -726,8 +726,8 @@ void MainWindow::startUserIdleTimer()
  * If the game is stopped, the timer is not updated, and the "start new game" dialog is shown instead */
 void MainWindow::updateVisibleGameTimer()
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     QString gameTime{""};
     if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
         if (this->m_playTimer->isPaused()) {
@@ -773,7 +773,7 @@ void MainWindow::updateUserIdleTimer()
  * zeroes are requested (ie getLCDPadding(2) returns "00") */
 std::string MainWindow::getLCDPadding(uint8_t howMuch)
 {
-    return QMineSweeperUtilities::getPadding(howMuch, '0');
+    return QmsUtilities::getPadding(howMuch, '0');
 }
 
 /* updateNumberOfMinesLCD() : The right LCD on the MainWindow shows how
@@ -785,8 +785,8 @@ std::string MainWindow::getLCDPadding(uint8_t howMuch)
  * added before the number is displayed */
 void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     if (numberOfMines > 999) {
         this->m_ui->minesRemaining->display(LCD_OVERFLOW_STRING);
     } else if (numberOfMines <= 0) {
@@ -807,8 +807,8 @@ void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
  * against powers of 10, and the correct number of 0's are added before the number is displayed */
 void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     if (numberOfMovesMade > 999) {
         this->m_ui->numberOfMoves->display(LCD_OVERFLOW_STRING);
     } else if (numberOfMovesMade <= 0) {
@@ -828,7 +828,7 @@ void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
  * is re-emitted by MainWindow, indicating that all UI elements of a game over are taken care of */
 void MainWindow::onMineExplosionEventTriggered()
 {
-    using namespace QMineSweeperUtilities;
+    using namespace QmsUtilities;
     displayAllMines();
     if (this->m_soundEnabled) {
         this->m_gameSoundEffects->explosionEffect.play();
@@ -854,8 +854,8 @@ void MainWindow::onActionMuteSoundChecked(bool checked)
  * BoardSize form is set. If it is true, the geometry is not set. */
 void MainWindow::onChangeBoardSizeActionTriggered()
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     this->setEnabled(false);
     this->m_boardResizeUi->statusBar->showMessage(QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING,
                                                                    this->m_gameController->numberOfColumns(),
@@ -916,8 +916,8 @@ void MainWindow::onBoardResizeActionClicked()
  * running game is reactivated, including all player timers */
 void MainWindow::onBoardResizeOkayButtonClicked()
 {
-    using namespace QMineSweeperUtilities;
-    using namespace QMineSweeperStrings;
+    using namespace QmsUtilities;
+    using namespace QmsStrings;
     this->setEnabled(true);
     this->m_boardSizeWindow->hide();
     int maybeNewColumns{STRING_TO_INT(this->m_boardResizeUi->lblColumns->text().toStdString().c_str())};
@@ -998,7 +998,7 @@ void MainWindow::bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw)
 /* bindQMineSweeperIcons() : Convenience function for late binding of a shared_ptr
  * to the QMineSweeperIcons instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QMineSweeperIcons> qmsiPtr)
+void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QmsIcons> qmsiPtr)
 {
     this->m_gameIcons.reset();
     this->m_gameIcons = qmsiPtr;
@@ -1007,7 +1007,7 @@ void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QMineSweeperIcons> qmsiPt
 /* bindGameController() : Convenience function for late binding of a shared_ptr
  * to the GameController instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundEffects> qmssePtr)
+void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> qmssePtr)
 {
     this->m_gameSoundEffects.reset();
     this->m_gameSoundEffects = qmssePtr;
@@ -1016,7 +1016,7 @@ void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QMineSweeperSoundE
 /* bindQMineSweeperSettingsLoader() : Convenience function for late binding of a shared_ptr
  * to the QMineSweeperSettingsLoader instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSettingsLoader> qmsslPtr)
+void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoader> qmsslPtr)
 {
     this->m_settingsLoader.reset();
     this->m_settingsLoader = qmsslPtr;
@@ -1027,7 +1027,7 @@ void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QMineSweeperSett
  * Queries the shared_ptr passed in for it's number of surrounding mines, then
  * uses the shared_ptr to the QMineSweeperIcons instance to set the graphic on the
  * QMineSweeperButton to the correct number via chained else-ifs */
-void MainWindow::drawNumberOfSurroundingMines(QMineSweeperButton *msb)
+void MainWindow::drawNumberOfSurroundingMines(QmsButton *msb)
 {
     if (msb->numberOfSurroundingMines() == 0) {
         msb->setIcon(this->m_gameIcons->COUNT_MINES_0);

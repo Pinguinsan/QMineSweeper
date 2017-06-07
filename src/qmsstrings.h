@@ -16,12 +16,12 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_QMINESWEEPERSTRINGS_H
-#define QMINESWEEPER_QMINESWEEPERSTRINGS_H
+#ifndef QMINESWEEPER_QMSSTRINGS_H
+#define QMINESWEEPER_QMSSTRINGS_H
 
 #include <string>
 
-namespace QMineSweeperStrings
+namespace QmsStrings
 {
     extern const char *MAIN_WINDOW_TITLE;
     extern const char *GENERIC_ERROR_MESSAGE;
@@ -99,4 +99,4 @@ namespace QMineSweeperStrings
     extern const char *EXPLOSION_EFFECT_SOURCE_STRING;
 }
 
-#endif //QMINESWEEPER_QMINESWEEPERSTRINGS_H
+#endif //QMINESWEEPER_QMSSTRINGS_H

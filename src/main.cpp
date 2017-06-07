@@ -36,15 +36,15 @@
 #include <QDateTime>
 
 #include "mainwindow.h"
-#include "qminesweeperbutton.h"
-#include "qminesweepericons.h"
-#include "qminesweeperstrings.h"
-#include "qminesweepersoundeffects.h"
-#include "qminesweepersettingsloader.h"
-#include "qminesweeperutilities.h"
+#include "qmsbutton.h"
+#include "qmsicons.h"
+#include "qmsstrings.h"
+#include "qmssoundeffects.h"
+#include "qmssettingsloader.h"
+#include "qmsutilities.h"
 #include "gamecontroller.h"
 #include "globaldefinitions.h"
-#include "qminesweeperapplicationsettings.h"
+#include "qmsapplicationsettings.h"
 
 /*
  * The program is organized like this:
@@ -101,8 +101,8 @@ std::pair<int, int> tryParseDimensions(const char *maybeDimensions);
 
 int main(int argc, char *argv[])
 {
-    using namespace QMineSweeperStrings;
-    using namespace QMineSweeperUtilities;
+    using namespace QmsStrings;
+    using namespace QmsUtilities;
 
     QCoreApplication::setOrganizationName(AUTHOR_NAME);
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
@@ -177,16 +177,16 @@ int main(int argc, char *argv[])
          }
      }
      if (rowCount == -1) {
-         columnCount = QMineSweeperSettingsLoader::DEFAULT_COLUMN_COUNT();
-         rowCount = QMineSweeperSettingsLoader::DEFAULT_ROW_COUNT();
+         columnCount = QmsSettingsLoader::DEFAULT_COLUMN_COUNT();
+         rowCount = QmsSettingsLoader::DEFAULT_ROW_COUNT();
      } else {
         columnsSetByCommandLine = true;
     }
-    QMineSweeperApplicationSettings settings{QMineSweeperSettingsLoader::loadApplicationSettings()};
+    QmsApplicationSettings settings{QmsSettingsLoader::loadApplicationSettings()};
     if (!columnsSetByCommandLine) {
         if ((columnCount <= 0) || (rowCount <= 0)) {
-            columnCount = QMineSweeperSettingsLoader::DEFAULT_COLUMN_COUNT();
-            rowCount = QMineSweeperSettingsLoader::DEFAULT_ROW_COUNT();
+            columnCount = QmsSettingsLoader::DEFAULT_COLUMN_COUNT();
+            rowCount = QmsSettingsLoader::DEFAULT_ROW_COUNT();
         } else {
             columnCount = settings.numberOfColumns();
             rowCount = settings.numberOfRows();
@@ -194,13 +194,13 @@ int main(int argc, char *argv[])
 
     }
     LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
-    QMineSweeperUtilities::checkOrCreateProgramSettingsDirectory();
+    QmsUtilities::checkOrCreateProgramSettingsDirectory();
     //TODO: Load language from config file
 
     QApplication qApplication(argc, argv);
-    std::shared_ptr<QMineSweeperIcons> gameIcons{std::make_shared<QMineSweeperIcons>()};
-    std::shared_ptr<QMineSweeperSoundEffects> soundEffects{std::make_shared<QMineSweeperSoundEffects>()};
-    std::shared_ptr<QMineSweeperSettingsLoader> settingsLoader{std::make_shared<QMineSweeperSettingsLoader>()};
+    std::shared_ptr<QmsIcons> gameIcons{std::make_shared<QmsIcons>()};
+    std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>()};
+    std::shared_ptr<QmsSettingsLoader> settingsLoader{std::make_shared<QmsSettingsLoader>()};
     std::shared_ptr<GameController> gameController{std::make_shared<GameController>(columnCount, rowCount)};
     std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
     std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons,
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
                                                                         settingsLoader,
                                                                         gameController,
                                                                         qDesktopWidget,
-                                                                        QMineSweeperSettingsLoader::DEFAULT_LANGUAGE())};
+                                                                        QmsSettingsLoader::DEFAULT_LANGUAGE())};
     gameController->bindMainWindow(mainWindow);
     mainWindow->setupNewGame();
 
@@ -313,7 +313,7 @@ void installSignalHandlers(void (*signalHandler)(int))
 
 void displayVersion()
 {
-    using namespace QMineSweeperUtilities;
+    using namespace QmsUtilities;
     LOG_INFO() << QString{"%1, v%2.%3.%4"}.arg(PROGRAM_NAME, QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION));
     LOG_INFO() << QString{"Written by %1"}.arg(AUTHOR_NAME);
     LOG_INFO() << QString{"Built with %1 v%2.%3.%4, %5"}.arg(COMPILER_NAME, QS_NUMBER(COMPILER_MAJOR_VERSION), QS_NUMBER(COMPILER_MINOR_VERSION), QS_NUMBER(COMPILER_PATCH_VERSION), __DATE__);
@@ -395,7 +395,7 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     if (outputStream) {
         *outputStream << logMessage.toStdString();
     }
-    logToFile(logMessage, QMineSweeperUtilities::getLogFileName());
+    logToFile(logMessage, QmsUtilities::getLogFileName());
 
 }
 

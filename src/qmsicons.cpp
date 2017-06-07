@@ -5,8 +5,8 @@
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the implementation of a QMineSweeperIcons class   *
-*    QMineSweeperIcons holds instances of all icons used in the game,  *
+*    This file holds the implementation of a QmsIcons class            *
+*    QmsIcons holds instances of all icons used in the game,           *
 *    allowing members to be called to set icons, rather than having to *
 *    use a raw filename string to access the icon on disk              *
 *    The source code is released under the LGPL                        *
@@ -16,15 +16,19 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qminesweepericons.h"
+#include "qmsicons.h"
 
-using namespace QMineSweeperStrings;
+#include <QString>
+#include <QIcon>
+#include "qmsstrings.h"
 
-/* QMineSweeperIcons() : Constructor, setting up the QIcons used.
+using namespace QmsStrings;
+
+/* QmsIcons() : Constructor, setting up the QIcons used.
  * This thin wrapper class for the QIcons is necessary because all QObjects
  * must be instantiated and set up after a QApplication is instantiated, so using them
  * as static objects is not usable. Thus, this late binding is necessary */
-QMineSweeperIcons::QMineSweeperIcons() :
+QmsIcons::QmsIcons() :
     MINE_ICON_16{QIcon{MINE_ICON_16_STRING}},
     MINE_ICON_24{QIcon{MINE_ICON_24_STRING}},
     MINE_ICON_32{QIcon{MINE_ICON_32_STRING}},
@@ -56,8 +60,8 @@ QMineSweeperIcons::QMineSweeperIcons() :
     //Constructor
 }
 
-/* ~QMineSweeperIcons() : Destructor, empty by default */
-QMineSweeperIcons::~QMineSweeperIcons()
+/* ~QmsIcons() : Destructor, empty by default */
+QmsIcons::~QmsIcons()
 {
     //Destructor
 }
