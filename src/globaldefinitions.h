@@ -25,5 +25,12 @@
 #    define QS_NUMBER(x) QString::number(x)
 #endif
 
+#ifndef STRING_TO_INT
+#    if defined(__ANDROID__)
+#        define STRING_TO_INT(x) std::atoi(x)
+#    else
+#        define STRING_TO_INT(x) std::stoi(x)
+#    endif
+#endif
 
 #endif // QMINESWEEPER_GLOBALDEFINITIONS_H

@@ -16,8 +16,19 @@
 
 #include "boardresizewindow.h"
 
+BoardResizeWindow::BoardResizeWindow()
+{
+
+}
+
+BoardResizeWindow::~BoardResizeWindow()
+{
+
+}
+
 void BoardResizeWindow::closeEvent(QCloseEvent *ce)
 {
     emit (aboutToClose());
     QMainWindow::closeEvent(ce);
 }
+

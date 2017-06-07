@@ -26,6 +26,7 @@
 #include <QDialog>
 #include <QActionGroup>
 #include <QTranslator>
+#include <QSettings>
 
 #include "qminesweeperbutton.h"
 #include "qminesweepericons.h"
@@ -36,6 +37,7 @@
 #include "qminesweeperstrings.h"
 #include "qminesweepersettingsloader.h"
 #include "globaldefinitions.h"
+#include "qminesweeperapplicationsettings.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -74,7 +76,7 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
     m_eventTimer{new QTimer{}},
     m_playTimer{new SteadyEventTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
-    m_bsui{new Ui::BoardResizeWindow{}},
+    m_boardResizeUi{new Ui::BoardResizeWindow{}},
     m_ui{new Ui::MainWindow{}},
     m_boardSizeWindow{new BoardResizeWindow{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
@@ -96,12 +98,12 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
     using namespace QMineSweeperStrings;
     this->m_ui->setupUi(this);
     this->setLanguage(this->m_language);
-    this->m_bsui->setupUi(this->m_boardSizeWindow.get());
+    this->m_boardResizeUi->setupUi(this->m_boardSizeWindow.get());
     this->m_boardSizeWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     this->m_boardSizeWindow->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
-    this->m_bsui->columnsBox->setTabOrder(this->m_bsui->columnsBox, this->m_bsui->rowsBox);
+    //this->m_boardResizeUi->columnsBox->setTabOrder(this->m_boardResizeUi->columnsBox, this->m_boardResizeUi->rowsBox);
 
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     this->connect(this->m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
@@ -110,8 +112,13 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
     this->connect(this->m_ui->actionMuteSound, &QAction::triggered, this, &MainWindow::onActionMuteSoundChecked);
 
     this->connect(this->m_ui->resetButton, &QPushButton::clicked, this, &MainWindow::onResetButtonClicked);
-    this->connect(this->m_bsui->okayButton, &QPushButton::clicked, this, &MainWindow::onBsuiOkayButtonClicked);
-    this->connect(this->m_bsui->cancelButton, &QPushButton::clicked, this, &MainWindow::onBsuiCancelButtonClicked);
+    this->connect(this->m_boardResizeUi->btnOkay, &QPushButton::clicked, this, &MainWindow::onBoardResizeOkayButtonClicked);
+    this->connect(this->m_boardResizeUi->btnCancel, &QPushButton::clicked, this, &MainWindow::onBoardResizeCancelButtonClicked);
+    this->connect(this->m_boardResizeUi->btnIncrementColumns, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
+    this->connect(this->m_boardResizeUi->btnDecrementColumns, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
+    this->connect(this->m_boardResizeUi->btnIncrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
+    this->connect(this->m_boardResizeUi->btnDecrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
+
 
     this->connect(this->m_gameController.get(), &GameController::winEvent, this, &MainWindow::onGameWon);
     this->connect(this->m_gameController.get(), &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
@@ -170,6 +177,18 @@ MainWindow::MainWindow(std::shared_ptr<QMineSweeperIcons> gameIcons,
     this->m_eventTimer->start();
     this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
+}
+
+/* collectApplicationSettings() : Called when a the main windows is closing.
+ * This method collects all of the application settings that may or may not
+ * have been changed throughout the course of the gameplay, for purpose of
+ * passing them to QMineSweeperSettingsLoader to write them to peristant storage. */
+QMineSweeperApplicationSettings MainWindow::collectApplicationSettings() const
+{
+    QMineSweeperApplicationSettings returnSettings;
+    returnSettings.setNumberOfColumns(this->m_gameController->numberOfColumns());
+    returnSettings.setNumberOfRows(this->m_gameController->numberOfRows());
+    return returnSettings;
 }
 
 /* setLanguage() : Called when the UI must have it's language set (from
@@ -259,6 +278,7 @@ void MainWindow::hideEvent(QHideEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     (void)event;
+    QMineSweeperSettingsLoader::saveApplicationSettings(this->collectApplicationSettings());
     /*
     emit(gamePaused());
     QMessageBox::StandardButton userReply;
@@ -507,7 +527,6 @@ QSize MainWindow::getMaxMineSize()
             errorBox->setWindowIcon(this->m_gameIcons->MINE_ICON_48);
             errorBox->exec();
             exit(EXIT_FAILURE);
-            QCoreApplication::exit(EXIT_FAILURE);
         }
         if ((x >= m_currentDefaultMineSize.width()) && (y >= m_currentDefaultMineSize.height())) {
             this->m_currentMaxMineSize = this->m_currentDefaultMineSize;
@@ -838,26 +857,26 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     using namespace QMineSweeperUtilities;
     using namespace QMineSweeperStrings;
     this->setEnabled(false);
-    this->m_bsui->statusBar->showMessage(QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING,
+    this->m_boardResizeUi->statusBar->showMessage(QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING,
                                                                    this->m_gameController->numberOfColumns(),
                                                                    RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
                                                                    this->m_gameController->numberOfRows()));
 
-    this->m_bsui->columnsBox->setValue(this->m_gameController->numberOfColumns());
-    this->m_bsui->rowsBox->setValue(this->m_gameController->numberOfRows());
+    this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(this->m_gameController->numberOfColumns()));
+    this->m_boardResizeUi->lblRows->setText(QS_NUMBER(this->m_gameController->numberOfRows()));
 #if defined(__ANDROID__)
     if (!this->m_boardSizeGeometrySet) {
-        this->m_bsui->okayButton->setFixedSize(this->m_bsui->okayButton->size()*4);
-        this->m_bsui->cancelButton->setFixedSize(this->m_bsui->cancelButton->size()*4);
+        this->m_boardResizeUi->okayButton->setFixedSize(this->m_boardResizeUi->okayButton->size()*4);
+        this->m_boardResizeUi->cancelButton->setFixedSize(this->m_boardResizeUi->cancelButton->size()*4);
         this->m_boardSizeWindow->setFixedHeight(this->m_qDesktopWidget->availableGeometry().height() / 5);
         this->m_boardSizeWindow->setFixedWidth(this->m_qDesktopWidget->availableGeometry().width());
         QFont font;
         font.setPointSize(font.pointSize() + 50);
-        this->m_bsui->columnsBox->setFont(font);
-        this->m_bsui->rowsBox->setFont(font);
+        this->m_boardResizeUi->columnsBox->setFont(font);
+        this->m_boardResizeUi->rowsBox->setFont(font);
 
-        this->m_bsui->columnsBox->setFixedSize(this->m_bsui->columnsBox->size()*4);
-        this->m_bsui->rowsBox->setFixedSize(this->m_bsui->rowsBox->size()*4);
+        this->m_boardResizeUi->columnsBox->setFixedSize(this->m_boardResizeUi->columnsBox->size()*4);
+        this->m_boardResizeUi->rowsBox->setFixedSize(this->m_boardResizeUi->rowsBox->size()*4);
         this->m_boardSizeGeometrySet = true;
     }
 #endif
@@ -865,19 +884,44 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     emit(gamePaused());
 }
 
+/* onBoardResizeActionClicked() : When the BoardSize dialog increment or decrement
+ * buttons are clicked (columns or rows), this function is called and the corresponding
+ * label on the BoardResize window is updated, corresponding to which one was clicked (found
+ * in this method by casting the QObject::sender to a QPushButton and comparing pointers */
+void MainWindow::onBoardResizeActionClicked()
+{
+    if (QPushButton *pressedButton{dynamic_cast<QPushButton *>(QObject::sender())}) {
+        int currentColumns{STRING_TO_INT(this->m_boardResizeUi->lblColumns->text().toStdString().c_str())};
+        int currentRows{STRING_TO_INT(this->m_boardResizeUi->lblRows->text().toStdString().c_str())};
+        if (pressedButton == this->m_boardResizeUi->btnIncrementColumns) {
+            this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(currentColumns + 1));
+        } else if (pressedButton == this->m_boardResizeUi->btnDecrementColumns) {
+            if (currentColumns != 0) {
+                this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(currentColumns - 1));
+            }
+        } else if (pressedButton == this->m_boardResizeUi->btnIncrementRows) {
+            this->m_boardResizeUi->lblRows->setText(QS_NUMBER(currentRows + 1));
+        } else if (pressedButton == this->m_boardResizeUi->btnDecrementRows) {
+            if (currentRows != 0) {
+                this->m_boardResizeUi->lblRows->setText(QS_NUMBER(currentRows - 1));
+            }
+        }
+    }
+}
+
 /* onBsuiOkayButtonClicked() : When the BoardSize dialog's "ok" button is clicked,
  * the player has requested to change the board size and start a new game. If there is
  * an active game, the player is asked if they'd like to stop that game and start a new one.
  * If they reply that they want to, a new game is setup. Otherwise, the currently
  * running game is reactivated, including all player timers */
-void MainWindow::onBsuiOkayButtonClicked()
+void MainWindow::onBoardResizeOkayButtonClicked()
 {
     using namespace QMineSweeperUtilities;
     using namespace QMineSweeperStrings;
     this->setEnabled(true);
     this->m_boardSizeWindow->hide();
-    int maybeNewColumns{this->m_bsui->columnsBox->value()};
-    int maybeNewRows{this->m_bsui->rowsBox->value()};
+    int maybeNewColumns{STRING_TO_INT(this->m_boardResizeUi->lblColumns->text().toStdString().c_str())};
+    int maybeNewRows{STRING_TO_INT(this->m_boardResizeUi->lblRows->text().toStdString().c_str())};
     if ((maybeNewColumns == this->m_gameController->numberOfColumns()) && (maybeNewRows == this->m_gameController->numberOfRows())) {
         if (!this->m_gameController->gameOver()) {
             emit(gameResumed());
@@ -901,7 +945,7 @@ void MainWindow::onBsuiOkayButtonClicked()
     }
 }
 
-void MainWindow::onBsuiCancelButtonClicked()
+void MainWindow::onBoardResizeCancelButtonClicked()
 {
     this->setEnabled(true);
     this->m_boardSizeWindow->hide();

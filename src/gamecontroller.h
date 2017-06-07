@@ -130,6 +130,7 @@ public slots:
     void onGameResumed();
     void onMineDisplayed();
     void onGameWon();
+
 signals:
     void gameStarted();
     void gamePaused();

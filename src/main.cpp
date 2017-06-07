@@ -44,6 +44,7 @@
 #include "qminesweeperutilities.h"
 #include "gamecontroller.h"
 #include "globaldefinitions.h"
+#include "qminesweeperapplicationsettings.h"
 
 /*
  * The program is organized like this:
@@ -61,9 +62,10 @@
 
 static const char *PROGRAM_NAME{"QMineSweeper"};
 static const char *LONG_PROGRAM_NAME{"QMineSweeper"};
+static const char *REMOTE_URL{"https://github.com/tlewiscpp/QMineSweeper"};
 static const char *AUTHOR_NAME{"Tyler Lewis"};
-static const int SOFTWARE_MAJOR_VERSION{0};
-static const int SOFTWARE_MINOR_VERSION{2};
+static const int SOFTWARE_MAJOR_VERSION{1};
+static const int SOFTWARE_MINOR_VERSION{1};
 static const int SOFTWARE_PATCH_VERSION{0};
 
 #if defined(__GNUC__)
@@ -101,7 +103,10 @@ int main(int argc, char *argv[])
 {
     using namespace QMineSweeperStrings;
     using namespace QMineSweeperUtilities;
-    (void)LONG_PROGRAM_NAME;
+
+    QCoreApplication::setOrganizationName(AUTHOR_NAME);
+    QCoreApplication::setOrganizationDomain(REMOTE_URL);
+    QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
     installSignalHandlers(interruptHandler);
 
@@ -118,6 +123,7 @@ int main(int argc, char *argv[])
      displayVersion();
      int columnCount{-1};
      int rowCount{-1};
+     bool columnsSetByCommandLine{false};
 
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
          if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
@@ -173,7 +179,20 @@ int main(int argc, char *argv[])
      if (rowCount == -1) {
          columnCount = QMineSweeperSettingsLoader::DEFAULT_COLUMN_COUNT();
          rowCount = QMineSweeperSettingsLoader::DEFAULT_ROW_COUNT();
-     }
+     } else {
+        columnsSetByCommandLine = true;
+    }
+    QMineSweeperApplicationSettings settings{QMineSweeperSettingsLoader::loadApplicationSettings()};
+    if (!columnsSetByCommandLine) {
+        if ((columnCount <= 0) || (rowCount <= 0)) {
+            columnCount = QMineSweeperSettingsLoader::DEFAULT_COLUMN_COUNT();
+            rowCount = QMineSweeperSettingsLoader::DEFAULT_ROW_COUNT();
+        } else {
+            columnCount = settings.numberOfColumns();
+            rowCount = settings.numberOfRows();
+        }
+
+    }
     LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     QMineSweeperUtilities::checkOrCreateProgramSettingsDirectory();
     //TODO: Load language from config file
@@ -222,8 +241,11 @@ std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
     }
     size_t foundDividerPosition{stringCopy.find(divider)};
     try {
-        int maybeColumns{std::stoi(stringCopy.substr(0, foundDividerPosition))};
-        int maybeRows{std::stoi(stringCopy.substr(foundDividerPosition + 1))};
+        int maybeColumns{STRING_TO_INT(stringCopy.substr(0, foundDividerPosition).c_str())};
+        int maybeRows{STRING_TO_INT(stringCopy.substr(foundDividerPosition + 1).c_str())};
+        if ((maybeColumns == 0) || (maybeRows == 0)) {
+            throw std::exception();
+        }
         return std::make_pair(maybeColumns, maybeRows);
     } catch (std::exception &e) {
         (void)e;

@@ -19,6 +19,9 @@
 #define QMINESWEEPERSETTINGSLOADER_H
 
 #include <QObject>
+#include <utility>
+
+class QMineSweeperApplicationSettings;
 
 class QMineSweeperSettingsLoader : public QObject
 {
@@ -37,9 +40,13 @@ public:
     static int DEFAULT_ROW_COUNT();
     static QMineSweeperSettingsLoader::SupportedLanguage DEFAULT_LANGUAGE();
     static const char *languageToString(QMineSweeperSettingsLoader::SupportedLanguage language);
+    static QMineSweeperApplicationSettings loadApplicationSettings();
+    static void saveApplicationSettings(const QMineSweeperApplicationSettings &settings);
 private:
     static const int s_DEFAULT_NUMBER_OF_COLUMNS;
     static const int s_DEFAULT_NUMBER_OF_ROWS;
+    static const char *s_NUMBER_OF_COLUMNS_KEY;
+    static const char *s_NUMBER_OF_ROWS_KEY;
     static const QMineSweeperSettingsLoader::SupportedLanguage s_DEFAULT_LANGUAGE;
 
 public slots:

@@ -36,6 +36,7 @@ class GameController;
 class BoardResizeWindow;
 class QMineSweeperIcons;
 class QMineSweeperSoundEffects;
+class QMineSweeperApplicationSettings;
 class QDesktopWidget;
 class QMediaPlayer;
 class QDialog;
@@ -44,6 +45,7 @@ class QString;
 class QTimer;
 class QActionGroup;
 class QTranslator;
+
 
 class MainWindow : public QMainWindow
 {
@@ -75,6 +77,8 @@ public:
     int yPlacement() const;
     void centerAndFitWindow();
     bool boardResizeDialogVisible();
+
+    QMineSweeperApplicationSettings collectApplicationSettings() const;
     std::shared_ptr<QMineSweeperIcons> qmsiPtr() const;
     std::shared_ptr<QMineSweeperSoundEffects> qmssePtr() const;
     QString saveStyleSheet() const;
@@ -83,7 +87,7 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
-    std::unique_ptr<Ui::BoardResizeWindow> m_bsui;
+    std::unique_ptr<Ui::BoardResizeWindow> m_boardResizeUi;
     std::unique_ptr<Ui::MainWindow> m_ui;
     std::unique_ptr<BoardResizeWindow>  m_boardSizeWindow;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
@@ -94,6 +98,7 @@ private:
     std::shared_ptr<QMineSweeperSettingsLoader> m_settingsLoader;
     std::shared_ptr<GameController> m_gameController;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
+
 
     QMineSweeperSettingsLoader::SupportedLanguage m_language;
     double m_reductionSizeScaleFactor;
@@ -162,12 +167,13 @@ private slots:
     void onChangeBoardSizeActionTriggered();
     void onAboutQtActionTriggered();
     void onApplicationExit();
-    void onBsuiOkayButtonClicked();
-    void onBsuiCancelButtonClicked();
+    void onBoardResizeOkayButtonClicked();
+    void onBoardResizeCancelButtonClicked();
     void updateVisibleGameTimer();
     void updateGeometry();
     void updateUserIdleTimer();
     void startGameTimer();
+    void onBoardResizeActionClicked();
 
     void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
     void updateNumberOfMinesLCD(int numberOfMines);

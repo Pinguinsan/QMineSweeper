@@ -14,7 +14,6 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-
 #ifndef QMINESWEEPER_BOARDRESIZEWINDOW_H
 #define QMINESWEEPER_BOARDRESIZEWINDOW_H
 
@@ -24,6 +23,8 @@ class BoardResizeWindow : public QMainWindow
 {
     Q_OBJECT
 public:
+    BoardResizeWindow();
+    ~BoardResizeWindow();
 
 signals:
     void aboutToClose();
