@@ -177,7 +177,9 @@ int main(int argc, char *argv[])
      } else {
         columnsSetByCommandLine = true;
     }
-#if !defined(__ANDROID__)
+#if defined(__ANDROID__)
+    (void)columnsSetByCommandLine;
+#else
     QmsApplicationSettings settings{QmsSettingsLoader::loadApplicationSettings()};
     if (!columnsSetByCommandLine) {
         if ((columnCount <= 0) || (rowCount <= 0)) {
