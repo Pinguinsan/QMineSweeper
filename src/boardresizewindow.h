@@ -19,12 +19,15 @@
 
 #include <QMainWindow>
 
+class QDesktopWidget;
+
 class BoardResizeWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     BoardResizeWindow();
     ~BoardResizeWindow();
+    void centerAndFitWindow(QDesktopWidget *desktopWidget);
 
 signals:
     void aboutToClose();
@@ -32,6 +35,12 @@ signals:
 
 public:
     void closeEvent(QCloseEvent *ce);
+
+private:
+    int m_xPlacement;
+    int m_yPlacement;
+
+    void calculateXYPlacement(QDesktopWidget *desktopWidget);
 };
 
 #endif //QMINESWEEPER_BOARDRESIZEWINDOW_H

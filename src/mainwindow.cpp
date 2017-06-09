@@ -103,7 +103,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->m_boardSizeWindow->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
-    //this->m_boardResizeUi->columnsBox->setTabOrder(this->m_boardResizeUi->columnsBox, this->m_boardResizeUi->rowsBox);
 
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     this->connect(this->m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
@@ -118,7 +117,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this->m_boardResizeUi->btnDecrementColumns, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
     this->connect(this->m_boardResizeUi->btnIncrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
     this->connect(this->m_boardResizeUi->btnDecrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
-
 
     this->connect(this->m_gameController.get(), &GameController::winEvent, this, &MainWindow::onGameWon);
     this->connect(this->m_gameController.get(), &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
@@ -278,7 +276,9 @@ void MainWindow::hideEvent(QHideEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     (void)event;
+#if !defined(__ANDROID__)
     QmsSettingsLoader::saveApplicationSettings(this->collectApplicationSettings());
+#endif
     /*
     emit(gamePaused());
     QMessageBox::StandardButton userReply;
@@ -881,6 +881,7 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     }
 #endif
     this->m_boardSizeWindow->show();
+    this->m_boardSizeWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
     emit(gamePaused());
 }
 

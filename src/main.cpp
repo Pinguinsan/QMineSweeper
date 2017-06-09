@@ -182,6 +182,7 @@ int main(int argc, char *argv[])
      } else {
         columnsSetByCommandLine = true;
     }
+#if !defined(__ANDROID__)
     QmsApplicationSettings settings{QmsSettingsLoader::loadApplicationSettings()};
     if (!columnsSetByCommandLine) {
         if ((columnCount <= 0) || (rowCount <= 0)) {
@@ -191,10 +192,10 @@ int main(int argc, char *argv[])
             columnCount = settings.numberOfColumns();
             rowCount = settings.numberOfRows();
         }
-
     }
-    LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
+#endif
+    LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     //TODO: Load language from config file
 
     QApplication qApplication(argc, argv);

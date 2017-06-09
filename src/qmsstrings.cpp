@@ -64,14 +64,14 @@ namespace QmsStrings
     const char *SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};
     const char *JAPANESE_TRANSLATION_PATH{":/translations/japanese.qm"};
 
-    const char *MINE_ICON_16_STRING{":/mine-icons/png/mine-icons/16-qms.png"};
-    const char *MINE_ICON_24_STRING{":/mine-icons/png/mine-icons/24-qms.png"};
-    const char *MINE_ICON_32_STRING{":/mine-icons/png/mine-icons/32-qms.png"};
-    const char *MINE_ICON_48_STRING{":/mine-icons/png/mine-icons/48-qms.png"};
-    const char *MINE_ICON_64_STRING{":/mine-icons/png/mine-icons/64-qms.png"};
-    const char *MINE_ICON_72_STRING{":/mine-icons/png/mine-icons/72-qms.png"};
-    const char *MINE_ICON_96_STRING{":/mine-icons/png/mine-icons/96-qms.png"};
-    const char *MINE_ICON_128_STRING{":/mine-icons/png/mine-icons/128-qms.png"};
+    const char *MINE_ICON_16_STRING{":/mine-icons/png/mine-icons/16-qminesweeper.png"};
+    const char *MINE_ICON_24_STRING{":/mine-icons/png/mine-icons/24-qminesweeper.png"};
+    const char *MINE_ICON_32_STRING{":/mine-icons/png/mine-icons/32-qminesweeper.png"};
+    const char *MINE_ICON_48_STRING{":/mine-icons/png/mine-icons/48-qminesweeper.png"};
+    const char *MINE_ICON_64_STRING{":/mine-icons/png/mine-icons/64-qminesweeper.png"};
+    const char *MINE_ICON_72_STRING{":/mine-icons/png/mine-icons/72-qminesweeper.png"};
+    const char *MINE_ICON_96_STRING{":/mine-icons/png/mine-icons/96-qminesweeper.png"};
+    const char *MINE_ICON_128_STRING{":/mine-icons/png/mine-icons/128-qminesweeper.png"};
     const char *FACE_ICON_BIG_SMILEY_STRING{":/face-icons/png/face-icons/big-smiley-face.png"};
     const char *FACE_ICON_CRAZY_STRING{":/face-icons/png/face-icons/crazy-face.png"};
     const char *FACE_ICON_FROWNY_STRING{":/face-icons/png/face-icons/frowny-face.png"};
