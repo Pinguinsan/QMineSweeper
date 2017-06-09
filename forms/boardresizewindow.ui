@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>687</width>
-    <height>356</height>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,21 +33,6 @@
          </property>
          <property name="text">
           <string>Columns</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lblColumns">
-         <property name="font">
-          <font>
-           <pointsize>48</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>9</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -105,6 +90,21 @@
          </property>
          <property name="text">
           <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" rowspan="2">
+        <widget class="QLabel" name="lblColumns">
+         <property name="font">
+          <font>
+           <pointsize>48</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>9</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -213,6 +213,46 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>687</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuPreset">
+    <property name="title">
+     <string>Preset</string>
+    </property>
+    <addaction name="actionBeginner"/>
+    <addaction name="actionIntermediate"/>
+    <addaction name="actionAdvanced"/>
+    <addaction name="actionExtreme"/>
+   </widget>
+   <addaction name="menuPreset"/>
+  </widget>
+  <action name="actionBeginner">
+   <property name="text">
+    <string>Beginner (9x9)</string>
+   </property>
+  </action>
+  <action name="actionIntermediate">
+   <property name="text">
+    <string>Intermediate (18x9)</string>
+   </property>
+  </action>
+  <action name="actionAdvanced">
+   <property name="text">
+    <string>Advanced (18x18)</string>
+   </property>
+  </action>
+  <action name="actionExtreme">
+   <property name="text">
+    <string>Extreme (24x24)</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

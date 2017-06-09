@@ -48,6 +48,10 @@ namespace QmsUtilities
     QString getOSVersion();
     QString getBuildArchitecture();
     QString getCurrentArchitecture();
+    bool containsSeparator(const char *testString);
+    std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions);
+    std::pair<int, int> tryParseDimensions(const char *maybeDimensions);
+
 
     class Random
     {

@@ -118,6 +118,11 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this->m_boardResizeUi->btnIncrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
     this->connect(this->m_boardResizeUi->btnDecrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
 
+    this->connect(this->m_boardResizeUi->actionBeginner, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_boardResizeUi->actionIntermediate, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_boardResizeUi->actionAdvanced, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_boardResizeUi->actionExtreme, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
+
     this->connect(this->m_gameController.get(), &GameController::winEvent, this, &MainWindow::onGameWon);
     this->connect(this->m_gameController.get(), &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
     this->connect(this->m_gameController.get(), &GameController::userIsNoLongerIdle, this, &MainWindow::startUserIdleTimer);
@@ -177,6 +182,25 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
 }
 
+void MainWindow::onPresetBoardSizeActionTriggered()
+{
+    using namespace QmsUtilities;
+    if (QAction *triggeredAction{dynamic_cast<QAction *>(QObject::sender())}) {
+        auto foundPosition = triggeredAction->text().toStdString().find_last_of(" ");
+        auto maybeDimensions = triggeredAction->text().toStdString().substr(foundPosition);
+        maybeDimensions = stripAllFromString(maybeDimensions, "(");
+        maybeDimensions = stripAllFromString(maybeDimensions, ")");
+        maybeDimensions = stripAllFromString(maybeDimensions, " ");
+        auto dimensions = tryParseDimensions(maybeDimensions);
+        if ((dimensions.first == -1) || (dimensions.second == -1)) {
+            throw std::runtime_error(TStringFormat("In MainWindow::onBeginnerBoardSizeTriggered() : dimensions parsed from QAction menu item are not valid (QAction::text() = \"{0}\", this should never happen)", maybeDimensions));
+        }
+        this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(dimensions.first));
+        this->m_boardResizeUi->lblRows->setText(QS_NUMBER(dimensions.first));
+    }
+
+}
+
 /* collectApplicationSettings() : Called when a the main windows is closing.
  * This method collects all of the application settings that may or may not
  * have been changed throughout the course of the gameplay, for purpose of
@@ -197,7 +221,7 @@ void MainWindow::setLanguage(QmsSettingsLoader::SupportedLanguage language)
 {
     //TODO: Retranslate all non-ui set strings
     if (this->m_language == language) {
-        LOG_DEBUG() << QString{"Attempted to set language to %1, but that language is already loaded"}.arg(QmsSettingsLoader::languageToString(language));
+        //LOG_DEBUG() << QString{"Attempted to set language to %1, but that language is already loaded"}.arg(QmsSettingsLoader::languageToString(language));
     } else {
         const char *targetTranslationFile{};
         if (language == QmsSettingsLoader::SupportedLanguage::English) {
@@ -319,40 +343,20 @@ void MainWindow::onGameWon()
     this->m_gameController->setGameOver(true);
 
     for (auto &it : this->m_gameController->mineSweeperButtons()) {
-        std::shared_ptr<QmsButton> tempMsb{it.second};
-        if(tempMsb->hasMine()) {
-            if (tempMsb->hasFlag()) {
-                tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
-                tempMsb->setChecked(true);
+        if(it.second->hasMine()) {
+            if (it.second->hasFlag()) {
+                it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
+                it.second->setChecked(true);
             } else {
-                tempMsb->setIcon(this->m_gameIcons->MINE_ICON_72);
-                tempMsb->setChecked(true);
-                tempMsb->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
+                it.second->setIcon(this->m_gameIcons->MINE_ICON_72);
+                it.second->setChecked(true);
+                it.second->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
             }
-        } else if (tempMsb->hasFlag()) {
-            tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
-            tempMsb->setChecked(true);
+        } else if (it.second->hasFlag()) {
+            it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
+            it.second->setChecked(true);
         }
-        tempMsb->setIsRevealed(true);
-    }
-    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-        for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
-            std::shared_ptr<QmsButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
-            if(tempMsb->hasMine()) {
-                if (tempMsb->hasFlag()) {
-                    tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
-                    tempMsb->setChecked(true);
-                } else {
-                    tempMsb->setIcon(this->m_gameIcons->MINE_ICON_72);
-                    tempMsb->setChecked(true);
-                    tempMsb->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
-                }
-            } else if (tempMsb->hasFlag()) {
-                tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
-                tempMsb->setChecked(true);
-            }
-            tempMsb->setIsRevealed(true);
-        }
+        it.second->setIsRevealed(true);
     }
     std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
@@ -409,10 +413,8 @@ void MainWindow::setupNewGame()
  * disable them, so the user cannot play the game until it is resumed */
 void MainWindow::onGamePaused()
 {
-    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-        for (int columnIndex = 0; columnIndex <this->m_gameController->numberOfColumns(); columnIndex++) {
-            this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)->setEnabled(false);
-        }
+    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+        it.second->setEnabled(false);
     }
 }
 
@@ -421,10 +423,8 @@ void MainWindow::onGamePaused()
  * so the user can continue with their game */
 void MainWindow::onGameResumed()
 {
-    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-        for (int columnIndex = 0; columnIndex <this->m_gameController->numberOfColumns(); columnIndex++) {
-            this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)->setEnabled(true);
-        }
+    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+        it.second->setEnabled(true);
     }
 }
 
@@ -583,24 +583,21 @@ void MainWindow::displayAllMines()
     using namespace QmsStrings;
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_FROWNY);
     this->m_gameController->setGameOver(true);
-    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-        for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
-            std::shared_ptr<QmsButton> tempMsb = this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex);
-            if(tempMsb->hasMine()) {
-                if (tempMsb->hasFlag()) {
-                    tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
-                    tempMsb->setChecked(true);
-                } else {
-                    tempMsb->setIcon(this->m_gameIcons->MINE_ICON_72);
-                    tempMsb->setChecked(true);
-                    tempMsb->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
-                }
-            } else if (tempMsb->hasFlag()) {
-                tempMsb->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
-                tempMsb->setChecked(true);
+    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+        if(it.second->hasMine()) {
+            if (it.second->hasFlag()) {
+                it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
+                it.second->setChecked(true);
+            } else {
+                it.second->setIcon(this->m_gameIcons->MINE_ICON_72);
+                it.second->setChecked(true);
+                it.second->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
             }
-            tempMsb->setIsRevealed(true);
+        } else if (it.second->hasFlag()) {
+            it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
+            it.second->setChecked(true);
         }
+        it.second->setIsRevealed(true);
     }
 }
 
@@ -664,17 +661,15 @@ void MainWindow::doGameReset()
 {
     using namespace QmsStrings;
     this->m_boardSizeWindow->hide();
-    for (int columnIndex = 0; columnIndex < this->m_gameController->numberOfColumns(); columnIndex++) {
-        for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-            std::shared_ptr<QmsButton> tempMsb{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
-            tempMsb->setChecked(false);
-            tempMsb->setFlat(false);
-            tempMsb->setStyleSheet(this->m_saveStyleSheet);
-            tempMsb->setIcon(this->m_gameIcons->COUNT_MINES_0);
-            tempMsb->setEnabled(true);
-            tempMsb->setIsRevealed(false);
-        }
+    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+        it.second->setChecked(false);
+        it.second->setFlat(false);
+        it.second->setStyleSheet(this->m_saveStyleSheet);
+        it.second->setIcon(this->m_gameIcons->COUNT_MINES_0);
+        it.second->setEnabled(true);
+        it.second->setIsRevealed(false);
     }
+
     emit(resetGame());
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);

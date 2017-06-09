@@ -174,6 +174,7 @@ private slots:
     void updateUserIdleTimer();
     void startGameTimer();
     void onBoardResizeActionClicked();
+    void onPresetBoardSizeActionTriggered();
 
     void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
     void updateNumberOfMinesLCD(int numberOfMines);

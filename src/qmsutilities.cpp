@@ -29,6 +29,7 @@ namespace QmsUtilities
     static QString logFileName{""};
     static QString configurationFilePath{""};
     static QString userConfigurationFilePath{""};
+    const std::list<char> KNOWN_DIMENSIONS_SEPARATORS{'x', ',', '.'};
 
     #if defined(_WIN32)
         static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-win32.json"};
@@ -476,5 +477,47 @@ namespace QmsUtilities
        {
            return stripAllFromString(stringToStrip, std::string(1, whatToStrip));
        }
+
+
+           std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
+           {
+               std::string stringCopy{maybeDimensions};
+               std::transform(stringCopy.begin(), stringCopy.end(), stringCopy.begin(), ::tolower);
+               char divider{'\0'};
+               for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
+                   if (stringCopy.find(it) != std::string::npos) {
+                       divider = it;
+                   }
+               }
+               size_t foundDividerPosition{stringCopy.find(divider)};
+               try {
+                   int maybeColumns{STRING_TO_INT(stringCopy.substr(0, foundDividerPosition).c_str())};
+                   int maybeRows{STRING_TO_INT(stringCopy.substr(foundDividerPosition + 1).c_str())};
+                   if ((maybeColumns == 0) || (maybeRows == 0)) {
+                       throw std::exception();
+                   }
+                   return std::make_pair(maybeColumns, maybeRows);
+               } catch (std::exception &e) {
+                   (void)e;
+                   return std::make_pair(-1, -1);
+               }
+           }
+
+           std::pair<int, int> tryParseDimensions(const char *maybeDimensions)
+           {
+               return tryParseDimensions(std::string{maybeDimensions});
+           }
+
+           bool containsSeparator(const char *testString)
+           {
+               std::string copyString{testString};
+               std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+               for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
+                   if (copyString.find(it) != std::string::npos) {
+                       return true;
+                   }
+               }
+               return false;
+           }
 
 }
