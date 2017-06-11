@@ -114,7 +114,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
 
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
-    this->connect(this->m_aboutQmsWindow.get(), &AboutQmsWindow::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
 
     this->connect(this->m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, this, &MainWindow::onAboutQtActionTriggered);
@@ -192,7 +191,7 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     using namespace QmsGlobalSettings;
 
 
-    /* initialize all strings for the AboutQmsWindow */
+    /* initialize all strings for the AboutQmsWindow and connect slots */
     QString currentText{this->m_aboutQmsUi->lblProgramCopyright->text()};
     this->m_aboutQmsUi->lblProgramCopyright->setText(currentText +
                                             QS_NUMBER(QDateTime{}.date().year()) +
@@ -200,6 +199,9 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
                                             AUTHOR_NAME);
     this->m_aboutQmsUi->lblProgramVersion->setText(QString{"v%1.%2.%3"}.arg(QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION)));
     //this->m_aboutQmsUi->lblProgramWebsite->setText();
+
+    this->connect(this->m_aboutQmsWindow.get(), &AboutQmsWindow::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
+    this->connect(this->m_aboutQmsUi->btnLicense, &QPushButton::clicked, this, &MainWindow::onAboutQmsWindowLicenseButtonClicked);
 
 
     this->m_eventTimer->start();
@@ -1000,6 +1002,13 @@ void MainWindow::onAboutQmsWindowClosed()
  * option is clicked, causing the About QMineSweeper window (defined in forms/aboutqmswindow.ui)
  * to show. This method also pauses the game while the window is active */
 void MainWindow::onAboutQtActionTriggered()
+{
+
+}
+
+/* onAboutQmsWindowLicenseButtonClicked() : called when the license button on the
+ * AboutQmsWindow is clicked. This method displays the licence for QMineSweeper*/
+void MainWindow::onAboutQmsWindowLicenseButtonClicked(bool checked)
 {
 
 }
