@@ -29,10 +29,12 @@ namespace Ui
 {
     class MainWindow;
     class BoardResizeWindow;
+    class AboutQmsWindow;
 }
 
 class QmsButton;
 class GameController;
+class AboutQmsWindow;
 class BoardResizeWindow;
 class QmsIcons;
 class QmsSoundEffects;
@@ -65,11 +67,11 @@ public:
     void displayAllMines();
     void resizeResetIcon();
     void displayMine(QmsButton *msb);
-    void bindGameController(std::shared_ptr<GameController> gc);
-    void bindQMineSweeperIcons(std::shared_ptr<QmsIcons> qmsiPtr);
-    void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw);
-    void bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> qmssePtr);
-    void bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoader> qmsslPtr);
+    void bindGameController(std::shared_ptr<GameController> gameController);
+    void bindQMineSweeperIcons(std::shared_ptr<QmsIcons> programIcons);
+    void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget);
+    void bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> programSoundEffects);
+    void bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoader> programSettingsLoader);
     void setResetButtonIcon(const QIcon &icon);
     void drawNumberOfSurroundingMines(QmsButton *msb);
     void setLanguage(QmsSettingsLoader::SupportedLanguage newLanguage);
@@ -87,8 +89,10 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
+    std::unique_ptr<Ui::AboutQmsWindow> m_aboutQmsUi;
     std::unique_ptr<Ui::BoardResizeWindow> m_boardResizeUi;
     std::unique_ptr<Ui::MainWindow> m_ui;
+    std::unique_ptr<AboutQmsWindow> m_aboutQmsWindow;
     std::unique_ptr<BoardResizeWindow>  m_boardSizeWindow;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
@@ -166,6 +170,8 @@ private slots:
     void onResetButtonClicked();
     void onChangeBoardSizeActionTriggered();
     void onAboutQtActionTriggered();
+    void onAboutQMineSweeperActionTriggered();
+    void onAboutQmsWindowClosed();
     void onApplicationExit();
     void onBoardResizeOkayButtonClicked();
     void onBoardResizeCancelButtonClicked();

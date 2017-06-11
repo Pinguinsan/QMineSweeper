@@ -1017,7 +1017,7 @@
      <x>0</x>
      <y>0</y>
      <width>526</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1047,7 +1047,7 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout_QMineSweeper"/>
+    <addaction name="actionAboutQMineSweeper"/>
     <addaction name="actionAboutQt"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1115,7 +1115,7 @@
     <string>Ctrl+M</string>
    </property>
   </action>
-  <action name="actionAbout_QMineSweeper">
+  <action name="actionAboutQMineSweeper">
    <property name="text">
     <string>About QMineSweeper</string>
    </property>

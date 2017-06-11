@@ -39,7 +39,8 @@ HEADERS += src/mainwindow.h \
     src/qmssettingsloader.h \
     src/qmssoundeffects.h \
     src/qmsstrings.h \
-    src/qmsutilities.h
+    src/qmsutilities.h \
+    src/aboutqmswindow.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
@@ -52,14 +53,16 @@ SOURCES += src/main.cpp \
     src/qmssettingsloader.cpp \
     src/qmssoundeffects.cpp \
     src/qmsstrings.cpp \
-    src/qmsutilities.cpp
+    src/qmsutilities.cpp \
+    src/aboutqmswindow.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc \
              resources/translations.qrc
 
 FORMS += forms/mainwindow.ui \
-         forms/boardresizewindow.ui
+         forms/boardresizewindow.ui \
+    forms/aboutqmswindow.ui
 
 win32 {
     RC_FILE += resources/qminesweeper.rc

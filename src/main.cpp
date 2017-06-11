@@ -60,31 +60,6 @@
  *     QMineSweeperSettingsLoader - Single instance class that holds all settings from a configuration file
  */
 
-static const char *PROGRAM_NAME{"QMineSweeper"};
-static const char *LONG_PROGRAM_NAME{"QMineSweeper"};
-static const char *REMOTE_URL{"https://github.com/tlewiscpp/QMineSweeper"};
-static const char *AUTHOR_NAME{"Tyler Lewis"};
-static const int SOFTWARE_MAJOR_VERSION{1};
-static const int SOFTWARE_MINOR_VERSION{1};
-static const int SOFTWARE_PATCH_VERSION{0};
-
-#if defined(__GNUC__)
-    static const char *COMPILER_NAME{"g++"};
-    static const int COMPILER_MAJOR_VERSION{__GNUC__};
-    static const int COMPILER_MINOR_VERSION{__GNUC_MINOR__};
-    static const int COMPILER_PATCH_VERSION{__GNUC_PATCHLEVEL__};
-#elif defined(_MSC_VER)
-    static const char *COMPILER_NAME{"msvc"};
-    static const int COMPILER_MAJOR_VERSION{_MSC_VER};
-    static const int COMPILER_MINOR_VERSION{0};
-    static const int COMPILER_PATCH_VERSION{0};
-#else
-    static const char *COMPILER_NAME{"unknown"};
-    static const int COMPILER_MAJOR_VERSION{0};
-    static const int COMPILER_MINOR_VERSION{0};
-    static const int COMPILER_PATCH_VERSION{0};
-#endif
-
 const std::list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
 const std::list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
 const std::list<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
@@ -94,10 +69,13 @@ void displayVersion();
 void interruptHandler(int signal);
 void installSignalHandlers(void (*signalHandler)(int));
 
+
+using namespace QmsStrings;
+using namespace QmsUtilities;
+using namespace QmsGlobalSettings;
+
 int main(int argc, char *argv[])
 {
-    using namespace QmsStrings;
-    using namespace QmsUtilities;
 
     QCoreApplication::setOrganizationName(AUTHOR_NAME);
     QCoreApplication::setOrganizationDomain(REMOTE_URL);

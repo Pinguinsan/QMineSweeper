@@ -1,5 +1,5 @@
 /***********************************************************************
-*    qmssettingsloader.cpp                                    *
+*    qmssettingsloader.cpp                                             *
 *    Class to load settings used in QMineSweeper                       *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
@@ -14,7 +14,6 @@
 *    Public license along with QMineSweeper                            *
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
-
 
 #include "qmssettingsloader.h"
 #include "qmsstrings.h"

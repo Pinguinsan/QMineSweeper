@@ -33,4 +33,5 @@
 #    endif
 #endif
 
+
 #endif // QMINESWEEPER_GLOBALDEFINITIONS_H

@@ -27,10 +27,12 @@
 #include <QActionGroup>
 #include <QTranslator>
 #include <QSettings>
+#include <QDateTime>
 
 #include "qmsbutton.h"
 #include "qmsicons.h"
 #include "gamecontroller.h"
+#include "aboutqmswindow.h"
 #include "boardresizewindow.h"
 #include "qmssoundeffects.h"
 #include "qmsutilities.h"
@@ -42,6 +44,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_boardresizewindow.h"
+#include "ui_aboutqmswindow.h"
 
 /* static const initializations */
 #if defined(__ANDROID__)
@@ -76,8 +79,10 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_eventTimer{new QTimer{}},
     m_playTimer{new SteadyEventTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
+    m_aboutQmsUi{new Ui::AboutQmsWindow{}},
     m_boardResizeUi{new Ui::BoardResizeWindow{}},
     m_ui{new Ui::MainWindow{}},
+    m_aboutQmsWindow{new AboutQmsWindow{}},
     m_boardSizeWindow{new BoardResizeWindow{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
     m_translator{new QTranslator{}},
@@ -105,6 +110,9 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
 
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
+    this->connect(this->m_aboutQmsWindow.get(), &AboutQmsWindow::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
+
     this->connect(this->m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, this, &MainWindow::onAboutQtActionTriggered);
     this->connect(this->m_ui->actionBoardSize, &QAction::triggered, this, &MainWindow::onChangeBoardSizeActionTriggered);
@@ -177,9 +185,25 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
             this->m_reductionSizeScaleFactor = 0.5;
         }
     #endif
+
+    using namespace QmsGlobalSettings;
+
+
+    /* initialize all strings for the AboutQmsWindow */
+    QString currentText{this->m_aboutQmsUi->lblProgramCopyright->text()};
+    this->m_aboutQmsUi->lblProgramCopyright->setText(currentText +
+                                            QS_NUMBER(QDateTime{}.date().year()) +
+                                            " - " +
+                                            AUTHOR_NAME);
+    this->m_aboutQmsUi->lblProgramVersion->setText(QString{"v%1.%2.%3"}.arg(QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION)));
+    //this->m_aboutQmsUi->lblProgramWebsite->setText();
+
+
     this->m_eventTimer->start();
     this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
+
+
 }
 
 void MainWindow::onPresetBoardSizeActionTriggered()
@@ -941,6 +965,11 @@ void MainWindow::onBoardResizeOkayButtonClicked()
     }
 }
 
+
+/* onBoardResizeCancelButtonClicked() : Called when the user cancels changing the board
+ * size from the BoardResizeWindow, using the "cancel" button. After the action is cancelled,
+ * the game is resumed (if it were paused) by emitting a gameResumed() signal, and all widgets
+ * on the MainWindow are re-enabled, as well as hiding the BoardResizeWindow */
 void MainWindow::onBoardResizeCancelButtonClicked()
 {
     this->setEnabled(true);
@@ -951,18 +980,35 @@ void MainWindow::onBoardResizeCancelButtonClicked()
     }
 }
 
-/* onAboutQtActionTriggered() : Called when the About->About Qt menu
- * option is clicked, causing the About Qt window (supplied by the Qt toolchain)
- * to show. This separate event is also hooked, allowing the game to be paused if necessary */
+/* onAboutQmsWindowClosed() : Called when the AboutQmsWindow is closed. If a game is currently
+ * in progress, the game is resumed by emitting a gameResumed() signal, and all widgets on the
+ * MainWindow are re-enabled, as well as hiding the AboutQmsWindow */
+void MainWindow::onAboutQmsWindowClosed()
+{
+    this->setEnabled(true);
+    this->m_aboutQmsWindow->hide();
+    this->show();
+    if (!this->m_gameController->gameOver()) {
+        emit(gameResumed());
+    }
+}
+
+/* onAboutQMineSweeperActionTriggered() : Called when the About->About QMineSweeper menu
+ * option is clicked, causing the About QMineSweeper window (defined in forms/aboutqmswindow.ui)
+ * to show. This method also pauses the game while the window is active */
 void MainWindow::onAboutQtActionTriggered()
 {
-    /*
-    if ((this->m_gcPtr->gameState() == GameState::GAME_ACTIVE) && (!this->m_gcPtr->gameOver())) {
-        this->setEnabled(false);
-        this->m_tempPauseFlag = true;
-        emit(gamePaused());
-    }
-    */
+    using namespace QmsGlobalSettings;
+    this->m_aboutQmsWindow->show();
+    this->m_aboutQmsWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
+}
+
+/* onAboutQmActionTriggered() : Called when the About->About Qt menu
+ * option is clicked, causing the About Qt window (supplied by the Qt toolchain)
+ * to show. This separate event is also hooked, allowing the game to be paused if necessary */
+void MainWindow::onAboutQMineSweeperActionTriggered()
+{
+
 }
 
 
