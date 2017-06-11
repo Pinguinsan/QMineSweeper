@@ -40,10 +40,10 @@ set (QMINESWEEPER_SOURCES "${SOURCE_ROOT}/src/main.cpp"
                           "${SOURCE_ROOT}/src/qmsbutton.cpp"
                           "${SOURCE_ROOT}/src/qmssettingsloader.cpp"
                           "${SOURCE_ROOT}/src/qmsapplicationsettings.cpp"
-                          "${SOURCE_ROOT}/src/boardresizewindow.cpp")
-
+                          "${SOURCE_ROOT}/src/boardresizewindow.cpp"
+                          "${SOURCE_ROOT}/src/aboutqmswindow.cpp")
     
-                      set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
+set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
                           "${SOURCE_ROOT}/src/gamecontroller.h"
                           "${SOURCE_ROOT}/src/minecoordinates.h"
                           "${SOURCE_ROOT}/src/qmsicons.h"
@@ -56,7 +56,8 @@ set (QMINESWEEPER_SOURCES "${SOURCE_ROOT}/src/main.cpp"
                           "${SOURCE_ROOT}/src/qmsbutton.h"
                           "${SOURCE_ROOT}/src/qmssettingsloader.h"
                           "${SOURCE_ROOT}/src/qmsapplicationsettings.h"
-                          "${SOURCE_ROOT}/src/globaldefinitions.h")
+                          "${SOURCE_ROOT}/src/globaldefinitions.h"
+                          "${SOURCE_ROOT}/src/aboutqmswindow.h")
 
 
 if (WIN32)
