@@ -142,9 +142,6 @@
      </layout>
     </item>
    </layout>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
-   <zorder>horizontalSpacer</zorder>
   </widget>
  </widget>
  <resources>
