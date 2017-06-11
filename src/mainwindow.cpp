@@ -102,8 +102,11 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
 {
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
-    this->setLanguage(this->m_language);
     this->m_boardResizeUi->setupUi(this->m_boardSizeWindow.get());
+    this->m_aboutQmsUi->setupUi(this->m_aboutQmsWindow.get());
+
+
+    this->setLanguage(this->m_language);
     this->m_boardSizeWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     this->m_boardSizeWindow->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
