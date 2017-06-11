@@ -1001,9 +1001,7 @@ void MainWindow::onAboutQmsWindowClosed()
  * to show. This method also pauses the game while the window is active */
 void MainWindow::onAboutQtActionTriggered()
 {
-    using namespace QmsGlobalSettings;
-    this->m_aboutQmsWindow->show();
-    this->m_aboutQmsWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
+
 }
 
 /* onAboutQmActionTriggered() : Called when the About->About Qt menu
@@ -1011,7 +1009,9 @@ void MainWindow::onAboutQtActionTriggered()
  * to show. This separate event is also hooked, allowing the game to be paused if necessary */
 void MainWindow::onAboutQMineSweeperActionTriggered()
 {
-
+    using namespace QmsGlobalSettings;
+    this->m_aboutQmsWindow->show();
+    this->m_aboutQmsWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
 }
 
 
