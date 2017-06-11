@@ -1010,7 +1010,7 @@ void MainWindow::onAboutQtActionTriggered()
  * AboutQmsWindow is clicked. This method displays the licence for QMineSweeper*/
 void MainWindow::onAboutQmsWindowLicenseButtonClicked(bool checked)
 {
-
+    (void)checked;
 }
 
 /* onAboutQmActionTriggered() : Called when the About->About Qt menu
