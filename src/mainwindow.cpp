@@ -202,6 +202,7 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
 
     this->connect(this->m_aboutQmsWindow.get(), &AboutQmsWindow::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
     this->connect(this->m_aboutQmsUi->btnLicense, &QPushButton::clicked, this, &MainWindow::onAboutQmsWindowLicenseButtonClicked);
+    this->connect(this->m_aboutQmsUi->btnCloseDialog, &QPushButton::clicked, this, &MainWindow::onAboutQmsWindowCloseButtonClicked);
 
 
     this->m_eventTimer->start();
@@ -1011,6 +1012,14 @@ void MainWindow::onAboutQtActionTriggered()
 void MainWindow::onAboutQmsWindowLicenseButtonClicked(bool checked)
 {
     (void)checked;
+}
+
+/* onAboutQmsWindowCloseButtonClicked() : called when the close button on the
+ * AboutQmsWindow is clicked. This method closes the window */
+void MainWindow::onAboutQmsWindowCloseButtonClicked(bool checked)
+{
+    (void)checked;
+    this->m_aboutQmsWindow->close();
 }
 
 /* onAboutQmActionTriggered() : Called when the About->About Qt menu

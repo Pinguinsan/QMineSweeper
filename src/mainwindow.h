@@ -172,6 +172,7 @@ private slots:
     void onAboutQtActionTriggered();
     void onAboutQMineSweeperActionTriggered();
     void onAboutQmsWindowLicenseButtonClicked(bool checked);
+    void onAboutQmsWindowCloseButtonClicked(bool checked);
     void onAboutQmsWindowClosed();
     void onApplicationExit();
     void onBoardResizeOkayButtonClicked();
