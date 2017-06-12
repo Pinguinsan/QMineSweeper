@@ -102,6 +102,7 @@ void BoardResizeDialog::onPresetBoardSizeActionTriggered(bool checked)
  * Typically called after resizing the UI on this widget / window */
 void BoardResizeDialog::centerAndFitWindow(QDesktopWidget *desktopWidget)
 {
+    this->setFixedSize(this->minimumSize());
     this->calculateXYPlacement(desktopWidget);
     this->move(this->m_xPlacement, this->m_yPlacement);
 }

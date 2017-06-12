@@ -89,8 +89,8 @@ void AboutQmsDialog::onCloseButtonClicked(bool checked)
  * Typically called after resizing the UI on this widget / window */
 void AboutQmsDialog::centerAndFitWindow(QDesktopWidget *desktopWidget)
 {
-    this->calculateXYPlacement(desktopWidget);
     this->setFixedSize(this->minimumSize());
+    this->calculateXYPlacement(desktopWidget);
     this->move(this->m_xPlacement, this->m_yPlacement);
 }
 
