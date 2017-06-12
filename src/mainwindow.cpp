@@ -47,8 +47,8 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_boardresizewindow.h"
-#include "ui_aboutqmswindow.h"
+#include "ui_boardresizedialog.h"
+#include "ui_aboutqmsdialog.h"
 
 /* static const initializations */
 #if defined(__ANDROID__)
@@ -83,10 +83,9 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_eventTimer{new QTimer{}},
     m_playTimer{new SteadyEventTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
-    m_boardResizeUi{new Ui::BoardResizeWindow{}},
     m_ui{new Ui::MainWindow{}},
     m_aboutQmsDialog{new AboutQmsDialog{}},
-    m_boardSizeWindow{new BoardResizeDialog{}},
+    m_boardSizeDialog{new BoardResizeDialog{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
     m_translator{new QTranslator{}},
     m_statusBarLabel{new QLabel{}},
@@ -180,10 +179,10 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     using namespace QmsGlobalSettings;
 
     /* initialize all strings and stuff for the BoardResizeWindow */
-    this->m_boardSizeWindow->setWindowFlag(Qt::WindowStaysOnTopHint);
-    this->m_boardSizeWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    this->m_boardSizeWindow->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
-    this->connect(this->m_boardSizeWindow.get(), &BoardResizeDialog::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
+    this->m_boardSizeDialog->setWindowFlag(Qt::WindowStaysOnTopHint);
+    this->m_boardSizeDialog->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
+    this->m_boardSizeDialog->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
+    this->connect(this->m_boardSizeDialog.get(), &BoardResizeDialog::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
 
 
     this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
@@ -273,7 +272,7 @@ void MainWindow::onLanguageSelected(bool checked)
  * the form is visible, for use in pausing or unpausing the game */
 bool MainWindow::boardResizeDialogVisible()
 {
-    return this->m_boardSizeWindow->isVisible();
+    return this->m_boardSizeDialog->isVisible();
 }
 
 /* showEvent() : Called when the main window is shown, and emits a
@@ -668,7 +667,7 @@ void MainWindow::onResetButtonClicked()
 void MainWindow::doGameReset()
 {
     using namespace QmsStrings;
-    this->m_boardSizeWindow->hide();
+    this->m_boardSizeDialog->hide();
     for (auto &it : this->m_gameController->mineSweeperButtons()) {
         it.second->setChecked(false);
         it.second->setFlat(false);
@@ -854,8 +853,8 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     using namespace QmsUtilities;
     using namespace QmsStrings;
     this->setEnabled(false);
-    this->m_boardSizeWindow->show(this->m_gameController->numberOfColumns(), this->m_gameController->numberOfRows());
-    this->m_boardSizeWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
+    this->m_boardSizeDialog->show(this->m_gameController->numberOfColumns(), this->m_gameController->numberOfRows());
+    this->m_boardSizeDialog->centerAndFitWindow(this->m_qDesktopWidget.get());
     emit(gamePaused());
 }
 

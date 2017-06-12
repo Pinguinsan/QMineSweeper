@@ -28,7 +28,6 @@
 namespace Ui
 {
     class MainWindow;
-    class BoardResizeWindow;
 }
 
 class QmsButton;
@@ -90,10 +89,9 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
-    std::unique_ptr<Ui::BoardResizeWindow> m_boardResizeUi;
     std::unique_ptr<Ui::MainWindow> m_ui;
     std::unique_ptr<AboutQmsDialog> m_aboutQmsDialog;
-    std::unique_ptr<BoardResizeDialog>  m_boardSizeWindow;
+    std::unique_ptr<BoardResizeDialog>  m_boardSizeDialog;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
     std::unique_ptr<QLabel> m_statusBarLabel;

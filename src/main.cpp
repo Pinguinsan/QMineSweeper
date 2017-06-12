@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
 void interruptHandler(int signalNumber)
 {
 #if defined(_WIN32)
-
+    Q_UNUSED(signalNumber);
 #else
     if ((signalNumber == SIGUSR1) || (signalNumber == SIGUSR2) || (signalNumber == SIGCHLD)) {
         return;
@@ -220,7 +220,7 @@ void interruptHandler(int signalNumber)
 void installSignalHandlers(void (*signalHandler)(int))
 {
 #if defined(_WIN32)
-
+    Q_UNUSED(signalHandler);
 #else
     static struct sigaction signalInterruptHandler;
     signalInterruptHandler.sa_handler = signalHandler;

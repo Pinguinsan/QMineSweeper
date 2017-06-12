@@ -61,6 +61,7 @@ BoardResizeDialog::~BoardResizeDialog()
 
 void BoardResizeDialog::showEvent(QShowEvent *event)
 {
+    Q_UNUSED(event);
     this->m_resultToEmit.columns = 0;
     this->m_resultToEmit.rows = 0;
     this->m_resultToEmit.userAction = DialogCode::Rejected;
