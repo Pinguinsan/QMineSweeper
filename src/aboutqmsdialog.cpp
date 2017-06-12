@@ -20,11 +20,13 @@
 
 #include "globaldefinitions.h"
 #include "qmsapplicationsettings.h"
+#include "qmsstrings.h"
 
 #include <QDesktopWidget>
 #include <QRect>
 #include <QDateTime>
 #include <QPushButton>
+#include <QFile>
 
 #include <memory>
 
@@ -34,6 +36,7 @@ AboutQmsDialog::AboutQmsDialog() :
     m_yPlacement{0}
 {
     using namespace QmsGlobalSettings;
+    using namespace QmsStrings;
 
     this->m_ui->setupUi(this);
 
@@ -46,6 +49,13 @@ AboutQmsDialog::AboutQmsDialog() :
     this->m_ui->lblProgramWebsite->setOpenExternalLinks(true);
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     this->m_ui->tbAboutQmsLicense->setVisible(false);
+
+    QFile licenseFile{QmsStrings::QMINESWEEPER_LICENSE_PATH};
+    licenseFile.open(QIODevice::OpenModeFlag::ReadOnly);
+    this->m_ui->tbAboutQmsLicense->append(licenseFile.readAll());
+    licenseFile.close();
+    this->m_ui->tbAboutQmsLicense->moveCursor(QTextCursor::Start);
+    this->m_ui->tbAboutQmsLicense->ensureCursorVisible();
 
     this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutQmsDialog::onLicenseButtonClicked);
     this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutQmsDialog::onCloseButtonClicked);
