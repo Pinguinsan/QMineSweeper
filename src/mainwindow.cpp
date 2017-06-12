@@ -28,12 +28,16 @@
 #include <QTranslator>
 #include <QSettings>
 #include <QDateTime>
+#include <QSpacerItem>
+
+#include <cctype>
+#include <algorithm>
 
 #include "qmsbutton.h"
 #include "qmsicons.h"
 #include "gamecontroller.h"
-#include "aboutqmswindow.h"
-#include "boardresizewindow.h"
+#include "aboutqmsdialog.h"
+#include "boardresizedialog.h"
 #include "qmssoundeffects.h"
 #include "qmsutilities.h"
 #include "qmsstrings.h"
@@ -79,13 +83,13 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_eventTimer{new QTimer{}},
     m_playTimer{new SteadyEventTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
-    m_aboutQmsUi{new Ui::AboutQmsWindow{}},
     m_boardResizeUi{new Ui::BoardResizeWindow{}},
     m_ui{new Ui::MainWindow{}},
-    m_aboutQmsWindow{new AboutQmsWindow{}},
-    m_boardSizeWindow{new BoardResizeWindow{}},
+    m_aboutQmsDialog{new AboutQmsDialog{}},
+    m_boardSizeWindow{new BoardResizeDialog{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
     m_translator{new QTranslator{}},
+    m_statusBarLabel{new QLabel{}},
     m_gameIcons{gameIcons},
     m_gameSoundEffects{gameSoundEffects},
     m_settingsLoader{settingsLoader},
@@ -102,18 +106,17 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
 {
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
-    this->m_boardResizeUi->setupUi(this->m_boardSizeWindow.get());
-    this->m_aboutQmsUi->setupUi(this->m_aboutQmsWindow.get());
 
+    this->m_ui->statusBar->addWidget(this->m_statusBarLabel.get());
+    if (this->m_gameSoundEffects->isMuted()) {
+        this->m_ui->actionMuteSound->setChecked(true);
+    }
 
     this->setLanguage(this->m_language);
-    this->m_boardSizeWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    this->m_boardSizeWindow->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
 
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
-    this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
 
     this->connect(this->m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, this, &MainWindow::onAboutQtActionTriggered);
@@ -121,18 +124,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this->m_ui->actionMuteSound, &QAction::triggered, this, &MainWindow::onActionMuteSoundChecked);
 
     this->connect(this->m_ui->resetButton, &QPushButton::clicked, this, &MainWindow::onResetButtonClicked);
-    this->connect(this->m_boardResizeUi->btnOkay, &QPushButton::clicked, this, &MainWindow::onBoardResizeOkayButtonClicked);
-    this->connect(this->m_boardResizeUi->btnCancel, &QPushButton::clicked, this, &MainWindow::onBoardResizeCancelButtonClicked);
-    this->connect(this->m_boardResizeUi->btnIncrementColumns, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
-    this->connect(this->m_boardResizeUi->btnDecrementColumns, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
-    this->connect(this->m_boardResizeUi->btnIncrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
-    this->connect(this->m_boardResizeUi->btnDecrementRows, &QPushButton::clicked, this, &MainWindow::onBoardResizeActionClicked);
-
-    this->connect(this->m_boardResizeUi->actionBeginner, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
-    this->connect(this->m_boardResizeUi->actionIntermediate, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
-    this->connect(this->m_boardResizeUi->actionAdvanced, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
-    this->connect(this->m_boardResizeUi->actionExtreme, &QAction::triggered, this, &MainWindow::onPresetBoardSizeActionTriggered);
-
     this->connect(this->m_gameController.get(), &GameController::winEvent, this, &MainWindow::onGameWon);
     this->connect(this->m_gameController.get(), &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
     this->connect(this->m_gameController.get(), &GameController::userIsNoLongerIdle, this, &MainWindow::startUserIdleTimer);
@@ -152,8 +143,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this->m_ui->menuFile, &QMenu::aboutToHide, this->m_gameController.get(), &GameController::onContextMenuInactive);
     this->connect(this->m_ui->menuPreferences, &QMenu::aboutToHide, this->m_gameController.get(), &GameController::onContextMenuInactive);
     this->connect(this->m_ui->menuHelp, &QMenu::aboutToHide, this->m_gameController.get(), &GameController::onContextMenuInactive);
-
-    this->connect(this->m_boardSizeWindow.get(), &BoardResizeWindow::aboutToClose, this, &MainWindow::onCustomDialogClosed);
 
     this->connect(this, &MainWindow::boardResize, this->m_gameController.get(), &GameController::onBoardResizeTriggered);
     this->connect(this, &MainWindow::mineDisplayed, this->m_gameController.get(), &GameController::onMineDisplayed);
@@ -190,45 +179,28 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
 
     using namespace QmsGlobalSettings;
 
+    /* initialize all strings and stuff for the BoardResizeWindow */
+    this->m_boardSizeWindow->setWindowFlag(Qt::WindowStaysOnTopHint);
+    this->m_boardSizeWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
+    this->m_boardSizeWindow->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
+    this->connect(this->m_boardSizeWindow.get(), &BoardResizeDialog::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
 
-    /* initialize all strings for the AboutQmsWindow and connect slots */
-    QString currentText{this->m_aboutQmsUi->lblProgramCopyright->text()};
-    this->m_aboutQmsUi->lblProgramCopyright->setText(currentText +
-                                            QS_NUMBER(QDateTime{}.date().year()) +
-                                            " - " +
-                                            AUTHOR_NAME);
-    this->m_aboutQmsUi->lblProgramVersion->setText(QString{"v%1.%2.%3"}.arg(QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION)));
-    //this->m_aboutQmsUi->lblProgramWebsite->setText();
 
-    this->connect(this->m_aboutQmsWindow.get(), &AboutQmsWindow::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
-    this->connect(this->m_aboutQmsUi->btnLicense, &QPushButton::clicked, this, &MainWindow::onAboutQmsWindowLicenseButtonClicked);
-    this->connect(this->m_aboutQmsUi->btnCloseDialog, &QPushButton::clicked, this, &MainWindow::onAboutQmsWindowCloseButtonClicked);
-
+    this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
+    this->connect(this->m_aboutQmsDialog.get(), &AboutQmsDialog::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
 
     this->m_eventTimer->start();
     this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
 
-
 }
 
-void MainWindow::onPresetBoardSizeActionTriggered()
+/* displayStatusMessage() : Called to include a space in the beginning
+ * of the statusBar message, because without it, it is too closely aligned
+ * to the corner of the window and doesn't look quite right */
+void MainWindow::displayStatusMessage(QString statusMessage)
 {
-    using namespace QmsUtilities;
-    if (QAction *triggeredAction{dynamic_cast<QAction *>(QObject::sender())}) {
-        auto foundPosition = triggeredAction->text().toStdString().find_last_of(" ");
-        auto maybeDimensions = triggeredAction->text().toStdString().substr(foundPosition);
-        maybeDimensions = stripAllFromString(maybeDimensions, "(");
-        maybeDimensions = stripAllFromString(maybeDimensions, ")");
-        maybeDimensions = stripAllFromString(maybeDimensions, " ");
-        auto dimensions = tryParseDimensions(maybeDimensions);
-        if ((dimensions.first == -1) || (dimensions.second == -1)) {
-            throw std::runtime_error(TStringFormat("In MainWindow::onBeginnerBoardSizeTriggered() : dimensions parsed from QAction menu item are not valid (QAction::text() = \"{0}\", this should never happen)", maybeDimensions));
-        }
-        this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(dimensions.first));
-        this->m_boardResizeUi->lblRows->setText(QS_NUMBER(dimensions.first));
-    }
-
+    this->m_statusBarLabel->setText(" " + statusMessage);
 }
 
 /* collectApplicationSettings() : Called when a the main windows is closing.
@@ -240,6 +212,7 @@ QmsApplicationSettings MainWindow::collectApplicationSettings() const
     QmsApplicationSettings returnSettings;
     returnSettings.setNumberOfColumns(this->m_gameController->numberOfColumns());
     returnSettings.setNumberOfRows(this->m_gameController->numberOfRows());
+    returnSettings.setAudioVolume(this->m_gameSoundEffects->audioVolume());
     return returnSettings;
 }
 
@@ -268,7 +241,7 @@ void MainWindow::setLanguage(QmsSettingsLoader::SupportedLanguage language)
         }
         this->m_translator->load(targetTranslationFile);
         this->m_language = language;
-        this->m_ui->statusBar->showMessage(QStatusBar::tr(this->m_ui->statusBar->currentMessage().toStdString().c_str()));
+        this->displayStatusMessage(QStatusBar::tr(this->m_ui->statusBar->currentMessage().toStdString().c_str()));
         this->setWindowTitle(MainWindow::tr(this->windowTitle().toStdString().c_str()));
         this->m_ui->retranslateUi(this);
     }
@@ -353,11 +326,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 /* onCustomDialogClosed() : Called when a custom dialog (board resize, etc)
  * is closed, signaling to the main game window to resume the game, if a game is in progress */
-void MainWindow::onCustomDialogClosed()
+void MainWindow::onBoardResizeDialogClosed(int columns, int rows, QDialog::DialogCode userAction)
 {
     this->setEnabled(true);
-    if (!this->m_gameController->initialClickFlag() && !this->m_gameController->gameOver()) {
-        emit (gameResumed());
+    if (userAction == QDialog::DialogCode::Accepted) {
+        this->invalidateSizeCaches();
+        emit(boardResize(columns, rows));
+    } else {
+        if (!this->m_gameController->initialClickFlag() && !this->m_gameController->gameOver()) {
+            emit (gameResumed());
+        }
     }
 }
 
@@ -409,7 +387,7 @@ void MainWindow::centerAndFitWindow()
     this->setFixedSize(this->minimumSize());
 #endif
     */
-    //this->setFixedSize(this->minimumSize());
+    this->setFixedSize(this->minimumSize());
     this->calculateXYPlacement();
     this->move(this->m_xPlacement, this->m_yPlacement);
 }
@@ -419,8 +397,8 @@ void MainWindow::centerAndFitWindow()
  * is used to change the smiley face to a sleepy face */
 void MainWindow::onGameStarted()
 {
-    startGameTimer();
-    startUserIdleTimer();
+    this->startGameTimer();
+    this->startUserIdleTimer();
 }
 
 /* setupNewGame() : Called when a gameStarted() signal is emitted
@@ -434,8 +412,8 @@ void MainWindow::setupNewGame()
         delete wItem;
     }
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
-    populateMineField();
-    centerAndFitWindow();
+    this->populateMineField();
+    this->centerAndFitWindow();
 }
 
 /* onGamePaused() : Called when a gamePaused() signal is emitted
@@ -702,7 +680,7 @@ void MainWindow::doGameReset()
 
     emit(resetGame());
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
-    this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);
+    this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
     this->updateNumberOfMinesLCD(this->m_gameController->numberOfMines());
     this->updateNumberOfMovesMadeLCD(0);
 }
@@ -759,15 +737,15 @@ void MainWindow::updateVisibleGameTimer()
             this->m_playTimer->resume();
         }
         this->m_playTimer->update();
-        gameTime = toQString(this->m_playTimer->toString(GameController::MILLISECOND_DELAY_DIGITS()));
-        this->m_ui->statusBar->showMessage(gameTime);
+        gameTime = toQString(this->m_playTimer->toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
+        this->displayStatusMessage(gameTime);
     } else if (!this->m_gameController->initialClickFlag()){
         this->m_playTimer->pause();
         this->m_playTimer->update();
-        gameTime = toQString(this->m_playTimer->toString(GameController::MILLISECOND_DELAY_DIGITS()));
-        this->m_ui->statusBar->showMessage(gameTime);
+        gameTime = toQString(this->m_playTimer->toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
+        this->displayStatusMessage(gameTime);
     } else {
-        this->m_ui->statusBar->showMessage(START_NEW_GAME_INSTRUCTION);
+        this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
     }
 }
 
@@ -855,9 +833,7 @@ void MainWindow::onMineExplosionEventTriggered()
 {
     using namespace QmsUtilities;
     displayAllMines();
-    if (this->m_soundEnabled) {
-        this->m_gameSoundEffects->explosionEffect.play();
-    }
+    this->m_gameSoundEffects->explosionEffect().play();
     emit(mineExplosionEvent());
 }
 
@@ -866,11 +842,7 @@ void MainWindow::onMineExplosionEventTriggered()
  * are disabled. If not, they are enabled */
 void MainWindow::onActionMuteSoundChecked(bool checked)
 {
-    if (checked) {
-        this->m_soundEnabled = false;
-    } else {
-        this->m_soundEnabled = true;
-    }
+    this->m_gameSoundEffects->setAudioMuted(checked);
 }
 
 /* onChangeBoardSizeActionTriggered() : Called when the "change board size" menu option
@@ -882,108 +854,9 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     using namespace QmsUtilities;
     using namespace QmsStrings;
     this->setEnabled(false);
-    this->m_boardResizeUi->statusBar->showMessage(QStringFormat("%s%i%s%i", RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING,
-                                                                   this->m_gameController->numberOfColumns(),
-                                                                   RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
-                                                                   this->m_gameController->numberOfRows()));
-
-    this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(this->m_gameController->numberOfColumns()));
-    this->m_boardResizeUi->lblRows->setText(QS_NUMBER(this->m_gameController->numberOfRows()));
-#if defined(__ANDROID__)
-    if (!this->m_boardSizeGeometrySet) {
-        this->m_boardResizeUi->btnOkay->setFixedSize(this->m_boardResizeUi->btnOkay->size()*4);
-        this->m_boardResizeUi->btnCancel->setFixedSize(this->m_boardResizeUi->btnOkay->size()*4);
-        this->m_boardSizeWindow->setFixedHeight(this->m_qDesktopWidget->availableGeometry().height() / 5);
-        this->m_boardSizeWindow->setFixedWidth(this->m_qDesktopWidget->availableGeometry().width());
-        QFont font;
-        font.setPointSize(font.pointSize() + 50);
-        this->m_boardResizeUi->lblColumns->setFont(font);
-        this->m_boardResizeUi->lblRows->setFont(font);
-
-        this->m_boardResizeUi->lblColumns->setFixedSize(this->m_boardResizeUi->lblColumns->size()*4);
-        this->m_boardResizeUi->lblRows->setFixedSize(this->m_boardResizeUi->lblRows->size()*4);
-        this->m_boardSizeGeometrySet = true;
-    }
-#endif
-    this->m_boardSizeWindow->show();
+    this->m_boardSizeWindow->show(this->m_gameController->numberOfColumns(), this->m_gameController->numberOfRows());
     this->m_boardSizeWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
     emit(gamePaused());
-}
-
-/* onBoardResizeActionClicked() : When the BoardSize dialog increment or decrement
- * buttons are clicked (columns or rows), this function is called and the corresponding
- * label on the BoardResize window is updated, corresponding to which one was clicked (found
- * in this method by casting the QObject::sender to a QPushButton and comparing pointers */
-void MainWindow::onBoardResizeActionClicked()
-{
-    if (QPushButton *pressedButton{dynamic_cast<QPushButton *>(QObject::sender())}) {
-        int currentColumns{STRING_TO_INT(this->m_boardResizeUi->lblColumns->text().toStdString().c_str())};
-        int currentRows{STRING_TO_INT(this->m_boardResizeUi->lblRows->text().toStdString().c_str())};
-        if (pressedButton == this->m_boardResizeUi->btnIncrementColumns) {
-            this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(currentColumns + 1));
-        } else if (pressedButton == this->m_boardResizeUi->btnDecrementColumns) {
-            if (currentColumns != 0) {
-                this->m_boardResizeUi->lblColumns->setText(QS_NUMBER(currentColumns - 1));
-            }
-        } else if (pressedButton == this->m_boardResizeUi->btnIncrementRows) {
-            this->m_boardResizeUi->lblRows->setText(QS_NUMBER(currentRows + 1));
-        } else if (pressedButton == this->m_boardResizeUi->btnDecrementRows) {
-            if (currentRows != 0) {
-                this->m_boardResizeUi->lblRows->setText(QS_NUMBER(currentRows - 1));
-            }
-        }
-    }
-}
-
-/* onBsuiOkayButtonClicked() : When the BoardSize dialog's "ok" button is clicked,
- * the player has requested to change the board size and start a new game. If there is
- * an active game, the player is asked if they'd like to stop that game and start a new one.
- * If they reply that they want to, a new game is setup. Otherwise, the currently
- * running game is reactivated, including all player timers */
-void MainWindow::onBoardResizeOkayButtonClicked()
-{
-    using namespace QmsUtilities;
-    using namespace QmsStrings;
-    this->setEnabled(true);
-    this->m_boardSizeWindow->hide();
-    int maybeNewColumns{STRING_TO_INT(this->m_boardResizeUi->lblColumns->text().toStdString().c_str())};
-    int maybeNewRows{STRING_TO_INT(this->m_boardResizeUi->lblRows->text().toStdString().c_str())};
-    if ((maybeNewColumns == this->m_gameController->numberOfColumns()) && (maybeNewRows == this->m_gameController->numberOfRows())) {
-        if (!this->m_gameController->gameOver()) {
-            emit(gameResumed());
-        }
-        return;
-    }
-    QMessageBox::StandardButton userReply;
-    QString questionBoxMessage{QStringFormat("%s%i%s%i%s", RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
-                                                         maybeNewColumns,
-                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
-                                                         maybeNewRows,
-                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
-    userReply = static_cast<QMessageBox::StandardButton>(QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No));
-    if (userReply == QMessageBox::Yes) {
-        this->invalidateSizeCaches();
-        emit(boardResize(maybeNewColumns, maybeNewRows));
-    } else {
-        if (!this->m_gameController->gameOver()) {
-            emit(gameResumed());
-        }
-    }
-}
-
-
-/* onBoardResizeCancelButtonClicked() : Called when the user cancels changing the board
- * size from the BoardResizeWindow, using the "cancel" button. After the action is cancelled,
- * the game is resumed (if it were paused) by emitting a gameResumed() signal, and all widgets
- * on the MainWindow are re-enabled, as well as hiding the BoardResizeWindow */
-void MainWindow::onBoardResizeCancelButtonClicked()
-{
-    this->setEnabled(true);
-    this->m_boardSizeWindow->hide();
-    this->show();
-    if (!this->m_gameController->gameOver()) {
-        emit(gameResumed());
-    }
 }
 
 /* onAboutQmsWindowClosed() : Called when the AboutQmsWindow is closed. If a game is currently
@@ -992,34 +865,19 @@ void MainWindow::onBoardResizeCancelButtonClicked()
 void MainWindow::onAboutQmsWindowClosed()
 {
     this->setEnabled(true);
-    this->m_aboutQmsWindow->hide();
     this->show();
+    this->m_aboutQmsDialog->hide();
     if (!this->m_gameController->gameOver()) {
         emit(gameResumed());
     }
 }
 
 /* onAboutQMineSweeperActionTriggered() : Called when the About->About QMineSweeper menu
- * option is clicked, causing the About QMineSweeper window (defined in forms/aboutqmswindow.ui)
+ * option is clicked, causing the About QMineSweeper window (defined in forms/aboutqmsdialog.ui)
  * to show. This method also pauses the game while the window is active */
 void MainWindow::onAboutQtActionTriggered()
 {
 
-}
-
-/* onAboutQmsWindowLicenseButtonClicked() : called when the license button on the
- * AboutQmsWindow is clicked. This method displays the licence for QMineSweeper*/
-void MainWindow::onAboutQmsWindowLicenseButtonClicked(bool checked)
-{
-    (void)checked;
-}
-
-/* onAboutQmsWindowCloseButtonClicked() : called when the close button on the
- * AboutQmsWindow is clicked. This method closes the window */
-void MainWindow::onAboutQmsWindowCloseButtonClicked(bool checked)
-{
-    (void)checked;
-    this->m_aboutQmsWindow->close();
 }
 
 /* onAboutQmActionTriggered() : Called when the About->About Qt menu
@@ -1028,8 +886,10 @@ void MainWindow::onAboutQmsWindowCloseButtonClicked(bool checked)
 void MainWindow::onAboutQMineSweeperActionTriggered()
 {
     using namespace QmsGlobalSettings;
-    this->m_aboutQmsWindow->show();
-    this->m_aboutQmsWindow->centerAndFitWindow(this->m_qDesktopWidget.get());
+    this->setEnabled(false);
+    emit(gamePaused());
+    this->m_aboutQmsDialog->show();
+    this->m_aboutQmsDialog->centerAndFitWindow(this->m_qDesktopWidget.get());
 }
 
 
@@ -1043,37 +903,37 @@ void MainWindow::onApplicationExit()
 /* bindGameController() : Convenience function for late binding of a shared_ptr
  * to the GameController instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindGameController(std::shared_ptr<GameController> gc)
+void MainWindow::bindGameController(std::shared_ptr<GameController> gameController)
 {
     this->m_gameController.reset();
-    this->m_gameController = gc;
+    this->m_gameController = gameController;
 }
 
 /* bindQDesktopWidget() : Convenience function for late binding of a shared_ptr
  * to the QDesktopWidget instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qdw)
+void MainWindow::bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget)
 {
     this->m_qDesktopWidget.reset();
-    this->m_qDesktopWidget = qdw;
+    this->m_qDesktopWidget = qDesktopWidget;
 }
 
 /* bindQMineSweeperIcons() : Convenience function for late binding of a shared_ptr
  * to the QMineSweeperIcons instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QmsIcons> qmsiPtr)
+void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QmsIcons> gameIcons)
 {
     this->m_gameIcons.reset();
-    this->m_gameIcons = qmsiPtr;
+    this->m_gameIcons = gameIcons;
 }
 
 /* bindGameController() : Convenience function for late binding of a shared_ptr
  * to the GameController instance, to support dependancy injection for MainWindow,
  * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> qmssePtr)
+void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> gameSoundEffects)
 {
     this->m_gameSoundEffects.reset();
-    this->m_gameSoundEffects = qmssePtr;
+    this->m_gameSoundEffects = gameSoundEffects;
 }
 
 /* bindQMineSweeperSettingsLoader() : Convenience function for late binding of a shared_ptr

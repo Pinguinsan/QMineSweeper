@@ -68,35 +68,37 @@ namespace QmsStrings
     extern const char *SPANISH_TRANSLATION_PATH;
     extern const char *JAPANESE_TRANSLATION_PATH;
 
-    extern const char *MINE_ICON_16_STRING;
-    extern const char *MINE_ICON_24_STRING;
-    extern const char *MINE_ICON_32_STRING;
-    extern const char *MINE_ICON_48_STRING;
-    extern const char *MINE_ICON_64_STRING;
-    extern const char *MINE_ICON_72_STRING;
-    extern const char *MINE_ICON_96_STRING;
-    extern const char *MINE_ICON_128_STRING;
-    extern const char *FACE_ICON_BIG_SMILEY_STRING;
-    extern const char *FACE_ICON_CRAZY_STRING;
-    extern const char *FACE_ICON_FROWNY_STRING;
-    extern const char *FACE_ICON_SLEEPY_STRING;
-    extern const char *FACE_ICON_SMILEY_STRING;
-    extern const char *FACE_ICON_WINKY_STRING;
-    extern const char *COUNT_MINES_0_STRING;
-    extern const char *COUNT_MINES_1_STRING;
-    extern const char *COUNT_MINES_2_STRING;
-    extern const char *COUNT_MINES_3_STRING;
-    extern const char *COUNT_MINES_4_STRING;
-    extern const char *COUNT_MINES_5_STRING;
-    extern const char *COUNT_MINES_6_STRING;
-    extern const char *COUNT_MINES_7_STRING;
-    extern const char *COUNT_MINES_8_STRING;
-    extern const char *STATUS_ICON_FLAG_STRING;
-    extern const char *STATUS_ICON_QUESTION_STRING;
-    extern const char *STATUS_ICON_FLAG_CHECK_STRING;
-    extern const char *STATUS_ICON_FLAG_X_STRING;
+    extern const char *MINE_ICON_16_PATH;
+    extern const char *MINE_ICON_24_PATH;
+    extern const char *MINE_ICON_32_PATH;
+    extern const char *MINE_ICON_48_PATH;
+    extern const char *MINE_ICON_64_PATH;
+    extern const char *MINE_ICON_72_PATH;
+    extern const char *MINE_ICON_96_PATH;
+    extern const char *MINE_ICON_128_PATH;
+    extern const char *FACE_ICON_BIG_SMILEY_PATH;
+    extern const char *FACE_ICON_CRAZY_PATH;
+    extern const char *FACE_ICON_FROWNY_PATH;
+    extern const char *FACE_ICON_SLEEPY_PATH;
+    extern const char *FACE_ICON_SMILEY_PATH;
+    extern const char *FACE_ICON_WINKY_PATH;
+    extern const char *COUNT_MINES_0_PATH;
+    extern const char *COUNT_MINES_1_PATH;
+    extern const char *COUNT_MINES_2_PATH;
+    extern const char *COUNT_MINES_3_PATH;
+    extern const char *COUNT_MINES_4_PATH;
+    extern const char *COUNT_MINES_5_PATH;
+    extern const char *COUNT_MINES_6_PATH;
+    extern const char *COUNT_MINES_7_PATH;
+    extern const char *COUNT_MINES_8_PATH;
+    extern const char *STATUS_ICON_FLAG_PATH;
+    extern const char *STATUS_ICON_QUESTION_PATH;
+    extern const char *STATUS_ICON_FLAG_CHECK_PATH;
+    extern const char *STATUS_ICON_FLAG_X_PATH;
 
-    extern const char *EXPLOSION_EFFECT_SOURCE_STRING;
+    extern const char *EXPLOSION_EFFECT_SOURCE_PATH;
+
+    extern const char *QMINESWEEPER_LICENSE_PATH;
 }
 
 #endif //QMINESWEEPER_QMSSTRINGS_H

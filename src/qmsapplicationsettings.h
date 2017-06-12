@@ -56,13 +56,16 @@ public:
     QmsApplicationSettings();
     int numberOfColumns() const;
     int numberOfRows() const;
+    int audioVolume() const;
 
     void setNumberOfColumns(int columns);
     void setNumberOfRows(int rows);
+    void setAudioVolume(int volume);
 
 private:
     int m_numberOfColumns;
     int m_numberOfRows;
+    int m_audioVolume;
 };
 
 #endif // QMINESWEEPER_QMSAPPLICATIONSETTINGS_H

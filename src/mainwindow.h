@@ -18,7 +18,7 @@
 #define QMINESWEEPER_MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QDialog>
 #include <iostream>
 #include <memory>
 
@@ -29,13 +29,12 @@ namespace Ui
 {
     class MainWindow;
     class BoardResizeWindow;
-    class AboutQmsWindow;
 }
 
 class QmsButton;
 class GameController;
-class AboutQmsWindow;
-class BoardResizeWindow;
+class AboutQmsDialog;
+class BoardResizeDialog;
 class QmsIcons;
 class QmsSoundEffects;
 class QmsApplicationSettings;
@@ -47,6 +46,8 @@ class QString;
 class QTimer;
 class QActionGroup;
 class QTranslator;
+class QLabel;
+class QDialog;
 
 
 class MainWindow : public QMainWindow
@@ -89,13 +90,13 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
-    std::unique_ptr<Ui::AboutQmsWindow> m_aboutQmsUi;
     std::unique_ptr<Ui::BoardResizeWindow> m_boardResizeUi;
     std::unique_ptr<Ui::MainWindow> m_ui;
-    std::unique_ptr<AboutQmsWindow> m_aboutQmsWindow;
-    std::unique_ptr<BoardResizeWindow>  m_boardSizeWindow;
+    std::unique_ptr<AboutQmsDialog> m_aboutQmsDialog;
+    std::unique_ptr<BoardResizeDialog>  m_boardSizeWindow;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
+    std::unique_ptr<QLabel> m_statusBarLabel;
     std::unique_ptr<QMediaPlayer> m_soundEffects;
     std::shared_ptr<QmsIcons> m_gameIcons;
     std::shared_ptr<QmsSoundEffects> m_gameSoundEffects;
@@ -116,7 +117,6 @@ private:
     bool m_iconReductionSizeCacheIsValid;
     bool m_tempPauseFlag;
     bool m_boardSizeGeometrySet;
-    bool m_soundEnabled;
 
     static const int s_TASKBAR_HEIGHT;
     static const int s_GAME_TIMER_INTERVAL;
@@ -143,6 +143,7 @@ private:
     static const long long int constexpr MILLISECONDS_PER_MINUTE{60000};
     static const long long int constexpr MILLISECONDS_PER_HOUR{3600000};
 
+    void displayStatusMessage(QString statusMessage);
 signals:
     void resetButtonClicked();
     void resetGame();
@@ -162,27 +163,21 @@ public slots:
     void onMineExplosionEventTriggered();
     void setupNewGame();
     void onGameWon();
-    void onCustomDialogClosed();
+    void onBoardResizeDialogClosed(int columns, int rows, QDialog::DialogCode userResult);
     void startUserIdleTimer();
 
 private slots:
     void eventLoop();
     void onResetButtonClicked();
-    void onChangeBoardSizeActionTriggered();
     void onAboutQtActionTriggered();
     void onAboutQMineSweeperActionTriggered();
-    void onAboutQmsWindowLicenseButtonClicked(bool checked);
-    void onAboutQmsWindowCloseButtonClicked(bool checked);
     void onAboutQmsWindowClosed();
     void onApplicationExit();
-    void onBoardResizeOkayButtonClicked();
-    void onBoardResizeCancelButtonClicked();
     void updateVisibleGameTimer();
     void updateGeometry();
     void updateUserIdleTimer();
     void startGameTimer();
-    void onBoardResizeActionClicked();
-    void onPresetBoardSizeActionTriggered();
+    void onChangeBoardSizeActionTriggered();
 
     void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
     void updateNumberOfMinesLCD(int numberOfMines);

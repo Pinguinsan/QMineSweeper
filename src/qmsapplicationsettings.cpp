@@ -66,6 +66,11 @@ void QmsApplicationSettings::setNumberOfRows(int rows)
     this->m_numberOfRows = rows;
 }
 
+void QmsApplicationSettings::setAudioVolume(int audioVolume)
+{
+    this->m_audioVolume = audioVolume;
+}
+
 int QmsApplicationSettings::numberOfColumns() const
 {
     return this->m_numberOfColumns;
@@ -74,4 +79,9 @@ int QmsApplicationSettings::numberOfColumns() const
 int QmsApplicationSettings::numberOfRows() const
 {
     return this->m_numberOfRows;
+}
+
+int QmsApplicationSettings::audioVolume() const
+{
+    return this->m_audioVolume;
 }

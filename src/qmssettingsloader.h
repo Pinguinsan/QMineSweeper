@@ -38,6 +38,7 @@ public:
 
     static int DEFAULT_COLUMN_COUNT();
     static int DEFAULT_ROW_COUNT();
+    static int DEFAULT_AUDIO_VOLUME();
     static QmsSettingsLoader::SupportedLanguage DEFAULT_LANGUAGE();
     static const char *languageToString(QmsSettingsLoader::SupportedLanguage language);
     static QmsApplicationSettings loadApplicationSettings();
@@ -45,11 +46,12 @@ public:
 private:
     static const int s_DEFAULT_NUMBER_OF_COLUMNS;
     static const int s_DEFAULT_NUMBER_OF_ROWS;
+    static const int s_DEFAULT_AUDIO_VOLUME;
     static const char *s_NUMBER_OF_COLUMNS_KEY;
     static const char *s_NUMBER_OF_ROWS_KEY;
+    static const char *s_AUDIO_VOLUME_KEY;
     static const QmsSettingsLoader::SupportedLanguage s_DEFAULT_LANGUAGE;
 
-public slots:
 };
 
 #endif // QMINESWEEPER_QMSSETTINGSLOADER_H

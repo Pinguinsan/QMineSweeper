@@ -31,7 +31,6 @@ HEADERS += src/mainwindow.h \
            src/minecoordinates.h \
            src/minecoordinatehash.h \
            src/eventtimer.h \
-           src/boardresizewindow.h \
     src/globaldefinitions.h \
     src/qmsapplicationsettings.h \
     src/qmsbutton.h \
@@ -40,13 +39,13 @@ HEADERS += src/mainwindow.h \
     src/qmssoundeffects.h \
     src/qmsstrings.h \
     src/qmsutilities.h \
-    src/aboutqmswindow.h
+    src/aboutqmsdialog.h \
+    src/boardresizedialog.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
            src/gamecontroller.cpp \
            src/minecoordinates.cpp \
-    src/boardresizewindow.cpp \
     src/qmsapplicationsettings.cpp \
     src/qmsbutton.cpp \
     src/qmsicons.cpp \
@@ -54,15 +53,17 @@ SOURCES += src/main.cpp \
     src/qmssoundeffects.cpp \
     src/qmsstrings.cpp \
     src/qmsutilities.cpp \
-    src/aboutqmswindow.cpp
+    src/aboutqmsdialog.cpp \
+    src/boardresizedialog.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc \
-             resources/translations.qrc
+             resources/translations.qrc \
+    resources/licenses.qrc
 
 FORMS += forms/mainwindow.ui \
-         forms/boardresizewindow.ui \
-    forms/aboutqmswindow.ui
+    forms/aboutqmsdialog.ui \
+    forms/boardresizedialog.ui
 
 win32 {
     RC_FILE += resources/qminesweeper.rc

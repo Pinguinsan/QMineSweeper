@@ -18,6 +18,11 @@
 ***********************************************************************/
 
 #include "qmssoundeffects.h"
+#include "qmsutilities.h"
+
+#include <limits>
+#include <exception>
+#include <stdexcept>
 
 #include <QSoundEffect>
 #include <QString>
@@ -26,18 +31,70 @@
 
 using namespace QmsStrings;
 
-const int QmsSoundEffects::s_EXPLOSION_EFFECT_VOLUME{25};
+const int QmsSoundEffects::s_MAXIMUM_SOUND_VOLUME{std::numeric_limits<uint16_t>::max()};
 
 /* QmsSoundEffects() : Constructor, setting up the QSoundEffects used.
  * This thin wrapper class for the QSoundEffects is necessary because all QObjects
  * must be instantiated and set up after a QApplication is instantiated, so using them
  * as static objects is not usable. Thus, this late binding is necessary */
-QmsSoundEffects::QmsSoundEffects() :
-    explosionEffect{},
-    m_explosionEffectSource{EXPLOSION_EFFECT_SOURCE_STRING}
+QmsSoundEffects::QmsSoundEffects(int audioVolume) :
+    m_explosionEffect{},
+    m_explosionEffectSource{EXPLOSION_EFFECT_SOURCE_PATH},
+    m_audioVolume{audioVolume},
+    m_storedMuteVolume{-1}
 {
-    this->explosionEffect.setMedia(QUrl{this->m_explosionEffectSource});
-    this->explosionEffect.setVolume(QmsSoundEffects::s_EXPLOSION_EFFECT_VOLUME);
+    this->m_explosionEffect.setMedia(QUrl{this->m_explosionEffectSource});
+    this->m_explosionEffect.setVolume(this->m_audioVolume);
+}
+
+QMediaPlayer &QmsSoundEffects::explosionEffect()
+{
+    return this->m_explosionEffect;
+}
+
+
+void QmsSoundEffects::setAudioVolume(int volume)
+{
+    using namespace QmsUtilities;
+    if (volume < 0) {
+        throw std::runtime_error(TStringFormat("In QmsSoundEffects::setSoundVolume(int): volume cannot be negative ({0} < 0)", volume, s_MAXIMUM_SOUND_VOLUME));
+    } else if (volume > s_MAXIMUM_SOUND_VOLUME) {
+        throw std::runtime_error(TStringFormat("In QmsSoundEffects::setSoundVolume(int): volume cannot be greater than maximum sound volume ({0} > {1})", volume));
+    } else {
+        if (volume == 0) {
+            this->m_storedMuteVolume = this->m_audioVolume;
+        }
+        this->m_audioVolume = volume;
+    }
+}
+
+int QmsSoundEffects::restoreVolumeFromMute()
+{
+    if (this->m_storedMuteVolume == -1) {
+        return -1;
+    } else {
+        return (this->m_audioVolume = this->m_storedMuteVolume);
+    }
+}
+
+bool QmsSoundEffects::isMuted() const
+{
+    return this->m_audioVolume == 0;
+}
+
+int QmsSoundEffects::audioVolume() const
+{
+    return this->m_audioVolume;
+}
+
+void QmsSoundEffects::setAudioMuted(bool audioMuted)
+{
+    if (audioMuted) {
+        this->m_storedMuteVolume = this->m_audioVolume;
+        this->m_audioVolume = 0;
+    } else {
+        this->restoreVolumeFromMute();
+    }
 }
 
 /* ~QmsSoundEffects() : Destructor, empty by defaut */

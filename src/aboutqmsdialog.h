@@ -1,13 +1,13 @@
 /***********************************************************************
-*    aboutqmswindow.h:                                                 *
-*    Custom QMainWindow for showing information about QMineSweeper     *
+*    aboutqmsdialog.h:                                                 *
+*    Custom QDialog for showing information about QMineSweeper         *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of an AboutQmsWindow class       *
-*    The AboutQmsWindow class is a window showing information about    *
+*    This file holds the declarations of an AboutQmsDialog class       *
+*    The AboutQmsDialog class is a window showing information about    *
 *    QMineSweeper, using the same format used by the program GHex      *
 *                                                                      *
 *    You should have received a copy of the GNU Lesser General         *
@@ -15,20 +15,24 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_ABOUTQMSWINDOW_H
-#define QMINESWEEPER_ABOUTQMSWINDOW_H
+#ifndef QMINESWEEPER_ABOUTQMSDIALOG_H
+#define QMINESWEEPER_ABOUTQMSDIALOG_H
 
+namespace Ui {
+    class AboutQmsDialog;
+}
 
-#include <QMainWindow>
+#include <QDialog>
+#include <memory>
 
 class QDesktopWidget;
 
-class AboutQmsWindow : public QMainWindow
+class AboutQmsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    AboutQmsWindow();
-    ~AboutQmsWindow();
+    AboutQmsDialog();
+    ~AboutQmsDialog();
     void centerAndFitWindow(QDesktopWidget *desktopWidget);
 
 signals:
@@ -38,7 +42,11 @@ signals:
 public:
     void closeEvent(QCloseEvent *ce);
 
+private slots:
+    void onLicenseButtonClicked(bool checked);
+    void onCloseButtonClicked(bool checked);
 private:
+    std::unique_ptr<Ui::AboutQmsDialog> m_ui;
     int m_xPlacement;
     int m_yPlacement;
 
