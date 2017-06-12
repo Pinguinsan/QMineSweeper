@@ -40,8 +40,8 @@ set (QMINESWEEPER_SOURCES "${SOURCE_ROOT}/src/main.cpp"
                           "${SOURCE_ROOT}/src/qmsbutton.cpp"
                           "${SOURCE_ROOT}/src/qmssettingsloader.cpp"
                           "${SOURCE_ROOT}/src/qmsapplicationsettings.cpp"
-                          "${SOURCE_ROOT}/src/boardresizewindow.cpp"
-                          "${SOURCE_ROOT}/src/aboutqmswindow.cpp")
+                          "${SOURCE_ROOT}/src/boardresizedialog.cpp"
+                          "${SOURCE_ROOT}/src/aboutqmsdialog.cpp")
     
 set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
                           "${SOURCE_ROOT}/src/gamecontroller.h"
@@ -52,12 +52,12 @@ set (QMINESWEEPER_HEADERS "${SOURCE_ROOT}/src/mainwindow.h"
                           "${SOURCE_ROOT}/src/qmsutilities.h"
                           "${SOURCE_ROOT}/src/qmssoundeffects.h"
                           "${SOURCE_ROOT}/src/qmsstrings.h"
-                          "${SOURCE_ROOT}/src/boardresizewindow.h"
                           "${SOURCE_ROOT}/src/qmsbutton.h"
                           "${SOURCE_ROOT}/src/qmssettingsloader.h"
                           "${SOURCE_ROOT}/src/qmsapplicationsettings.h"
                           "${SOURCE_ROOT}/src/globaldefinitions.h"
-                          "${SOURCE_ROOT}/src/aboutqmswindow.h")
+                          "${SOURCE_ROOT}/src/boardresizedialog.h"
+                          "${SOURCE_ROOT}/src/aboutqmsdialog.h")
 
 
 if (WIN32)
