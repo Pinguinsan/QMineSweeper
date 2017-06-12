@@ -40,7 +40,8 @@ HEADERS += src/mainwindow.h \
     src/qmsstrings.h \
     src/qmsutilities.h \
     src/aboutqmsdialog.h \
-    src/boardresizedialog.h
+    src/boardresizedialog.h \
+    src/qmsgamestate.h
 
 SOURCES += src/main.cpp \
            src/mainwindow.cpp \
@@ -54,7 +55,8 @@ SOURCES += src/main.cpp \
     src/qmsstrings.cpp \
     src/qmsutilities.cpp \
     src/aboutqmsdialog.cpp \
-    src/boardresizedialog.cpp
+    src/boardresizedialog.cpp \
+    src/qmsgamestate.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc \
