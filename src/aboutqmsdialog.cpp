@@ -47,7 +47,7 @@ AboutQmsDialog::AboutQmsDialog() :
     this->m_ui->lblProgramVersion->setText(QString{"v%1.%2.%3"}.arg(QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION)));
     this->m_ui->lblProgramWebsite->setText(QString{"<html><head/><body><p><a href=\"%1\"><span style=\" text-decoration: underline; color:#007af4;\">QMineSweeper website</span></a></p></body></html>"}.arg(REMOTE_URL));
     this->m_ui->lblProgramWebsite->setOpenExternalLinks(true);
-    this->setWindowFlag(Qt::WindowStaysOnTopHint);
+    this->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_ui->tbAboutQmsLicense->setVisible(false);
 
     QFile licenseFile{QmsStrings::QMINESWEEPER_LICENSE_PATH};

@@ -179,7 +179,7 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     using namespace QmsGlobalSettings;
 
     /* initialize all strings and stuff for the BoardResizeWindow */
-    this->m_boardSizeDialog->setWindowFlag(Qt::WindowStaysOnTopHint);
+    this->m_boardSizeDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_boardSizeDialog->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     this->m_boardSizeDialog->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
     this->connect(this->m_boardSizeDialog.get(), &BoardResizeDialog::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
