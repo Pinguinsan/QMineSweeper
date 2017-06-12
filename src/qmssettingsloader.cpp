@@ -18,6 +18,7 @@
 #include "qmssettingsloader.h"
 #include "qmsstrings.h"
 #include "qmsapplicationsettings.h"
+#include "globaldefinitions.h"
 
 #include <QSettings>
 
@@ -58,6 +59,7 @@ void QmsSettingsLoader::saveApplicationSettings(const QmsApplicationSettings &se
     settingsSaver.setValue(QmsSettingsLoader::s_NUMBER_OF_ROWS_KEY, settings.numberOfRows());
     settingsSaver.setValue(QmsSettingsLoader::s_AUDIO_VOLUME_KEY, settings.audioVolume());
     settingsSaver.sync();
+    LOG_INFO() << "Successfully saved application settings";
 }
 
 QmsApplicationSettings QmsSettingsLoader::loadApplicationSettings()

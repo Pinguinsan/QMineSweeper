@@ -152,7 +152,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this, &MainWindow::gameResumed, this->m_gameController.get(), &GameController::onGameResumed);
     this->connect(this, &MainWindow::mineExplosionEvent, this->m_gameController.get(), &GameController::onMineExplosionEventTriggered);
 
-
     this->m_languageActionGroup->addAction(this->m_ui->actionEnglish);
     this->m_languageActionGroup->addAction(this->m_ui->actionSpanish);
     this->m_languageActionGroup->addAction(this->m_ui->actionFrench);
@@ -183,7 +182,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->m_boardSizeDialog->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     this->m_boardSizeDialog->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
     this->connect(this->m_boardSizeDialog.get(), &BoardResizeDialog::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
-
 
     this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
     this->connect(this->m_aboutQmsDialog.get(), &AboutQmsDialog::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
@@ -301,10 +299,11 @@ void MainWindow::hideEvent(QHideEvent *event)
  * so the user can be prompted if they'd like to close the game */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    (void)event;
 #if !defined(__ANDROID__)
-    QmsSettingsLoader::saveApplicationSettings(this->collectApplicationSettings());
+    QmsApplicationSettings settings{this->collectApplicationSettings()};
+    QmsSettingsLoader::saveApplicationSettings(settings);
 #endif
+    return QMainWindow::closeEvent(event);
     /*
     emit(gamePaused());
     QMessageBox::StandardButton userReply;
@@ -622,7 +621,7 @@ QString MainWindow::saveStyleSheet() const
  * via a late binding dependancy-injection function. This is a simple
  * member access function for this shared_ptr, in case it needs to be accessed
  * by an object that does not obtain this shared_ptr */
-std::shared_ptr<QmsIcons> MainWindow::qmsiPtr() const
+std::shared_ptr<QmsIcons> MainWindow::gameIcons() const
 {
     return this->m_gameIcons;
 }
@@ -633,7 +632,7 @@ std::shared_ptr<QmsIcons> MainWindow::qmsiPtr() const
  * via a late binding dependancy-injection function. This is a simple
  * member access function for this shared_ptr, in case it needs to be accessed
  * by an object that does not obtain this shared_ptr */
-std::shared_ptr<QmsSoundEffects> MainWindow::qmssePtr() const
+std::shared_ptr<QmsSoundEffects> MainWindow::gameSounds() const
 {
     return this->m_gameSoundEffects;
 }

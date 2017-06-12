@@ -36,8 +36,7 @@ QmsButton::QmsButton(int columnIndex, int rowIndex, QWidget *parent) :
     m_blockClicks{false},
     m_longClickTimer{new SteadyEventTimer{}}
 {
-   //Row and column validity is checked by GameController
-   this->installEventFilter(this);
+    this->initialize();
 }
 
 QmsButton::QmsButton(QmsButton *other) :
@@ -111,7 +110,6 @@ bool QmsButton::eventFilter(QObject *pObject, QEvent *pEvent)
     } else  {
         return QObject::eventFilter(pObject, pEvent);
     }
-    return true;
 }
 
 bool QmsButton::operator==(const QmsButton &other) const

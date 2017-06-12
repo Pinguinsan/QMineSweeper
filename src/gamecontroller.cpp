@@ -405,9 +405,9 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
         incrementNumberOfMovesMade();
         this->m_mainWindow->displayMine(msbp);
         if (msbp->numberOfSurroundingMines() == 0) {
-            startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_BIG_SMILEY);
+            startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_BIG_SMILEY);
         } else {
-            startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_WINKY);
+            startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_WINKY);
         }
     }
     emit(userIsNoLongerIdle());
@@ -428,7 +428,7 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setText(GENERIC_ERROR_MESSAGE);
-            errorBox->setWindowIcon(this->m_mainWindow->qmsiPtr()->MINE_ICON_48);
+            errorBox->setWindowIcon(this->m_mainWindow->gameIcons()->MINE_ICON_48);
             errorBox->exec();
             logString(e.what());
             exit(EXIT_FAILURE);
@@ -442,17 +442,17 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
     } else if (msbp->hasFlag()) {
         msbp->setHasFlag(false);
         msbp->setHasQuestionMark(true);
-        msbp->setIcon(this->m_mainWindow->qmsiPtr()->STATUS_ICON_QUESTION);
+        msbp->setIcon(this->m_mainWindow->gameIcons()->STATUS_ICON_QUESTION);
         incrementUserMineCountDisplay();
     } else if (msbp->hasQuestionMark()) {
         msbp->setHasQuestionMark(false);
-        msbp->setIcon(this->m_mainWindow->qmsiPtr()->COUNT_MINES_0);
+        msbp->setIcon(this->m_mainWindow->gameIcons()->COUNT_MINES_0);
     } else {
         msbp->setHasFlag(true);
-        msbp->setIcon(this->m_mainWindow->qmsiPtr()->STATUS_ICON_FLAG);
+        msbp->setIcon(this->m_mainWindow->gameIcons()->STATUS_ICON_FLAG);
         decrementUserMineCountDisplay();
     }
-    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, this->m_mainWindow->qmsiPtr()->FACE_ICON_CRAZY);
+    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_CRAZY);
     emit(userIsNoLongerIdle());
 }
 

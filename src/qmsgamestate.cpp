@@ -21,7 +21,8 @@
 
 #include "qmsgamestate.h"
 
-QmsGameState::QmsGameState(QObject *parent) : QObject(parent)
+QmsGameState::QmsGameState(QObject *parent) :
+    QObject{parent}
 {
 
 }

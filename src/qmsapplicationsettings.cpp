@@ -23,7 +23,6 @@
 
 namespace QmsGlobalSettings
 {
-
     const char *PROGRAM_NAME{"QMineSweeper"};
     const char *LONG_PROGRAM_NAME{"QMineSweeper"};
     const char *REMOTE_URL{"https://github.com/tlewiscpp/QMineSweeper"};

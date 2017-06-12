@@ -81,8 +81,8 @@ public:
     bool boardResizeDialogVisible();
 
     QmsApplicationSettings collectApplicationSettings() const;
-    std::shared_ptr<QmsIcons> qmsiPtr() const;
-    std::shared_ptr<QmsSoundEffects> qmssePtr() const;
+    std::shared_ptr<QmsIcons> gameIcons() const;
+    std::shared_ptr<QmsSoundEffects> gameSounds() const;
     QString saveStyleSheet() const;
 
 private:
