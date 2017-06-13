@@ -1034,9 +1034,9 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpenGame"/>
-    <addaction name="actionSaveGame"/>
-    <addaction name="actionSaveGameAs"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuPreferences">
@@ -1139,6 +1139,9 @@
    <property name="text">
     <string>About QMineSweeper</string>
    </property>
+   <property name="toolTip">
+    <string>View information about QMineSweeper (author, website, license, etc)</string>
+   </property>
   </action>
   <action name="actionEnglish">
    <property name="checkable">
@@ -1175,25 +1178,34 @@
     <string>Japanese</string>
    </property>
   </action>
-  <action name="actionSaveGame">
+  <action name="actionSave">
    <property name="text">
-    <string>Save Game</string>
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the current game, so it can be resumed later</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionSaveGameAs">
+  <action name="actionSaveAs">
    <property name="text">
-    <string>Save Game As</string>
+    <string>Save As</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the current game under a specific name, so it can be resumed later</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
    </property>
   </action>
-  <action name="actionOpenGame">
+  <action name="actionOpen">
    <property name="text">
-    <string>Open Game</string>
+    <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open a previously saved game</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>

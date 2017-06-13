@@ -59,6 +59,10 @@ namespace QmsStrings
     const char *SPANISH_STRING{"Spanish"};
     const char *JAPANESE_STRING{"Japanese"};
 
+    const char *SAVED_GAME_FILE_EXTENSION{".qms"};
+    const char *SAVE_FILE_CAPTION{"Save game?"};
+    const char *OPEN_FILE_CAPTION{"Open existing game?"};
+
     const char *ENGLISH_TRANSLATION_PATH{":/translations/english.qm"};
     const char *FRENCH_TRANSLATION_PATH{":/translations/french.qm"};
     const char *SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};

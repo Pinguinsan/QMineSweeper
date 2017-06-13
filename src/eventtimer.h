@@ -73,7 +73,7 @@ public:
     }
 
     template <typename T>
-    std::string TO_STRING(const T &item)
+    std::string TO_STRING(const T &item) const
     {
         std::stringstream stringStream{};
         stringStream << item;
@@ -112,7 +112,7 @@ public:
         this->m_isPaused = false;
     }
 
-    void update()
+    void update() const
     {
         if (this->m_isPaused)  {
             this->m_startTime = platform_clock_t::now() - this->m_rawTime;
@@ -174,7 +174,7 @@ public:
         return this->m_totalTime;
     }
 
-    std::string toString(uint8_t millisecondDigits = 3)
+    std::string toString(uint8_t millisecondDigits = 3) const
     {
         if (!this->m_isPaused) {
             this->update();
@@ -232,14 +232,14 @@ public:
     }
 
 private:
-    std::chrono::time_point<platform_clock_t> m_startTime;
-    std::chrono::time_point<platform_clock_t> m_endTime;
-    std::chrono::milliseconds m_rawTime;
-    long long int m_totalTime;
-    long long int m_hours;
-    long long int m_minutes;
-    long long int m_seconds;
-    long long int m_milliseconds;
+    mutable std::chrono::time_point<platform_clock_t> m_startTime;
+    mutable std::chrono::time_point<platform_clock_t> m_endTime;
+    mutable std::chrono::milliseconds m_rawTime;
+    mutable long long int m_totalTime;
+    mutable long long int m_hours;
+    mutable long long int m_minutes;
+    mutable long long int m_seconds;
+    mutable long long int m_milliseconds;
     bool m_isPaused;
     bool m_isStopped;
 

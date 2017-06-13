@@ -20,6 +20,7 @@
 #define QMINESWEEPER_MINECOORDINATEHASH_H
 
 #include "minecoordinates.h"
+#include <utility>
 
 class MineCoordinateHash
 {
@@ -28,7 +29,8 @@ public:
      * This allows the MineCoordinates class to be used in a std::unordered_map */
     std::size_t operator()(const MineCoordinates &mc) const
     {
-        return (std::hash<int>()(mc.X()) ^ (std::hash<int>()(mc.Y())<<1));
+        //return std::hash<std::pair<int, int>>()(std::make_pair(mc.X(), mc.Y()));
+        return (std::hash<int>()(mc.X()) ^ (std::hash<int>()(mc.Y())));
     }
 };
 

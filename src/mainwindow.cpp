@@ -23,6 +23,7 @@
 #include <QString>
 #include <QRect>
 #include <QTimer>
+#include <QFileDialog>
 #include <QDialog>
 #include <QActionGroup>
 #include <QTranslator>
@@ -82,7 +83,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
                        QWidget *parent) :
     QMainWindow{parent},
     m_eventTimer{new QTimer{}},
-    m_playTimer{new SteadyEventTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
     m_ui{new Ui::MainWindow{}},
     m_aboutQmsDialog{new AboutQmsDialog{}},
@@ -102,7 +102,8 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_currentMaxMineSize{QSize{0,0}},
     m_maxMineSizeCacheIsValid{false},
     m_tempPauseFlag{false},
-    m_boardSizeGeometrySet{false}
+    m_boardSizeGeometrySet{false},
+    m_saveFilePath{""}
 {
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
@@ -117,6 +118,12 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
 
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    this->connect(this->m_ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveActionTriggered);
+    this->connect(this->m_ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsActionTriggered);
+    this->connect(this->m_ui->actionOpen, &QAction::triggered, this, &MainWindow::onOpenActionTriggered);
+
+    this->m_ui->actionSave->setEnabled(false);
+    this->m_ui->actionSaveAs->setEnabled(false);
 
     this->connect(this->m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     this->connect(this->m_ui->actionAboutQt, &QAction::triggered, this, &MainWindow::onAboutQtActionTriggered);
@@ -190,6 +197,60 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->m_eventTimer->start();
     this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
+
+}
+
+void MainWindow::onSaveActionTriggered()
+{
+    if (this->m_saveFilePath == "") {
+        this->onSaveAsActionTriggered();
+    } else {
+        emit(gamePaused());
+        this->doSaveGame(this->m_saveFilePath);
+        emit(gameResumed());
+    }
+}
+
+void MainWindow::onSaveAsActionTriggered()
+{
+    emit(gamePaused());
+    QFileDialog fileDialog;
+    fileDialog.setDirectory(QmsUtilities::getProgramSettingsDirectory());
+    fileDialog.setDefaultSuffix(QmsStrings::SAVED_GAME_FILE_EXTENSION);
+    fileDialog.setConfirmOverwrite(true);
+    fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
+    fileDialog.setNameFilter(QString{"*."} + QmsStrings::SAVED_GAME_FILE_EXTENSION);
+    this->m_saveFilePath = fileDialog.getSaveFileName(this, QFileDialog::tr(QmsStrings::SAVE_FILE_CAPTION));
+
+    if (this->m_saveFilePath == "") {
+        return;
+    } else {
+        if (!this->m_saveFilePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
+            this->m_saveFilePath = this->m_saveFilePath + QmsStrings::SAVED_GAME_FILE_EXTENSION;
+        }
+    }
+    this->doSaveGame(this->m_saveFilePath);
+    emit(gameResumed());
+}
+
+void MainWindow::doSaveGame(const QString &filePath)
+{
+    auto saveGameResut = this->m_gameController->saveGame(filePath);
+    if (saveGameResut == SaveGameStateResult::Success) {
+        LOG_INFO() << QString{"Successfully saved game to %1"}.arg(filePath);
+    } else if (saveGameResut == SaveGameStateResult::FileDoesNotExist) {
+
+    } else if (saveGameResut == SaveGameStateResult::UnableToDeleteExistingFile) {
+
+    } else if (saveGameResut == SaveGameStateResult::UnableToOpenFile) {
+
+    }
+    //TODO: Error checking
+}
+
+void MainWindow::onOpenActionTriggered()
+{
 
 }
 
@@ -346,6 +407,8 @@ void MainWindow::onGameWon()
 {
     using namespace QmsUtilities;
     using namespace QmsStrings;
+    this->m_ui->actionSave->setEnabled(false);
+    this->m_ui->actionSaveAs->setEnabled(false);
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_BIG_SMILEY);
     this->m_gameController->setGameOver(true);
 
@@ -398,6 +461,8 @@ void MainWindow::onGameStarted()
 {
     this->startGameTimer();
     this->startUserIdleTimer();
+    this->m_ui->actionSave->setEnabled(true);
+    this->m_ui->actionSaveAs->setEnabled(true);
 }
 
 /* setupNewGame() : Called when a gameStarted() signal is emitted
@@ -677,6 +742,7 @@ void MainWindow::doGameReset()
         it.second->setIsRevealed(false);
     }
 
+    this->m_saveFilePath = "";
     emit(resetGame());
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
@@ -707,7 +773,7 @@ void MainWindow::updateGeometry()
  * This timer is to show the player how long they've been playing the current game */
 void MainWindow::startGameTimer()
 {
-    this->m_playTimer->restart();
+    this->m_gameController->startPlayTimer();
 }
 
 /* startUserIdleTimer() : Called after each move made by a player.
@@ -716,7 +782,7 @@ void MainWindow::startGameTimer()
  * threshold, the reset icon is changed to a sleepy face */
 void MainWindow::startUserIdleTimer()
 {
-    if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
+    if (this->m_gameController->gameState() == GameState::GameActive) {
         this->m_userIdleTimer->restart();
     }
 }
@@ -731,17 +797,15 @@ void MainWindow::updateVisibleGameTimer()
     using namespace QmsUtilities;
     using namespace QmsStrings;
     QString gameTime{""};
-    if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
-        if (this->m_playTimer->isPaused()) {
-            this->m_playTimer->resume();
+    if (this->m_gameController->gameState() == GameState::GameActive) {
+        if (this->m_gameController->playTimer().isPaused()) {
+            this->m_gameController->resumePlayTimer();
         }
-        this->m_playTimer->update();
-        gameTime = toQString(this->m_playTimer->toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
+        gameTime = toQString(this->m_gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
         this->displayStatusMessage(gameTime);
     } else if (!this->m_gameController->initialClickFlag()){
-        this->m_playTimer->pause();
-        this->m_playTimer->update();
-        gameTime = toQString(this->m_playTimer->toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
+        this->m_gameController->pausePlayTimer();
+        gameTime = toQString(this->m_gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
         this->displayStatusMessage(gameTime);
     } else {
         this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
@@ -754,16 +818,15 @@ void MainWindow::updateVisibleGameTimer()
  * a sleepy face. If it has not, the method returns */
 void MainWindow::updateUserIdleTimer()
 {
-    if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
+    if (this->m_gameController->gameState() == GameState::GameActive) {
         if (this->m_userIdleTimer->isPaused()) {
             this->m_userIdleTimer->resume();
         }
-        this->m_playTimer->update();
     } else if (!this->m_gameController->initialClickFlag()) {
         this->m_userIdleTimer->pause();
         this->m_userIdleTimer->update();
     }
-    if (this->m_gameController->gameState() == GameState::GAME_ACTIVE) {
+    if (this->m_gameController->gameState() == GameState::GameActive) {
         if (this->m_userIdleTimer->totalTime() >= this->m_gameController->DEFAULT_SLEEPY_FACE_TIMEOUT()) {
             this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SLEEPY);
         }

@@ -148,18 +148,34 @@ bool MineCoordinates::operator>=(std::shared_ptr<MineCoordinates> compareObject)
     return (this->m_x >= compareObject->X());
 }
 
+/* toString() : A string representation of the coordinate pair */
+std::string MineCoordinates::toString() const
+{
+    return QmsUtilities::TStringFormat("({0},{1})", this->m_x, this->m_y);
+}
+
+/* toQString() : A string representation of the coordinate pair */
+QString MineCoordinates::toQString() const
+{
+    return QmsUtilities::QStringFormat("({0},{1})", this->m_x, this->m_y);
+}
+
+/* toStdPair() : A std::pair<int, int> representation of the coordinate pair */
+std::pair<int, int> MineCoordinates::toStdPair() const
+{
+    return std::make_pair(this->m_x, this->m_y);
+}
+
 /* operator<<() : Overloaded operator <<, enabling the pair to be output to
  * and output stream, passed in by const reference */
 std::ostream& operator<<(std::ostream& os, const MineCoordinates &mc)
 {
-    os << "(" << mc.X() << ", " << mc.Y() << ")";
-    return os;
+    return (os << mc.toString());
 }
 
 /* operator<<() : Overloaded operator <<, enabling the pair to be output to
  * and output stream, passed in by shared_ptr */
 std::ostream& operator<<(std::ostream& os, std::shared_ptr<MineCoordinates> mc)
 {
-    os << "(" << mc->X() << ", " << mc->Y() << ")";
-    return os;
+    return (os << mc->toString());
 }

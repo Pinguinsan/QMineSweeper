@@ -82,7 +82,7 @@ void GameController::onBoardResizeTriggered(int columns, int rows)
             static_cast<int>(roundIntuitively(static_cast<double>(this->m_qmsGameState->m_numberOfColumns) * static_cast<double>(this->m_qmsGameState->m_numberOfRows) * QmsGameState::s_CELL_TO_MINE_RATIOS.first)) :
             static_cast<int>(roundIntuitively(static_cast<double>(this->m_qmsGameState->m_numberOfColumns) * static_cast<double>(this->m_qmsGameState->m_numberOfRows) * QmsGameState::s_CELL_TO_MINE_RATIOS.second));
     this->m_qmsGameState->m_userDisplayNumberOfMines = this->m_qmsGameState->m_numberOfMines;
-    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameState = GameState::GameInactive;
     this->m_qmsGameState->m_mineCoordinates.clear();
     this->m_qmsGameState->m_mineSweeperButtons.clear();
     this->m_qmsGameState->m_initialClickFlag = true;
@@ -94,14 +94,14 @@ void GameController::onBoardResizeTriggered(int columns, int rows)
 void GameController::onGamePaused()
 {
     if (!this->m_qmsGameState->m_initialClickFlag) {
-        this->m_qmsGameState->m_gameState = GameState::GAME_PAUSED;
+        this->m_qmsGameState->m_gameState = GameState::GamePaused;
     }
 }
 
 void GameController::onGameResumed()
 {
     if (!this->m_qmsGameState->m_initialClickFlag) {
-        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_gameState = GameState::GameActive;
     }
 }
 
@@ -112,7 +112,7 @@ int GameController::userDisplayNumberOfMines() const
 
 void GameController::onMineExplosionEventTriggered()
 {
-    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameState = GameState::GameInactive;
     for (auto &it : this->m_qmsGameState->m_mineSweeperButtons) {
         it.second->setBlockClicks(true);
     }
@@ -175,6 +175,37 @@ ButtonContainer &GameController::mineSweeperButtons()
     return this->m_qmsGameState->m_mineSweeperButtons;
 }
 
+std::set<std::pair<int, int>> &GameController::mineCoordinates()
+{
+    return this->m_qmsGameState->m_mineCoordinates;
+}
+
+const SteadyEventTimer &GameController::playTimer() const
+{
+    this->m_qmsGameState->m_playTimer->update();
+    return *this->m_qmsGameState->m_playTimer;
+}
+
+void GameController::startPlayTimer()
+{
+    this->m_qmsGameState->m_playTimer->start();
+}
+
+void GameController::stopPlayTimer()
+{
+    this->m_qmsGameState->m_playTimer->stop();
+}
+
+void GameController::resumePlayTimer()
+{
+    this->m_qmsGameState->m_playTimer->resume();
+}
+
+void GameController::pausePlayTimer()
+{
+    this->m_qmsGameState->m_playTimer->pause();
+}
+
 std::shared_ptr<QmsButton> GameController::mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const
 {
     using namespace QmsStrings;
@@ -223,9 +254,14 @@ void GameController::generateRandomMinePlacement(QmsButton *msbp)
         if (potentialMineCoordinates == *(msbp->mineCoordinates().get())) {
             continue;
         } else {
-            this->m_qmsGameState->m_mineCoordinates.emplace(std::make_pair(potentialMineCoordinates.X(), potentialMineCoordinates.Y()));
+            this->m_qmsGameState->m_mineCoordinates.emplace(potentialMineCoordinates.toStdPair());
         }
     }
+}
+
+SaveGameStateResult GameController::saveGame(const QString &filePath)
+{
+    return this->m_qmsGameState->saveToFile(filePath);
 }
 
 void GameController::clearRandomMinePlacement()
@@ -234,7 +270,7 @@ void GameController::clearRandomMinePlacement()
 }
 
 void GameController::onGameReset()
- {
+{
     for (std::pair<const MineCoordinates, std::shared_ptr<QmsButton>> msbp : this->m_qmsGameState->m_mineSweeperButtons) {
         msbp.second->setHasFlag(false);
         msbp.second->setHasQuestionMark(false);
@@ -247,14 +283,14 @@ void GameController::onGameReset()
     this->m_qmsGameState->m_initialClickFlag = true;
     this->m_qmsGameState->m_gameOver = false;
     this->m_qmsGameState->m_userDisplayNumberOfMines = this->m_qmsGameState->m_numberOfMines;
-    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameState = GameState::GameInactive;
     this->m_qmsGameState->m_numberOfMovesMade = 0;
     this->m_qmsGameState->m_unopenedMineCount = this->m_qmsGameState->m_numberOfColumns*this->m_qmsGameState->m_numberOfRows;
 }
 
 void GameController::setGameOver(bool gameOver)
 {
-    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameState = GameState::GameInactive;
     this->m_qmsGameState->m_gameOver = gameOver;
 }
 
@@ -266,7 +302,7 @@ bool GameController::gameOver() const
 
 bool GameController::coordinatePairExists(const MineCoordinates &coordinatesToCheck) const
 {
-    for (const std::pair<int, int> &mc : this->m_qmsGameState->m_mineCoordinates) {
+    for (const auto &mc : this->m_qmsGameState->m_mineCoordinates) {
         if (coordinatesToCheck == mc) {
             return true;
         }
@@ -283,7 +319,7 @@ void GameController::setNumberOfMovesMade(int numberOfMovesMade)
 void GameController::assignAllMines()
 {
     using namespace QmsStrings;
-    for (const std::pair<int, int> &mc : this->m_qmsGameState->m_mineCoordinates) {
+    for (const auto &mc : this->m_qmsGameState->m_mineCoordinates) {
         if (this->m_qmsGameState->m_mineSweeperButtons.find(mc) != this->m_qmsGameState->m_mineSweeperButtons.end()) {
             this->m_qmsGameState->m_mineSweeperButtons.at(mc)->setHasMine(true);
         } else {
@@ -366,7 +402,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
     if (this->m_qmsGameState->m_initialClickFlag) {
         this->generateRandomMinePlacement(msbp);
         this->m_qmsGameState->m_initialClickFlag = false;
-        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_gameState = GameState::GameActive;
         try {
             assignAllMines();
             determineNeighborMineCounts();
@@ -376,7 +412,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
             std::cout << e.what() << std::endl;
             errorBox->exec();
         }
-        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_gameState = GameState::GameActive;
         emit(gameStarted());
     }    
     if ((msbp->hasFlag()) || (msbp->hasQuestionMark())) {
@@ -418,7 +454,7 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
             exit(EXIT_FAILURE);
         }
         this->m_qmsGameState->m_initialClickFlag = false;
-        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_gameState = GameState::GameActive;
         emit(gameStarted());
     }
     if (msbp->isChecked() || msbp->isRevealed()) {
@@ -460,13 +496,13 @@ void GameController::onMineDisplayed()
 
 void GameController::onGameWon()
 {
-    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameState = GameState::GameInactive;
 }
 
 void GameController::onContextMenuActive()
 {
-    if (this->m_qmsGameState->m_gameState == GameState::GAME_ACTIVE) {
-        this->m_qmsGameState->m_gameState = GameState::GAME_PAUSED;
+    if (this->m_qmsGameState->m_gameState == GameState::GameActive) {
+        this->m_qmsGameState->m_gameState = GameState::GamePaused;
         emit(gamePaused());
         this->gamePaused();
     }
@@ -474,8 +510,8 @@ void GameController::onContextMenuActive()
 
 void GameController::onContextMenuInactive()
 {
-    if ((this->m_qmsGameState->m_gameState == GameState::GAME_PAUSED) && (!this->m_mainWindow->boardResizeDialogVisible())) {
-        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
+    if ((this->m_qmsGameState->m_gameState == GameState::GamePaused) && (!this->m_mainWindow->boardResizeDialogVisible())) {
+        this->m_qmsGameState->m_gameState = GameState::GameActive;
         emit(gameResumed());
     }
 }

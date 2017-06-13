@@ -58,6 +58,10 @@ namespace QmsStrings
     extern const char *STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING;
     extern const char *LCD_OVERFLOW_STRING;
 
+    extern const char *SAVED_GAME_FILE_EXTENSION;
+    extern const char *SAVE_FILE_CAPTION;
+    extern const char *OPEN_FILE_CAPTION;
+
     extern const char *ENGLISH_STRING;
     extern const char *FRENCH_STRING;
     extern const char *SPANISH_STRING;

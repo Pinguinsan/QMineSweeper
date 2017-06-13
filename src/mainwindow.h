@@ -88,7 +88,6 @@ public:
 
 private:
     std::unique_ptr<QTimer> m_eventTimer;
-    std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
     std::unique_ptr<Ui::MainWindow> m_ui;
     std::unique_ptr<AboutQmsDialog> m_aboutQmsDialog;
@@ -116,6 +115,7 @@ private:
     bool m_iconReductionSizeCacheIsValid;
     bool m_tempPauseFlag;
     bool m_boardSizeGeometrySet;
+    QString m_saveFilePath;
 
     static const int s_TASKBAR_HEIGHT;
     static const int s_GAME_TIMER_INTERVAL;
@@ -143,6 +143,7 @@ private:
     static const long long int constexpr MILLISECONDS_PER_HOUR{3600000};
 
     void displayStatusMessage(QString statusMessage);
+    void doSaveGame(const QString &filePath);
 signals:
     void resetButtonClicked();
     void resetGame();
@@ -183,6 +184,9 @@ private slots:
     void onActionMuteSoundChecked(bool checked);
 
     void onLanguageSelected(bool triggered);
+    void onSaveActionTriggered();
+    void onSaveAsActionTriggered();
+    void onOpenActionTriggered();
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H

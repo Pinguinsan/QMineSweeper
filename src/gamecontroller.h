@@ -30,6 +30,7 @@
 #include <set>
 #include <unordered_map>
 
+#include "eventtimer.h"
 #include "qmsgamestate.h"
 #include "minecoordinatehash.h"
 
@@ -38,8 +39,6 @@ class MineCoordinates;
 class MainWindow;
 class QString;
 class QmsGameState;
-
-using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
 
 class GameController : public QObject
 {
@@ -66,6 +65,7 @@ public:
     void decrementUserMineCountDisplay();
     int userDisplayNumberOfMines() const;
     void setNumberOfMinesRemaining(int userDisplayNumberOfMines);
+    std::set<std::pair<int, int>> &mineCoordinates();
     ButtonContainer &mineSweeperButtons();
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
@@ -76,6 +76,11 @@ public:
     void addMineSweeperButton(int columnIndex, int rowIndex);
     void setGameOver(bool gameOver);
     int totalButtonCount() const;
+    const SteadyEventTimer &playTimer() const;
+    void startPlayTimer();
+    void stopPlayTimer();
+    void resumePlayTimer();
+    void pausePlayTimer();
 
     void startResetIconTimer(unsigned int howLong, const QIcon &icon) const;
     bool coordinatePairExists(const MineCoordinates &coordinatesToCheck) const;
@@ -92,6 +97,8 @@ public:
     bool isCornerButton(QmsButton *msb) const;
     bool isEdgeButton(QmsButton *msb) const;
     GameState gameState() const;
+
+    SaveGameStateResult saveGame(const QString &filePath);
 
     static double DEFAULT_NUMBER_OF_MINES();
     static int GAME_TIMER_INTERVAL();

@@ -25,19 +25,31 @@
 #include <set>
 #include <utility>
 #include <unordered_map>
+#include <chrono>
+#include <map>
 
 #include "minecoordinatehash.h"
+#include "eventtimer.h"
 
 class QString;
 class QmsButton;
 class MineCoordinates;
+class QXmlStreamWriter;
 
 using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
+//using ButtonContainer = std::map<MineCoordinates, std::shared_ptr<QmsButton>>;
 
 enum class GameState {
-    GAME_ACTIVE,
-    GAME_INACTIVE,
-    GAME_PAUSED
+    GameActive,
+    GameInactive,
+    GamePaused
+};
+
+enum class SaveGameStateResult {
+    Success,
+    FileDoesNotExist,
+    UnableToDeleteExistingFile,
+    UnableToOpenFile
 };
 
 class QmsGameState
@@ -49,35 +61,10 @@ public:
     QmsGameState(QmsGameState &&) = default;
     virtual ~QmsGameState();
 
-    bool initialClickFlag() const;
-    int numberOfColumns() const;
-    int numberOfRows() const;
-    int numberOfMines() const;
-    int numberOfMovesMade() const;
-    int unopenedMineCount() const;
-    void setNumberOfMovesMade(int numberOfMovesMade);
-    void incrementNumberOfMovesMade();
-    void decrementNumberOfMovesMade();
-    void incrementUserMineCountDisplay();
-    void decrementUserMineCountDisplay();
-    int userDisplayNumberOfMines() const;
-    void setNumberOfMinesRemaining(int userDisplayNumberOfMines);
-    ButtonContainer &mineSweeperButtons();
-    std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
-    std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
-    bool gameOver() const;
-    void setNumberOfColumns(int numberOfColumns);
-    void setNumberOfRows(int numberOfRows);
-    void setInitialClickFlag(bool initialClickFlag);
-    void addMineSweeperButton(int columnIndex, int rowIndex);
-    void setGameOver(bool gameOver);
-    int totalButtonCount() const;
-
     static QmsGameState loadFromFile(const QString &filePath);
-    static bool saveToFile(const QString &filePath);
-
-    GameState gameState() const;
+    SaveGameStateResult saveToFile(const QString &filePath);
 private:
+    std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::set<std::pair<int, int>> m_mineCoordinates;
     ButtonContainer m_mineSweeperButtons;
     int m_numberOfMines;
@@ -93,6 +80,9 @@ private:
 
     static const std::pair<double, double> s_CELL_TO_MINE_RATIOS;
     static const int s_CELL_TO_MINE_THRESHOLD;
+
+    void writeQmsButtonToXmlStream(QXmlStreamWriter *writeToFile, const MineCoordinates &coordinates, std::shared_ptr<QmsButton> targetButton);
+
 };
 
 #endif //QMINESWEEPER_QMSGAMESTATE_H

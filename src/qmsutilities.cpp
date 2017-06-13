@@ -537,4 +537,27 @@ namespace QmsUtilities
            return false;
        }
 
+
+   std::string boolToString(bool value)
+   {
+       return (value ? "true" : "false");
+   }
+
+   bool stringToBool(const std::string &value)
+   {
+       std::string copyString{value};
+       std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+       return (copyString == "true" ? true : false);
+   }
+
+       QString boolToQString(bool value)
+       {
+           return QString::fromStdString(boolToString(value));
+       }
+
+       bool qStringToBool(const QString &value)
+       {
+           return stringToBool(value.toStdString());
+       }
+
 }

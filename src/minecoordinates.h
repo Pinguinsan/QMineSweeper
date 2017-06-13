@@ -22,6 +22,7 @@
 #include <functional>
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <iostream>
 #include <tuple>
 
@@ -50,6 +51,9 @@ public:
     bool operator>(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator>=(const MineCoordinates &compareObject) const;
     bool operator>=(std::shared_ptr<MineCoordinates> compareObject) const;
+    std::string toString() const;
+    QString toQString() const;
+    std::pair<int, int> toStdPair() const;
     friend std::ostream& operator<<(std::ostream &os, const MineCoordinates &mc);
     friend std::ostream& operator<<(std::ostream &os, std::shared_ptr<MineCoordinates> mc);
 

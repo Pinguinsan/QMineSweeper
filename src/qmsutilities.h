@@ -263,6 +263,11 @@ namespace QmsUtilities
         return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});
     }
 
+    std::string boolToString(bool value);
+    bool stringToBool(const std::string &value);
+    QString boolToQString(bool value);
+    bool qStringToBool(const QString &value);
+
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip);
     std::string stripFromString(const std::string &stringToStrip, char whatToStrip);
     std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip);
