@@ -140,7 +140,7 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
     outputFile.seek(0);
     auto fileHash = QmsUtilities::getFileChecksum(&outputFile, QCryptographicHash::Sha512);
     outputFile.seek(outputFile.size());
-    outputFile.write(fileHash.constData());
+    //outputFile.write(fileHash.constData());
     outputFile.close();
     return SaveGameStateResult::Success;
 }
