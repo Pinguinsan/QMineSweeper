@@ -71,10 +71,8 @@ AboutQmsDialog::~AboutQmsDialog()
 void AboutQmsDialog::onLicenseButtonClicked(bool checked)
 {
     (void)checked;
-    if (this->m_ui->tbAboutQmsLicense->toPlainText().isEmpty()) {
-
-    }
     this->m_ui->tbAboutQmsLicense->setVisible(!this->m_ui->tbAboutQmsLicense->isVisible());
+    this->setFixedSize(this->minimumSize());
 }
 
 /* onAboutQmsWindowCloseButtonClicked() : called when the close button on the

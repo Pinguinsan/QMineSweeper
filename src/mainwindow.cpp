@@ -51,6 +51,7 @@
 #include "ui_aboutqmsdialog.h"
 
 /* static const initializations */
+
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};
     const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};

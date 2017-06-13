@@ -25,6 +25,7 @@
 #include "eventtimer.h"
 #include "qmssettingsloader.h"
 
+
 namespace Ui
 {
     class MainWindow;

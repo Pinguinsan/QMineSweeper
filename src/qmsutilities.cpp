@@ -304,16 +304,27 @@ namespace QmsUtilities
                 throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
             }
         }
+        settings = settings + "log/";
+        settingsDirectory = QDir{settings};
+        if (settingsDirectory.exists()) {
+            LOG_INFO() << QString{"Detected log directory at %1"}.arg(settings);
+        } else {
+            if (settingsDirectory.mkpath(".")) {
+                LOG_INFO() << QString{"Log directory not found, created new directory at %1"}.arg(settings);
+            } else {
+                throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
+            }
+        }
     }
 
     QString getLogFilePath()
     {
         if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
-            return programSettingsDirectory + logFileName;
+            return programSettingsDirectory + "log/" + logFileName;
         } else {
             QString log{getLogFileName()};
             QString settings{getProgramSettingsDirectory()};
-            return log + settings;
+            return  settings + log;
         }
     }
 
@@ -321,7 +332,7 @@ namespace QmsUtilities
     {
         if (logFileName.isEmpty()) {
             QString currentDateTime{QDateTime::currentDateTime().toString()};
-            QString  newDateTime{""};
+            QString newDateTime{""};
             for (const auto &it : currentDateTime) {
                 if ((it == ' ') || (it == ':')) {
                     newDateTime += '-';
@@ -329,7 +340,8 @@ namespace QmsUtilities
                     newDateTime += it.toLower();
                 }
             }
-            logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
+            //logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
+            logFileName = QString{"%1.log"}.arg(newDateTime);
         }
         return logFileName;
     }
@@ -479,45 +491,50 @@ namespace QmsUtilities
        }
 
 
-           std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
-           {
-               std::string stringCopy{maybeDimensions};
-               std::transform(stringCopy.begin(), stringCopy.end(), stringCopy.begin(), ::tolower);
-               char divider{'\0'};
-               for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
-                   if (stringCopy.find(it) != std::string::npos) {
-                       divider = it;
-                   }
+       std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
+       {
+           std::string stringCopy{maybeDimensions};
+           std::transform(stringCopy.begin(), stringCopy.end(), stringCopy.begin(), ::tolower);
+           char divider{'\0'};
+           for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
+               if (stringCopy.find(it) != std::string::npos) {
+                   divider = it;
                }
-               size_t foundDividerPosition{stringCopy.find(divider)};
-               try {
-                   int maybeColumns{STRING_TO_INT(stringCopy.substr(0, foundDividerPosition).c_str())};
-                   int maybeRows{STRING_TO_INT(stringCopy.substr(foundDividerPosition + 1).c_str())};
-                   if ((maybeColumns == 0) || (maybeRows == 0)) {
-                       throw std::exception();
-                   }
-                   return std::make_pair(maybeColumns, maybeRows);
-               } catch (std::exception &e) {
-                   (void)e;
+
+           }
+           if (divider == '\0'){
+               return std::make_pair(-1, -1);
+           }
+           size_t foundDividerPosition{stringCopy.find(divider)};
+           try {
+               int maybeColumns{STRING_TO_INT(stringCopy.substr(0, foundDividerPosition).c_str())};
+               int maybeRows{STRING_TO_INT(stringCopy.substr(foundDividerPosition + 1).c_str())};
+               if ((maybeColumns == 0) || (maybeRows == 0)) {
                    return std::make_pair(-1, -1);
                }
+               return std::make_pair(maybeColumns, maybeRows);
+           } catch (std::exception &e) {
+               (void)e;
+               return std::make_pair(-1, -1);
            }
+       }
 
-           std::pair<int, int> tryParseDimensions(const char *maybeDimensions)
-           {
-               return tryParseDimensions(std::string{maybeDimensions});
-           }
+       std::pair<int, int> tryParseDimensions(const char *maybeDimensions)
+       {
+           return tryParseDimensions(std::string{maybeDimensions});
+       }
 
-           bool containsSeparator(const char *testString)
-           {
-               std::string copyString{testString};
-               std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
-               for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
-                   if (copyString.find(it) != std::string::npos) {
-                       return true;
-                   }
+       bool containsSeparator(const char *testString)
+       {
+           std::string copyString{testString};
+           std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+
+           for (auto &it : KNOWN_DIMENSIONS_SEPARATORS) {
+               if (copyString.find(it) != std::string::npos) {
+                   return true;
                }
-               return false;
            }
+           return false;
+       }
 
 }

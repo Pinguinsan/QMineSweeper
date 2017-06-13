@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
+    QmsUtilities::checkOrCreateProgramSettingsDirectory();
     qInstallMessageHandler(globalLogHandler);
     installSignalHandlers(interruptHandler);
 
@@ -170,7 +171,6 @@ int main(int argc, char *argv[])
             rowCount = settings.numberOfRows();
         }
     }
-    QmsUtilities::checkOrCreateProgramSettingsDirectory();
 #endif
     LOG_INFO() << QString{"Using log file %1"}.arg(QmsUtilities::getLogFilePath());
     LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));

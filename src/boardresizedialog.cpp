@@ -87,14 +87,17 @@ void BoardResizeDialog::onPresetBoardSizeActionTriggered(bool checked)
     using namespace QmsUtilities;
     Q_UNUSED(checked);
     if (QPushButton *clickedButton{dynamic_cast<QPushButton *>(QObject::sender())}) {
-        auto foundPosition = clickedButton->toolTip().toStdString().find_last_of(" ");
-        auto maybeDimensions = clickedButton->toolTip().toStdString().substr(foundPosition);
+        std::string rawString{clickedButton->toolTip().toStdString()};
+        std::transform(rawString.begin(), rawString.end(), rawString.begin(), ::tolower);
+        rawString.erase(std::remove_if(rawString.begin(), rawString.end(), [](auto c) { return (!std::isdigit(c) && (c != 'x') && (c != ' ')); }), rawString.end());
+        auto foundBeginningSpace = rawString.find_last_of(" ");
+        auto maybeDimensions = rawString.substr(foundBeginningSpace + 1);
         auto dimensions = tryParseDimensions(maybeDimensions);
         if ((dimensions.first == -1) || (dimensions.second == -1)) {
             throw std::runtime_error(TStringFormat("In BoardResizeDialog::onBeginnerBoardSizeTriggered() : dimensions parsed from QPushButton menu item are not valid (QAction::text() = \"{0}\", this should never happen)", maybeDimensions));
         }
         this->m_ui->lblColumns->setText(QS_NUMBER(dimensions.first));
-        this->m_ui->lblRows->setText(QS_NUMBER(dimensions.first));
+        this->m_ui->lblRows->setText(QS_NUMBER(dimensions.second));
     }
 
 }
