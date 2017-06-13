@@ -30,18 +30,14 @@
 #include <set>
 #include <unordered_map>
 
+#include "qmsgamestate.h"
 #include "minecoordinatehash.h"
 
 class QmsButton;
 class MineCoordinates;
 class MainWindow;
 class QString;
-
-enum class GameState {
-    GAME_ACTIVE,
-    GAME_INACTIVE,
-    GAME_PAUSED
-};
+class QmsGameState;
 
 using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
 
@@ -68,35 +64,34 @@ public:
     void decrementNumberOfMovesMade();
     void incrementUserMineCountDisplay();
     void decrementUserMineCountDisplay();
-
     int userDisplayNumberOfMines() const;
     void setNumberOfMinesRemaining(int userDisplayNumberOfMines);
-    void startResetIconTimer(unsigned int howLong, const QIcon &icon) const;
-
     ButtonContainer &mineSweeperButtons();
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
-    bool coordinatePairExists(const MineCoordinates &coordinatesToCheck) const;
-    bool mineInBounds(const MineCoordinates &coordinatesToCheck) const;
-    bool mineInBounds(int columnIndex, int rowIndex) const;
     bool gameOver() const;
-    void bindMainWindow(std::shared_ptr<MainWindow> mw);
-
     void setNumberOfColumns(int numberOfColumns);
     void setNumberOfRows(int numberOfRows);
     void setInitialClickFlag(bool initialClickFlag);
     void addMineSweeperButton(int columnIndex, int rowIndex);
     void setGameOver(bool gameOver);
-    void clearRandomMinePlacement();
+    int totalButtonCount() const;
+
+    void startResetIconTimer(unsigned int howLong, const QIcon &icon) const;
+    bool coordinatePairExists(const MineCoordinates &coordinatesToCheck) const;
+    bool mineInBounds(const MineCoordinates &coordinatesToCheck) const;
+    bool mineInBounds(int columnIndex, int rowIndex) const;
+    void bindMainWindow(std::shared_ptr<MainWindow> mw);
+
     void assignAllMines();
     void determineNeighborMineCounts();
     void generateRandomMinePlacement(QmsButton *msb);
     void checkForOtherEmptyMines(QmsButton *msb);
+    void clearRandomMinePlacement();
 
     bool isCornerButton(QmsButton *msb) const;
     bool isEdgeButton(QmsButton *msb) const;
     GameState gameState() const;
-    int totalButtonCount() const;
 
     static double DEFAULT_NUMBER_OF_MINES();
     static int GAME_TIMER_INTERVAL();
@@ -143,24 +138,11 @@ signals:
     void numberOfMovesMadeChanged(int newNumber);
 
 private:
-    std::set<std::pair<int, int>> m_mineCoordinates;
-    ButtonContainer m_mineSweeperButtons;
-    int m_numberOfMines;
-    int m_userDisplayNumberOfMines;
-    bool m_initialClickFlag;
-    int m_numberOfColumns;
-    int m_numberOfRows;
-    int m_numberOfMovesMade;
-    GameState m_gameState;
-    bool m_gameOver;
+    std::shared_ptr<QmsGameState> m_qmsGameState;
     std::shared_ptr<MainWindow> m_mainWindow;
-    int m_totalButtonCount;
-    int m_unopenedMineCount;
 
     static const double s_DEFAULT_NUMBER_OF_MINES;
     static const int s_GAME_TIMER_INTERVAL;
-    static const std::pair<double, double> s_CELL_TO_MINE_RATIOS;
-    static const int s_CELL_TO_MINE_THRESHOLD;
     static const int s_NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES;
     static const int s_EDGE_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES;
     static const int s_CORNER_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES;

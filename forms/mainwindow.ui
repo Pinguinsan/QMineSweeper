@@ -1017,10 +1017,20 @@
      <x>0</x>
      <y>0</y>
      <width>526</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
    <widget class="QMenu" name="menuFile">
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>File</string>
     </property>
@@ -1030,6 +1040,11 @@
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuPreferences">
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Preferences</string>
     </property>
@@ -1047,6 +1062,11 @@
     <addaction name="menuLanguage"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Help</string>
     </property>

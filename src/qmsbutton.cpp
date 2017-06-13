@@ -110,6 +110,7 @@ bool QmsButton::eventFilter(QObject *pObject, QEvent *pEvent)
     } else  {
         return QObject::eventFilter(pObject, pEvent);
     }
+    return false;
 }
 
 bool QmsButton::operator==(const QmsButton &other) const

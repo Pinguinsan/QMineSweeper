@@ -35,8 +35,6 @@
 
 const double GameController::s_DEFAULT_NUMBER_OF_MINES{81.0};
 const int GameController::s_GAME_TIMER_INTERVAL{100};
-const std::pair<double, double> GameController::s_CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
-const int GameController::s_CELL_TO_MINE_THRESHOLD{82};
 const int GameController::s_NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES{8};
 const int GameController::s_EDGE_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES{5};
 const int GameController::s_CORNER_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES{3};
@@ -48,23 +46,9 @@ const int GameController::s_LONG_CLICK_THRESHOLD{250};
 const int GameController::s_MILLISECOND_DISPLAY_DIGITS{1};
 
 GameController::GameController(int columnCount, int rowCount) :
-    m_numberOfMines{0},
-    m_userDisplayNumberOfMines{0},
-    m_initialClickFlag{true},
-    m_numberOfColumns{columnCount},
-    m_numberOfRows{rowCount},
-    m_numberOfMovesMade{0},
-    m_gameState{GameState::GAME_INACTIVE},
-    m_gameOver{false},
-    m_mainWindow{nullptr},
-    m_totalButtonCount{this->m_numberOfColumns*this->m_numberOfRows},
-    m_unopenedMineCount{this->m_numberOfColumns*this->m_numberOfRows}
+    m_qmsGameState{std::make_shared<QmsGameState>(columnCount, rowCount)},
+    m_mainWindow{nullptr}
 {
-    using namespace QmsUtilities;
-    this->m_numberOfMines = ((this->m_numberOfColumns * this->m_numberOfRows) < this->s_CELL_TO_MINE_THRESHOLD) ?
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.first)) :
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.second));
-    this->m_userDisplayNumberOfMines = this->m_numberOfMines;
     this->connect(this, &GameController::gamePaused, this, &GameController::onGamePaused);
 }
 
@@ -81,98 +65,98 @@ void GameController::onMineSweeperButtonCreated(std::shared_ptr<QmsButton> msb)
 
 int GameController::totalButtonCount() const
 {
-    return this->m_totalButtonCount;
+    return this->m_qmsGameState->m_totalButtonCount;
 }
 
 int GameController::unopenedMineCount() const
 {
-    return this->m_unopenedMineCount;
+    return this->m_qmsGameState->m_unopenedMineCount;
 }
 
 void GameController::onBoardResizeTriggered(int columns, int rows)
 {
     using namespace QmsUtilities;
-    this->m_numberOfColumns = columns;
-    this->m_numberOfRows = rows;
-    this->m_numberOfMines = ((this->m_numberOfColumns * this->m_numberOfRows) < this->s_CELL_TO_MINE_THRESHOLD) ?
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.first)) :
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.second));
-    this->m_userDisplayNumberOfMines = this->m_numberOfMines;
-    this->m_gameState = GameState::GAME_INACTIVE;
-    this->m_mineCoordinates.clear();
-    this->m_mineSweeperButtons.clear();
-    this->m_initialClickFlag = true;
-    this->m_totalButtonCount = this->m_numberOfColumns * this->m_numberOfRows;
-    this->m_unopenedMineCount = this->m_totalButtonCount;
+    this->m_qmsGameState->m_numberOfColumns = columns;
+    this->m_qmsGameState->m_numberOfRows = rows;
+    this->m_qmsGameState->m_numberOfMines = ((this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows) < QmsGameState::s_CELL_TO_MINE_THRESHOLD) ?
+            static_cast<int>(roundIntuitively(static_cast<double>(this->m_qmsGameState->m_numberOfColumns) * static_cast<double>(this->m_qmsGameState->m_numberOfRows) * QmsGameState::s_CELL_TO_MINE_RATIOS.first)) :
+            static_cast<int>(roundIntuitively(static_cast<double>(this->m_qmsGameState->m_numberOfColumns) * static_cast<double>(this->m_qmsGameState->m_numberOfRows) * QmsGameState::s_CELL_TO_MINE_RATIOS.second));
+    this->m_qmsGameState->m_userDisplayNumberOfMines = this->m_qmsGameState->m_numberOfMines;
+    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_mineCoordinates.clear();
+    this->m_qmsGameState->m_mineSweeperButtons.clear();
+    this->m_qmsGameState->m_initialClickFlag = true;
+    this->m_qmsGameState->m_totalButtonCount = this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows;
+    this->m_qmsGameState->m_unopenedMineCount = this->m_qmsGameState->m_totalButtonCount;
     emit(readyToBeginNewGame());
 }
 
 void GameController::onGamePaused()
 {
-    if (!this->m_initialClickFlag) {
-        this->m_gameState = GameState::GAME_PAUSED;
+    if (!this->m_qmsGameState->m_initialClickFlag) {
+        this->m_qmsGameState->m_gameState = GameState::GAME_PAUSED;
     }
 }
 
 void GameController::onGameResumed()
 {
-    if (!this->m_initialClickFlag) {
-        this->m_gameState = GameState::GAME_ACTIVE;
+    if (!this->m_qmsGameState->m_initialClickFlag) {
+        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
     }
 }
 
 int GameController::userDisplayNumberOfMines() const
 {
-    return this->m_userDisplayNumberOfMines;
+    return this->m_qmsGameState->m_userDisplayNumberOfMines;
 }
 
 void GameController::onMineExplosionEventTriggered()
 {
-    this->m_gameState = GameState::GAME_INACTIVE;
-    for (auto &it : this->m_mineSweeperButtons) {
+    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    for (auto &it : this->m_qmsGameState->m_mineSweeperButtons) {
         it.second->setBlockClicks(true);
     }
 }
 
 void GameController::setNumberOfMinesRemaining(int numberOfMinesRemaining)
 {
-    this->m_userDisplayNumberOfMines = numberOfMinesRemaining;
-    emit (numberOfMinesRemainingChanged(this->m_userDisplayNumberOfMines));
+    this->m_qmsGameState->m_userDisplayNumberOfMines = numberOfMinesRemaining;
+    emit (numberOfMinesRemainingChanged(this->m_qmsGameState->m_userDisplayNumberOfMines));
 }
 
 int GameController::numberOfColumns() const
 {
-    return this->m_numberOfColumns;
+    return this->m_qmsGameState->m_numberOfColumns;
 }
 
 int GameController::numberOfMines() const
 {
-    return this->m_numberOfMines;
+    return this->m_qmsGameState->m_numberOfMines;
 }
 
 void GameController::setNumberOfColumns(int numberOfColumns)
 {
-    this->m_numberOfColumns = numberOfColumns;
+    this->m_qmsGameState->m_numberOfColumns = numberOfColumns;
 }
 
 int GameController::numberOfRows() const
 {
-    return this->m_numberOfRows;
+    return this->m_qmsGameState->m_numberOfRows;
 }
 
 void GameController::setNumberOfRows(int numberOfRows)
 {
-    this->m_numberOfRows = numberOfRows;
+    this->m_qmsGameState->m_numberOfRows = numberOfRows;
 }
 
 bool GameController::initialClickFlag() const
 {
-    return this->m_initialClickFlag;
+    return this->m_qmsGameState->m_initialClickFlag;
 }
 
 void GameController::setInitialClickFlag(bool initialClickFlag)
 {
-    this->m_initialClickFlag = initialClickFlag;
+    this->m_qmsGameState->m_initialClickFlag = initialClickFlag;
 }
 
 void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
@@ -180,7 +164,7 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
     using namespace QmsUtilities;
     using namespace QmsStrings;
     try {
-        this->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton> (new QmsButton{columnIndex, rowIndex, nullptr})));
+        this->m_qmsGameState->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton> (new QmsButton{columnIndex, rowIndex, nullptr})));
     } catch (std::exception &e) {
         LOG_WARNING() << QString{STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING}.arg(e.what());
     }
@@ -188,14 +172,14 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
 
 ButtonContainer &GameController::mineSweeperButtons() 
 {
-    return this->m_mineSweeperButtons;
+    return this->m_qmsGameState->m_mineSweeperButtons;
 }
 
 std::shared_ptr<QmsButton> GameController::mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const
 {
     using namespace QmsStrings;
-    if (this->mineInBounds(coordinates) && (this->m_mineSweeperButtons.find(coordinates) != m_mineSweeperButtons.end())) {
-        return this->m_mineSweeperButtons.at(coordinates);
+    if (this->mineInBounds(coordinates) && (this->m_qmsGameState->m_mineSweeperButtons.find(coordinates) != this->m_qmsGameState->m_mineSweeperButtons.end())) {
+        return this->m_qmsGameState->m_mineSweeperButtons.at(coordinates);
     } else {
         throw std::runtime_error(GENERIC_ERROR_MESSAGE);
     }
@@ -216,17 +200,17 @@ void GameController::startResetIconTimer(unsigned int howLong, const QIcon &icon
 bool GameController::isCornerButton(QmsButton *msbp) const
 {
     return (((msbp->columnIndex() == 0) && (msbp->rowIndex() == 0)) ||
-            ((msbp->columnIndex() == 0) && (msbp->rowIndex() == this->m_numberOfRows - 1)) ||
-            ((msbp->columnIndex() == this->m_numberOfColumns - 1) && (msbp->rowIndex() == 0)) ||
-            ((msbp->columnIndex() == this->m_numberOfColumns - 1) && (msbp->rowIndex() == this->m_numberOfRows - 1)));
+            ((msbp->columnIndex() == 0) && (msbp->rowIndex() == this->m_qmsGameState->m_numberOfRows - 1)) ||
+            ((msbp->columnIndex() == this->m_qmsGameState->m_numberOfColumns - 1) && (msbp->rowIndex() == 0)) ||
+            ((msbp->columnIndex() == this->m_qmsGameState->m_numberOfColumns - 1) && (msbp->rowIndex() == this->m_qmsGameState->m_numberOfRows - 1)));
 }
 
 bool GameController::isEdgeButton(QmsButton *msbp) const
 {
     return ((msbp->columnIndex() == 0) ||
-            (msbp->columnIndex() == this->m_numberOfColumns - 1) ||
+            (msbp->columnIndex() == this->m_qmsGameState->m_numberOfColumns - 1) ||
             (msbp->rowIndex() == 0) ||
-            (msbp->rowIndex() == this->m_numberOfRows - 1));
+            (msbp->rowIndex() == this->m_qmsGameState->m_numberOfRows - 1));
 }
 
 
@@ -234,24 +218,24 @@ void GameController::generateRandomMinePlacement(QmsButton *msbp)
 {
     using namespace QmsUtilities;
     MineCoordinates potentialMineCoordinates{0,0};
-    while (this->m_mineCoordinates.size() < static_cast<unsigned int>(this->m_numberOfMines)) {
-        potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_numberOfColumns), randomBetween(0, this->m_numberOfRows)};
+    while (this->m_qmsGameState->m_mineCoordinates.size() < static_cast<unsigned int>(this->m_qmsGameState->m_numberOfMines)) {
+        potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_qmsGameState->m_numberOfColumns), randomBetween(0, this->m_qmsGameState->m_numberOfRows)};
         if (potentialMineCoordinates == *(msbp->mineCoordinates().get())) {
             continue;
         } else {
-            this->m_mineCoordinates.emplace(std::make_pair(potentialMineCoordinates.X(), potentialMineCoordinates.Y()));
+            this->m_qmsGameState->m_mineCoordinates.emplace(std::make_pair(potentialMineCoordinates.X(), potentialMineCoordinates.Y()));
         }
     }
 }
 
 void GameController::clearRandomMinePlacement()
 {
-    m_mineCoordinates.clear();
+    this->m_qmsGameState->m_mineCoordinates.clear();
 }
 
 void GameController::onGameReset()
  {
-    for (std::pair<const MineCoordinates, std::shared_ptr<QmsButton>> msbp : this->m_mineSweeperButtons) {
+    for (std::pair<const MineCoordinates, std::shared_ptr<QmsButton>> msbp : this->m_qmsGameState->m_mineSweeperButtons) {
         msbp.second->setHasFlag(false);
         msbp.second->setHasQuestionMark(false);
         msbp.second->setHasMine(false);
@@ -260,29 +244,29 @@ void GameController::onGameReset()
         msbp.second->setBlockClicks(false);
     }
     clearRandomMinePlacement();
-    this->m_initialClickFlag = true;
-    this->m_gameOver = false;
-    this->m_userDisplayNumberOfMines = this->m_numberOfMines;
-    this->m_gameState = GameState::GAME_INACTIVE;
-    this->m_numberOfMovesMade = 0;
-    this->m_unopenedMineCount = this->m_numberOfColumns*this->m_numberOfRows;
+    this->m_qmsGameState->m_initialClickFlag = true;
+    this->m_qmsGameState->m_gameOver = false;
+    this->m_qmsGameState->m_userDisplayNumberOfMines = this->m_qmsGameState->m_numberOfMines;
+    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_numberOfMovesMade = 0;
+    this->m_qmsGameState->m_unopenedMineCount = this->m_qmsGameState->m_numberOfColumns*this->m_qmsGameState->m_numberOfRows;
 }
 
 void GameController::setGameOver(bool gameOver)
 {
-    this->m_gameState = GameState::GAME_INACTIVE;
-    this->m_gameOver = gameOver;
+    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameOver = gameOver;
 }
 
 bool GameController::gameOver() const
 {
-    return this->m_gameOver;
+    return this->m_qmsGameState->m_gameOver;
 }
 
 
 bool GameController::coordinatePairExists(const MineCoordinates &coordinatesToCheck) const
 {
-    for (const std::pair<int, int> &mc : this->m_mineCoordinates) {
+    for (const std::pair<int, int> &mc : this->m_qmsGameState->m_mineCoordinates) {
         if (coordinatesToCheck == mc) {
             return true;
         }
@@ -292,16 +276,16 @@ bool GameController::coordinatePairExists(const MineCoordinates &coordinatesToCh
 
 void GameController::setNumberOfMovesMade(int numberOfMovesMade)
 {
-    this->m_numberOfMovesMade = numberOfMovesMade;
+    this->m_qmsGameState->m_numberOfMovesMade = numberOfMovesMade;
 }
 
 
 void GameController::assignAllMines()
 {
     using namespace QmsStrings;
-    for (const std::pair<int, int> &mc : this->m_mineCoordinates) {
-        if (this->m_mineSweeperButtons.find(mc) != this->m_mineSweeperButtons.end()) {
-            this->m_mineSweeperButtons.at(mc)->setHasMine(true);
+    for (const std::pair<int, int> &mc : this->m_qmsGameState->m_mineCoordinates) {
+        if (this->m_qmsGameState->m_mineSweeperButtons.find(mc) != this->m_qmsGameState->m_mineSweeperButtons.end()) {
+            this->m_qmsGameState->m_mineSweeperButtons.at(mc)->setHasMine(true);
         } else {
             throw std::runtime_error(GENERIC_ERROR_MESSAGE);
         }
@@ -310,14 +294,14 @@ void GameController::assignAllMines()
 
  void GameController::determineNeighborMineCounts()
 {
-    for(std::pair<MineCoordinates, std::shared_ptr<QmsButton> > msbp : this->m_mineSweeperButtons) {
+    for(std::pair<MineCoordinates, std::shared_ptr<QmsButton> > msbp : this->m_qmsGameState->m_mineSweeperButtons) {
         for (int columnI = msbp.second->columnIndex() - 1; columnI <= msbp.second->columnIndex() + 1; columnI++) {
             for (int rowI = msbp.second->rowIndex() - 1; rowI <= msbp.second->rowIndex() + 1; rowI++) {
                 if ((columnI == msbp.second->columnIndex()) && (rowI == msbp.second->rowIndex())) {
                     continue;
                 } else if (mineInBounds(MineCoordinates{columnI, rowI})) {
                     MineCoordinates minePairCheck{ columnI, rowI };
-                    if (m_mineSweeperButtons.at(minePairCheck)->hasMine()) {
+                    if (this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->hasMine()) {
                         msbp.second->setNumberOfSurroundingMines(msbp.second->numberOfSurroundingMines() + 1);
                     }
                 }
@@ -331,9 +315,9 @@ bool GameController::mineInBounds(const MineCoordinates &coordinatesToCheck) con
     int tempColumnIndex = coordinatesToCheck.X();
     int tempRowIndex = coordinatesToCheck.Y();
     return ((tempColumnIndex >= 0) &&
-            (tempColumnIndex < m_numberOfColumns) &&
+            (tempColumnIndex < this->m_qmsGameState->m_numberOfColumns) &&
             (tempRowIndex >= 0) &&
-            (tempRowIndex < m_numberOfRows));
+            (tempRowIndex < this->m_qmsGameState->m_numberOfRows));
 }
 
 bool GameController::mineInBounds(int columnIndex, int rowIndex) const
@@ -350,11 +334,11 @@ bool GameController::mineInBounds(int columnIndex, int rowIndex) const
                 continue;
             } else if (mineInBounds(columnI, rowI)) {
                 MineCoordinates minePairCheck{ columnI, rowI };
-                if ((!this->m_mineSweeperButtons.at(minePairCheck)->hasMine()) &&
-                    (!this->m_mineSweeperButtons.at(minePairCheck)->isChecked()) &&
-                    (!this->m_mineSweeperButtons.at(minePairCheck)->hasQuestionMark()) &&
-                    (!this->m_mineSweeperButtons.at(minePairCheck)->hasFlag())) {
-                    this->m_mainWindow->displayMine(this->m_mineSweeperButtons.at(minePairCheck).get());
+                if ((!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->hasMine()) &&
+                    (!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->isChecked()) &&
+                    (!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->hasQuestionMark()) &&
+                    (!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->hasFlag())) {
+                    this->m_mainWindow->displayMine(this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck).get());
                 }
             }
         }
@@ -376,13 +360,13 @@ void GameController::onMineSweeperButtonRightClicked(QmsButton *msbp)
 void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
 {
     using namespace QmsStrings;
-    if (this->m_gameOver) {
+    if (this->m_qmsGameState->m_gameOver) {
         return;
     }
-    if (this->m_initialClickFlag) {
+    if (this->m_qmsGameState->m_initialClickFlag) {
         this->generateRandomMinePlacement(msbp);
-        this->m_initialClickFlag = false;
-        this->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_initialClickFlag = false;
+        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
         try {
             assignAllMines();
             determineNeighborMineCounts();
@@ -392,7 +376,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
             std::cout << e.what() << std::endl;
             errorBox->exec();
         }
-        this->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
         emit(gameStarted());
     }    
     if ((msbp->hasFlag()) || (msbp->hasQuestionMark())) {
@@ -417,10 +401,10 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
 {
     using namespace QmsUtilities;
     using namespace QmsStrings;
-    if (this->m_gameOver) {
+    if (this->m_qmsGameState->m_gameOver) {
         return;
     }
-    if (this->m_initialClickFlag) {
+    if (this->m_qmsGameState->m_initialClickFlag) {
         generateRandomMinePlacement(msbp);
         try {
             this->assignAllMines();
@@ -433,8 +417,8 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
             logString(e.what());
             exit(EXIT_FAILURE);
         }
-        this->m_initialClickFlag = false;
-        this->m_gameState = GameState::GAME_ACTIVE;
+        this->m_qmsGameState->m_initialClickFlag = false;
+        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
         emit(gameStarted());
     }
     if (msbp->isChecked() || msbp->isRevealed()) {
@@ -469,20 +453,20 @@ void GameController::onMineSweeperButtonLongRightClickReleased(QmsButton *msbp)
 
 void GameController::onMineDisplayed()
 {
-    if ((--this->m_unopenedMineCount) == this->m_numberOfMines) {
+    if ((--this->m_qmsGameState->m_unopenedMineCount) == this->m_qmsGameState->m_numberOfMines) {
         emit(winEvent());
     }
 }
 
 void GameController::onGameWon()
 {
-    this->m_gameState = GameState::GAME_INACTIVE;
+    this->m_qmsGameState->m_gameState = GameState::GAME_INACTIVE;
 }
 
 void GameController::onContextMenuActive()
 {
-    if (this->m_gameState == GameState::GAME_ACTIVE) {
-        this->m_gameState = GameState::GAME_PAUSED;
+    if (this->m_qmsGameState->m_gameState == GameState::GAME_ACTIVE) {
+        this->m_qmsGameState->m_gameState = GameState::GAME_PAUSED;
         emit(gamePaused());
         this->gamePaused();
     }
@@ -490,46 +474,46 @@ void GameController::onContextMenuActive()
 
 void GameController::onContextMenuInactive()
 {
-    if ((this->m_gameState == GameState::GAME_PAUSED) && (!this->m_mainWindow->boardResizeDialogVisible())) {
-        this->m_gameState = GameState::GAME_ACTIVE;
+    if ((this->m_qmsGameState->m_gameState == GameState::GAME_PAUSED) && (!this->m_mainWindow->boardResizeDialogVisible())) {
+        this->m_qmsGameState->m_gameState = GameState::GAME_ACTIVE;
         emit(gameResumed());
     }
 }
 
 GameState GameController::gameState() const
 {
-    return this->m_gameState;
+    return this->m_qmsGameState->m_gameState;
 }
 
-void GameController::bindMainWindow(std::shared_ptr<MainWindow> mw)
+void GameController::bindMainWindow(std::shared_ptr<MainWindow> mainWindow)
 {
     this->m_mainWindow.reset();
-    this->m_mainWindow = mw;
+    this->m_mainWindow = mainWindow;
 }
 
 int GameController::numberOfMovesMade() const
 {
-    return this->m_numberOfMovesMade;
+    return this->m_qmsGameState->m_numberOfMovesMade;
 }
 
 void GameController::incrementNumberOfMovesMade()
 {
-    emit(numberOfMovesMadeChanged(++this->m_numberOfMovesMade));
+    emit(numberOfMovesMadeChanged(++this->m_qmsGameState->m_numberOfMovesMade));
 }
 
 void GameController::decrementNumberOfMovesMade()
 {
-    emit(numberOfMovesMadeChanged(--this->m_numberOfMovesMade));
+    emit(numberOfMovesMadeChanged(--this->m_qmsGameState->m_numberOfMovesMade));
 }
 
 void GameController::incrementUserMineCountDisplay()
 {
-    emit(numberOfMinesRemainingChanged(++this->m_userDisplayNumberOfMines));
+    emit(numberOfMinesRemainingChanged(++this->m_qmsGameState->m_userDisplayNumberOfMines));
 }
 
 void GameController::decrementUserMineCountDisplay()
 {
-    emit(numberOfMinesRemainingChanged(--this->m_userDisplayNumberOfMines));
+    emit(numberOfMinesRemainingChanged(--this->m_qmsGameState->m_userDisplayNumberOfMines));
 }
 
 double GameController::DEFAULT_NUMBER_OF_MINES()
@@ -540,16 +524,6 @@ double GameController::DEFAULT_NUMBER_OF_MINES()
 int GameController::GAME_TIMER_INTERVAL()
 {
     return GameController::s_GAME_TIMER_INTERVAL;
-}
-
-std::pair<double, double> GameController::CELL_TO_MINE_RATIOS()
-{
-    return GameController::s_CELL_TO_MINE_RATIOS;
-}
-
-int GameController::CELL_TO_MINE_THRESHOLD()
-{
-    return GameController::s_CELL_TO_MINE_THRESHOLD;
 }
 
 int GameController::NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES()
