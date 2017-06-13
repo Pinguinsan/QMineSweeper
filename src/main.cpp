@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <utility>
+#include <algorithm>
 
 #if defined(_WIN32)
     #include <Windows.h>
@@ -68,6 +69,7 @@ void displayHelp();
 void displayVersion();
 void interruptHandler(int signal);
 void installSignalHandlers(void (*signalHandler)(int));
+void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 using namespace QmsStrings;
 using namespace QmsUtilities;
@@ -80,6 +82,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
+    qInstallMessageHandler(globalLogHandler);
     installSignalHandlers(interruptHandler);
 
      std::cout << std::endl;
@@ -169,6 +172,7 @@ int main(int argc, char *argv[])
     }
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
 #endif
+    LOG_INFO() << QString{"Using log file %1"}.arg(QmsUtilities::getLogFilePath());
     LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     //TODO: Load language from config file
 
@@ -275,13 +279,13 @@ template <typename StringType, typename FileStringType>
 void logToFile(const StringType &str, const FileStringType &filePath)
 {
     QFile qFile{filePath};
-    QString stringCopy{str};
+    QString stringCopy{toQString(str)};
     if (qFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-        if (qFile.write(str.toStdString().c_str(), str.length()) == -1) {
-            throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(str, filePath).toStdString());
+        if (qFile.write(toStdString(str).c_str(), toStdString(str).length()) == -1) {
+            throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(toQString(str), toQString(filePath)).toStdString());
         }
     } else {
-        throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (could not open file)"}.arg(str, filePath).toStdString());
+        throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (could not open file)"}.arg(toQString(str), toQString(filePath)).toStdString());
     }
 
 }
@@ -294,28 +298,40 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
 
     switch (type) {
     case QtDebugMsg:
-        logContext = "Debug: ";
+        logContext = "{Debug}: ";
         outputStream = &std::cout;
         break;
     case QtInfoMsg:
-        logContext = "Info: ";
+        logContext = "{Info}: ";
         outputStream = &std::clog;
         break;
     case QtWarningMsg:
-        logContext = "Warning: ";
+        logContext = "{Warning}: ";
         outputStream = &std::cout;
         break;
     case QtCriticalMsg:
-        logContext = "Critical: ";
+        logContext = "{Critical}: ";
         outputStream = &std::cerr;
         break;
     case QtFatalMsg:
-        logContext = "Fatal: ";
+        logContext = "{Fatal}: ";
         outputStream = &std::cerr;
         abort();
     }
-    QString logMessage{QString{"[%1] - %2 %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().toString(), logContext, localMsg.constData(), context.file, QS_NUMBER(context.line), context.function)};
-
+    QString logMessage{""};
+    std::string coreLogMessage{QString{localMsg}.toStdString()};
+    if (coreLogMessage.find("\"") == 0) {
+        coreLogMessage = coreLogMessage.substr(1);
+    }
+    if (coreLogMessage.find_last_of("\"") == coreLogMessage.length() - 1) {
+        coreLogMessage = coreLogMessage.substr(0, coreLogMessage.length() - 1);
+    }
+    //coreLogMessage.erase(std::remove_if(coreLogMessage.begin(), coreLogMessage.end(),[](char c) { return c == '\"'; }), coreLogMessage.end());
+    if ((type == QtCriticalMsg) || (type == QtFatalMsg)) {
+        logMessage = QString{"[%1] - %2 %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().toString(), logContext, coreLogMessage.c_str(), context.file, QS_NUMBER(context.line), context.function);
+    } else {
+        logMessage = QString{"[%1] - %2 %3"}.arg(QDateTime::currentDateTime().toString(), logContext, coreLogMessage.c_str());
+    }
     bool addLineEnding{true};
     static const QList<const char *> LINE_ENDINGS{"\r\n", "\r", "\n", "\n\r"};
     for (const auto &it : LINE_ENDINGS) {
@@ -329,7 +345,6 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     if (outputStream) {
         *outputStream << logMessage.toStdString();
     }
-    logToFile(logMessage, QmsUtilities::getLogFileName());
-
+    logToFile(logMessage.toStdString(), QmsUtilities::getLogFileName());
 }
 
