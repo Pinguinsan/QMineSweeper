@@ -32,6 +32,7 @@
 
 AboutQmsDialog::AboutQmsDialog() :
     m_ui{new Ui::AboutQmsDialog{}},
+    m_licenseHiddenHeight{-1},
     m_xPlacement{0},
     m_yPlacement{0}
 {
@@ -50,13 +51,6 @@ AboutQmsDialog::AboutQmsDialog() :
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_ui->tbAboutQmsLicense->setVisible(false);
 
-    QFile licenseFile{QmsStrings::QMINESWEEPER_LICENSE_PATH};
-    licenseFile.open(QIODevice::OpenModeFlag::ReadOnly);
-    this->m_ui->tbAboutQmsLicense->append(licenseFile.readAll());
-    licenseFile.close();
-    this->m_ui->tbAboutQmsLicense->moveCursor(QTextCursor::Start);
-    this->m_ui->tbAboutQmsLicense->ensureCursorVisible();
-
     this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutQmsDialog::onLicenseButtonClicked);
     this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutQmsDialog::onCloseButtonClicked);
 }
@@ -71,8 +65,36 @@ AboutQmsDialog::~AboutQmsDialog()
 void AboutQmsDialog::onLicenseButtonClicked(bool checked)
 {
     (void)checked;
+    if (this->m_ui->tbAboutQmsLicense->isVisible()) {
+        this->clearLicenseText();
+        if (this->m_licenseHiddenHeight != -1) {
+            QRect thisGeometry{this->geometry()};
+            thisGeometry.setHeight(this->m_licenseHiddenHeight);
+            this->setGeometry(thisGeometry);
+        }
+    } else {
+        if (this->m_licenseHiddenHeight == -1) {
+            this->m_licenseHiddenHeight = this->height();
+        }
+        this->populateLicenseText();
+    }
     this->m_ui->tbAboutQmsLicense->setVisible(!this->m_ui->tbAboutQmsLicense->isVisible());
-    this->setFixedSize(this->minimumSize());
+    //this->setFixedSize(this->minimumSize());
+}
+
+void AboutQmsDialog::populateLicenseText()
+{
+    QFile licenseFile{QmsStrings::QMINESWEEPER_LICENSE_PATH};
+    licenseFile.open(QIODevice::OpenModeFlag::ReadOnly);
+    this->m_ui->tbAboutQmsLicense->append(licenseFile.readAll());
+    licenseFile.close();
+    this->m_ui->tbAboutQmsLicense->moveCursor(QTextCursor::Start);
+    this->m_ui->tbAboutQmsLicense->ensureCursorVisible();
+}
+
+void AboutQmsDialog::clearLicenseText()
+{
+    this->m_ui->tbAboutQmsLicense->clear();
 }
 
 /* onAboutQmsWindowCloseButtonClicked() : called when the close button on the

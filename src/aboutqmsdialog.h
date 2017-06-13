@@ -47,10 +47,13 @@ private slots:
     void onCloseButtonClicked(bool checked);
 private:
     std::unique_ptr<Ui::AboutQmsDialog> m_ui;
+    int m_licenseHiddenHeight;
     int m_xPlacement;
     int m_yPlacement;
 
     void calculateXYPlacement(QDesktopWidget *desktopWidget);
+    void populateLicenseText();
+    void clearLicenseText();
 };
 
 #endif //QMINESWEEPER_ABOUTQMSWINDOW_H

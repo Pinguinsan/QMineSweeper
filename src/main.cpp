@@ -30,6 +30,8 @@
 
 #endif
 
+#define SIGNAL_STRING_BUFFER_SIZE 255
+
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QString>
@@ -78,13 +80,13 @@ using namespace QmsGlobalSettings;
 int main(int argc, char *argv[])
 {
 
+    installSignalHandlers(interruptHandler);
     QCoreApplication::setOrganizationName(AUTHOR_NAME);
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
     qInstallMessageHandler(globalLogHandler);
-    installSignalHandlers(interruptHandler);
 
      std::cout << std::endl;
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
@@ -216,7 +218,10 @@ void interruptHandler(int signalNumber)
     if ((signalNumber == SIGUSR1) || (signalNumber == SIGUSR2) || (signalNumber == SIGCHLD)) {
         return;
     }
-    std::cout << std::endl << "Caught signal " << signalNumber << " (" << std::strerror(errno) << "), exiting " << PROGRAM_NAME << std::endl;
+    std::unique_ptr<char[]> signalString{new char[SIGNAL_STRING_BUFFER_SIZE]};
+    memset(signalString.get(), '\0', SIGNAL_STRING_BUFFER_SIZE);
+    signalString.reset(strsignal(signalNumber));
+    std::cout << std::endl << "Caught signal " << signalNumber << " (" << signalString.get() << "), exiting " << PROGRAM_NAME << std::endl;
     exit (signalNumber);
 #endif
 }
@@ -295,7 +300,6 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     QByteArray localMsg{msg.toLocal8Bit()};
     QString logContext{""};
     auto *outputStream = &std::cout;
-
     switch (type) {
     case QtDebugMsg:
         logContext = "{Debug}: ";
@@ -328,9 +332,9 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     }
     //coreLogMessage.erase(std::remove_if(coreLogMessage.begin(), coreLogMessage.end(),[](char c) { return c == '\"'; }), coreLogMessage.end());
     if ((type == QtCriticalMsg) || (type == QtFatalMsg)) {
-        logMessage = QString{"[%1] - %2 %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().toString(), logContext, coreLogMessage.c_str(), context.file, QS_NUMBER(context.line), context.function);
+        logMessage = QString{"[%1] - %2 %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().time().toString(), logContext, coreLogMessage.c_str(), context.file, QS_NUMBER(context.line), context.function);
     } else {
-        logMessage = QString{"[%1] - %2 %3"}.arg(QDateTime::currentDateTime().toString(), logContext, coreLogMessage.c_str());
+        logMessage = QString{"[%1] - %2 %3"}.arg(QDateTime::currentDateTime().time().toString(), logContext, coreLogMessage.c_str());
     }
     bool addLineEnding{true};
     static const QList<const char *> LINE_ENDINGS{"\r\n", "\r", "\n", "\n\r"};

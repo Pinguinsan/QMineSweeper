@@ -60,6 +60,7 @@
     const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
     const int MainWindow::s_NUMBER_OF_VERTIAL_MARGINS{4};
     const int MainWindow::s_DEFAULT_MINE_SIZE_SCALE_FACTOR{1};
+    const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{14};
     const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.8};
 #else
     const int MainWindow::s_TASKBAR_HEIGHT{10};
@@ -68,6 +69,7 @@
     const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
     const int MainWindow::s_NUMBER_OF_VERTIAL_MARGINS{4};
     const int MainWindow::s_DEFAULT_MINE_SIZE_SCALE_FACTOR{19};
+    const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{12};
     const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
 #endif
 
@@ -108,6 +110,9 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
 
+    QFont tempFont{this->m_statusBarLabel->font()};
+    tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);
+    this->m_statusBarLabel->setFont(tempFont);
     this->m_ui->statusBar->addWidget(this->m_statusBarLabel.get());
     if (this->m_gameSoundEffects->isMuted()) {
         this->m_ui->actionMuteSound->setChecked(true);
@@ -340,11 +345,11 @@ bool MainWindow::boardResizeDialogVisible()
 void MainWindow::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
-    if ((!this->isHidden()) && (!this->isMinimized())) {
+    //if ((!this->isHidden()) && (!this->isMinimized())) {
         if (!this->m_gameController->initialClickFlag() && (!this->m_gameController->gameOver())) {
             emit (gameResumed());
         }
-    }
+    //}
 }
 
 /* hideEvent() : Called when the main window is hidden, and emits

@@ -76,6 +76,11 @@
      </item>
      <item>
       <widget class="QLabel" name="lblProgramDescription">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>A recreation of the legendary game for early versions of Windows</string>
        </property>
@@ -110,6 +115,11 @@
      </item>
      <item>
       <widget class="QLabel" name="lblProgramCopyright">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Copyright 2016 - </string>
        </property>
