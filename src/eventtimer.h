@@ -32,6 +32,8 @@
 #include <list>
 #include <functional>
 
+class QmsGameState;
+
 struct TimePoint
 {
     unsigned long hours;
@@ -43,12 +45,12 @@ struct TimePoint
 template <typename ClockType = std::chrono::steady_clock>
 class EventTimer
 {
+    friend class QmsGameState;
     using platform_clock_t = ClockType;
 
 public:
     EventTimer<ClockType>() :
         m_startTime{platform_clock_t::now()},
-        m_endTime{platform_clock_t::now()},
         m_totalTime{0},
         m_hours{0},
         m_minutes{0},
@@ -61,7 +63,6 @@ public:
 
     EventTimer<ClockType>(const EventTimer<ClockType> &other) :
         m_startTime{other.m_startTime},
-        m_endTime{other.m_endTime},
         m_totalTime{other.m_totalTime},
         m_hours{other.m_hours},
         m_minutes{other.m_minutes},
@@ -88,7 +89,6 @@ public:
         this->m_seconds = 0;
         this->m_milliseconds = 0;
         this->m_startTime = platform_clock_t::now();
-        this->m_endTime = this->m_startTime;
         this->m_isPaused = false;
     }
 
@@ -117,9 +117,9 @@ public:
         if (this->m_isPaused)  {
             this->m_startTime = platform_clock_t::now() - this->m_rawTime;
         } else {
-            this->m_endTime = platform_clock_t::now();
-            this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime-this->m_startTime).count();
-            this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->m_endTime - this->m_startTime);
+            auto endTime = platform_clock_t::now();
+            this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime).count();
+            this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime);
             this->m_hours = (this->m_totalTime/MILLISECONDS_PER_HOUR);
             this->m_minutes = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
             this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;

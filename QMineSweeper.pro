@@ -19,7 +19,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets multimedia xml
+QT       += core gui widgets multimedia
 
 CONFIG += c++14
 

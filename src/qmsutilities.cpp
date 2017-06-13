@@ -19,6 +19,7 @@
 #include "globaldefinitions.h"
 
 #include <QDateTime>
+#include <QByteArray>
 #include <QDir>
 
 namespace QmsUtilities
@@ -105,18 +106,6 @@ namespace QmsUtilities
         }
         fileToCreate.write(bundledSettingsFile.readAll());
         LOG_INFO() << QString{"Systemwide settings file at %1 successfuly recreated from bundled default settings"}.arg(systemSettingsFilePath);
-
-        /*
-        QString userSettingsPath{QMineSweeperUtilities::getUserConfigurationFilePath()};
-        QFile userFileToCreate{userSettingsPath};
-        bool userSettingsFileOpen{userFileToCreate.open(QIODevice::WriteOnly)};
-        if (!userSettingsFileOpen) {
-            LOG_WARNING() << QString{"User settings directory at %1 could not be opened for writing"}.arg(userSettingsPath);
-        } else {
-            fileToCreate.write(bundledSettingsFile.readAll());
-            LOG_INFO() << QString{"User settings file at %1 successfully recreated from bundled default settings"}.arg(userSettingsPath);
-        }
-        */
 
     }
 
@@ -320,11 +309,11 @@ namespace QmsUtilities
     QString getLogFilePath()
     {
         if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
-            return programSettingsDirectory + "log/" + logFileName;
+            return QString{"%1log/%2"}.arg(programSettingsDirectory, logFileName);
         } else {
             QString log{getLogFileName()};
             QString settings{getProgramSettingsDirectory()};
-            return  settings + log;
+            return  QString{"%1log/%2"}.arg(settings, log);
         }
     }
 
@@ -550,14 +539,42 @@ namespace QmsUtilities
        return (copyString == "true" ? true : false);
    }
 
-       QString boolToQString(bool value)
-       {
-           return QString::fromStdString(boolToString(value));
-       }
+   QString boolToQString(bool value)
+   {
+       return QString::fromStdString(boolToString(value));
+   }
 
-       bool qStringToBool(const QString &value)
-       {
-           return stringToBool(value.toStdString());
-       }
+   bool qStringToBool(const QString &value)
+   {
+       return stringToBool(value.toStdString());
+   }
 
+   QByteArray getFileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm)
+   {
+       QFile inputFile{fileName};
+       if (!inputFile.exists()) {
+           throw std::runtime_error(QString{"In QmsUtilities::getFileChecksum(const QString &, QCryptographicHash::Algorithm): input file %1 does not exist"}.arg(fileName).toStdString());
+       }
+       if (!inputFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
+           throw std::runtime_error(QString{"In QmsUtilities::getFileChecksum(const QString &, QCryptographicHash::Algorithm): could not open file %1"}.arg(fileName).toStdString());
+       }
+       QCryptographicHash hash{hashAlgorithm};
+       hash.addData(&inputFile);
+       return hash.result();
+   }
+
+   QByteArray getFileChecksum(QIODevice *inputDevice, QCryptographicHash::Algorithm hashAlgorithm)
+   {
+       if (!inputDevice) {
+           throw std::runtime_error("In QmsUtilities::getFileChecksum(QIODevice *, QCryptographicHash::Algorithm): input QIODevice is a nullptr");
+       }
+       if (!inputDevice->isOpen()) {
+           if (!inputDevice->open(QIODevice::OpenModeFlag::ReadOnly)) {
+               throw std::runtime_error("In QmsUtilities::getFileChecksum(QIODevice *, QCryptographicHash::Algorithm): could not open QIODevice");
+           }
+       }
+       QCryptographicHash hash{hashAlgorithm};
+       hash.addData(inputDevice);
+       return hash.result();
+   }
 }

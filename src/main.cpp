@@ -345,6 +345,6 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     if (outputStream) {
         *outputStream << logMessage.toStdString();
     }
-    logToFile(logMessage.toStdString(), QmsUtilities::getLogFileName());
+    logToFile(logMessage.toStdString(), QmsUtilities::getLogFilePath());
 }
 

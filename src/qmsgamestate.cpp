@@ -60,6 +60,27 @@ QmsGameState::~QmsGameState()
 
 static QmsGameState loadFromFile(const QString &filePath)
 {
+    QFile inputFile{filePath};
+    QXmlStreamReader readFromFile{};
+    if (!inputFile.exists()) {
+        throw std::runtime_error(QString{"In QmsGameState::loadFromFile(const QString &): input file %1 does not exist"}.arg(filePath).toStdString());
+    }
+    if (!inputFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
+        throw std::runtime_error(QString{"In QmsGameState::loadFromFile(const QString &): could not open input file %1"}.arg(filePath).toStdString());
+    }
+    readFromFile.setDevice(&inputFile);
+    //TODO:
+    if (true) {
+        throw std::runtime_error("In QmsGameState::loadFromFile(const QString &): this feature is not implemented yet");
+    }
+
+    while (!readFromFile.atEnd()) {
+        readFromFile.readNext();
+    }
+    if (readFromFile.hasError()) {
+        // do error handling
+    }
+    inputFile.close();
     return QmsGameState{0, 0};
 }
 
@@ -71,10 +92,13 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
             return SaveGameStateResult::UnableToDeleteExistingFile;
         }
     }
-    if (!outputFile.open(QIODevice::OpenModeFlag::WriteOnly)) {
+    if (!outputFile.open(QIODevice::OpenModeFlag::ReadWrite)) {
        return SaveGameStateResult::UnableToOpenFile;
     }
-    QXmlStreamWriter writeToFile;
+    using namespace QmsUtilities;
+    auto flaggedMines = std::count_if(this->m_mineSweeperButtons.begin(), this->m_mineSweeperButtons.end(), [](auto container) { return container.second->hasFlag(); });
+    auto numberOfMinesRemaining = this->m_numberOfMines - flaggedMines;
+    QXmlStreamWriter writeToFile{};
     writeToFile.setDevice(&outputFile);
     writeToFile.setAutoFormatting(true);
     writeToFile.setAutoFormattingIndent(4);
@@ -83,6 +107,13 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
             writeToFile.writeTextElement("NumberOfColumns", QS_NUMBER(this->m_numberOfColumns));
             writeToFile.writeTextElement("NumberOfRows", QS_NUMBER(this->m_numberOfRows));
             writeToFile.writeTextElement("NumberOfMines", QS_NUMBER(this->m_numberOfMines));
+            writeToFile.writeTextElement("NumberOfMovesMade", QS_NUMBER(this->m_numberOfMovesMade));
+            writeToFile.writeTextElement("NumberOfMinesRemaining", QS_NUMBER(numberOfMinesRemaining));
+            writeToFile.writeStartElement("PlayTime");
+                writeToFile.writeTextElement("IsPaused", boolToQString(this->m_playTimer->m_isPaused));
+                writeToFile.writeTextElement("IsStopped", boolToQString(this->m_playTimer->m_isStopped));
+                writeToFile.writeTextElement("TotalTime", QS_NUMBER(this->m_playTimer->m_totalTime));
+            writeToFile.writeEndElement(); //PlayTime
             writeToFile.writeTextElement("PlayTime", QString::fromStdString(this->m_playTimer->toString()));
             writeToFile.writeStartElement("MineCoordinateList");
                 for (auto &it: this->m_mineCoordinates) {
@@ -91,24 +122,25 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
             writeToFile.writeEndElement(); //MineCoordinates
             writeToFile.writeStartElement("QmsButtons");
                 for (auto &it : this->m_mineSweeperButtons) {
-                    this->writeQmsButtonToXmlStream(&writeToFile, it.first, it.second);
+                    auto coordinates = it.first;
+                    auto targetButton = it.second;
+                    writeToFile.writeStartElement("QmsButton");
+                        writeToFile.writeTextElement("MineCoordinates", QString{coordinates.toString().c_str()});
+                        writeToFile.writeTextElement("IsBlockingClicks", boolToQString(targetButton->isBlockingClicks()));
+                        writeToFile.writeTextElement("NumberOfSurroundingMines", QS_NUMBER(targetButton->numberOfSurroundingMines()));
+                        writeToFile.writeTextElement("IsChecked", boolToQString(targetButton->isChecked()));
+                        writeToFile.writeTextElement("HasFlag", boolToQString(targetButton->hasFlag()));
+                        writeToFile.writeTextElement("HasMine", boolToQString(targetButton->hasMine()));
+                        writeToFile.writeTextElement("IsRevealed", boolToQString(targetButton->isRevealed()));
+                    writeToFile.writeEndElement(); //QmsButton
                 }
             writeToFile.writeEndElement(); //MineSweeperButtons
         writeToFile.writeEndElement(); //QmsGameState
     writeToFile.writeEndDocument();
+    outputFile.seek(0);
+    auto fileHash = QmsUtilities::getFileChecksum(&outputFile, QCryptographicHash::Sha512);
+    outputFile.seek(outputFile.size());
+    outputFile.write(fileHash.constData());
+    outputFile.close();
     return SaveGameStateResult::Success;
-}
-
-void QmsGameState::writeQmsButtonToXmlStream(QXmlStreamWriter *writeToFile, const MineCoordinates &coordinates, std::shared_ptr<QmsButton> targetButton)
-{
-    using namespace QmsUtilities;
-    writeToFile->writeStartElement("QmsButton");
-        writeToFile->writeTextElement("MineCoordinates", QString{coordinates.toString().c_str()});
-        writeToFile->writeTextElement("isBlockingClicks", boolToQString(targetButton->isBlockingClicks()));
-        writeToFile->writeTextElement("numberOfSurroundingMines", QS_NUMBER(targetButton->numberOfSurroundingMines()));
-        writeToFile->writeTextElement("isChecked", boolToQString(targetButton->isChecked()));
-        writeToFile->writeTextElement("hasFlag", boolToQString(targetButton->hasFlag()));
-        writeToFile->writeTextElement("hasMine", boolToQString(targetButton->hasMine()));
-        writeToFile->writeTextElement("isRevealed", boolToQString(targetButton->isRevealed()));
-    writeToFile->writeEndElement(); //QmsButton
 }

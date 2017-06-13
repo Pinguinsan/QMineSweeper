@@ -31,8 +31,10 @@
 #include <regex>
 #include <cstdio>
 #include <random>
-
+#include <QCryptographicHash>
 #include <QString>
+
+class QByteArray;
 
 namespace QmsUtilities
 {
@@ -257,7 +259,7 @@ namespace QmsUtilities
     template<typename ... Args>
     QString QStringFormat(const char *format, Args ... args)
     {
-        ssize_t size = snprintf(nullptr, 0, format, args ...) + 1;
+        ssize_t size{snprintf(nullptr, 0, format, args ...) + 1};
         std::unique_ptr<char[]> stringBuffer{new char[size]};
         snprintf(stringBuffer.get(), size, format, args ...);
         return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});
@@ -267,6 +269,8 @@ namespace QmsUtilities
     bool stringToBool(const std::string &value);
     QString boolToQString(bool value);
     bool qStringToBool(const QString &value);
+    QByteArray getFileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
+    QByteArray getFileChecksum(QIODevice *inputDevice, QCryptographicHash::Algorithm hashAlgorithm);
 
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip);
     std::string stripFromString(const std::string &stringToStrip, char whatToStrip);
