@@ -31,7 +31,6 @@
 class QString;
 class QmsButton;
 class MineCoordinates;
-class GameController;
 
 using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
 
