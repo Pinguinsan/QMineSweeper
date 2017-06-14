@@ -34,6 +34,7 @@
 #include <QCryptographicHash>
 #include <QString>
 
+class QFile;
 class QByteArray;
 
 namespace QmsUtilities
@@ -272,6 +273,9 @@ namespace QmsUtilities
     QByteArray getFileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
     QByteArray getFileChecksum(QIODevice *inputDevice, QCryptographicHash::Algorithm hashAlgorithm);
 
+   QString getFileDirectoryPath(const QFile &file);
+   QString getFileName(const QFile &file);
+   bool looksLikeWindowsFilePath(const QString &path);
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip);
     std::string stripFromString(const std::string &stringToStrip, char whatToStrip);
     std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip);

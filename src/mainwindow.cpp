@@ -266,7 +266,7 @@ void MainWindow::onOpenActionTriggered()
     fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
     fileDialog.setNameFilter(QString{"*."} + QmsStrings::SAVED_GAME_FILE_EXTENSION);
-    QString maybeNewGamePath{fileDialog.getSaveFileName(this, QFileDialog::tr(QmsStrings::OPEN_FILE_CAPTION))};
+    QString maybeNewGamePath{fileDialog.getOpenFileName(this, QFileDialog::tr(QmsStrings::OPEN_FILE_CAPTION))};
 
     if (maybeNewGamePath == "") {
         return;

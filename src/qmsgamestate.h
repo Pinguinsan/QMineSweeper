@@ -58,6 +58,7 @@ enum class LoadGameStateResult {
     FileDoesNotExist,
     UnableToOpenFile,
     HashFileDoesNotExist,
+    UnableToOpenHashFile
     HashVerificationFailed
 };
 

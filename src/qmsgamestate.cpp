@@ -68,6 +68,7 @@ QmsGameState::~QmsGameState()
 
 LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState)
 {
+    using namespace QmsUtilities;
     QFile inputFile{filePath};
     QXmlStreamReader readFromFile{};
     if (!inputFile.exists()) {
@@ -77,9 +78,12 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
         return LoadGameStateResult::UnableToOpenFile;
     }
     auto fileHash = QmsUtilities::getFileChecksum(&inputFile, QCryptographicHash::Sha512);
-    QFile hashFile{QString{"%1.%2.hash"}.arg(QFileInfo{inputFile.fileName()}.filePath(), QFileInfo{inputFile.fileName()}.fileName())};
+    QFile hashFile{QString{"%1.%2.hash"}.arg(getFileDirectoryPath(inputFile), getFileName(inputFile))};
     if (!hashFile.exists()) {
         return LoadGameStateResult::HashFileDoesNotExist;
+    }
+    if (!hashFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
+        return LoadGameStateResult::UnableToOpenHashFile;
     }
     auto savedHash = hashFile.readAll();
 
@@ -163,7 +167,7 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
     writeToFile.writeEndDocument();
     outputFile.seek(0);
     auto fileHash = QmsUtilities::getFileChecksum(&outputFile, QCryptographicHash::Sha512);
-    QFile hashFile{QString{"%1.%2.hash"}.arg(QFileInfo{outputFile.fileName()}.filePath(), QFileInfo{outputFile.fileName()}.fileName())};
+    QFile hashFile{QString{"%1.%2.hash"}.arg(getFileDirectoryPath(outputFile), getFileName(outputFile))};
     if (hashFile.exists()) {
         if (!hashFile.remove()) {
             if (!outputFile.remove()) {

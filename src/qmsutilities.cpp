@@ -577,4 +577,46 @@ namespace QmsUtilities
        hash.addData(inputDevice);
        return hash.result();
    }
+
+   QString getFileDirectoryPath(const QFile &file)
+   {
+       if (!file.exists()) {
+           return QString{""};
+       }
+       QChar pathSeparator{'/'};
+       if (looksLikeWindowsFilePath(file.fileName())) {
+           pathSeparator = '\\';
+       }
+       QString tempString{file.fileName()};
+       auto lastSeparator = tempString.lastIndexOf(pathSeparator);
+       if (lastSeparator == -1) {
+           return QString{""};
+       }
+       return tempString.mid(0, lastSeparator + 1);
+   }
+
+   QString getFileName(const QFile &file)
+   {
+       if (!file.exists()) {
+           return QString{""};
+       }
+       QChar pathSeparator{'/'};
+       if (looksLikeWindowsFilePath(file.fileName())) {
+           pathSeparator = '\\';
+       }
+       QString tempString{file.fileName()};
+       auto lastSeparator = tempString.lastIndexOf(pathSeparator);
+       if (lastSeparator == -1) {
+           return QString{""};
+       }
+       return tempString.mid(lastSeparator + 1);
+   }
+
+   bool looksLikeWindowsFilePath(const QString &path)
+   {
+       std::string copyString{path.toStdString()};
+       auto windowsPathCount = std::count_if(copyString.begin(), copyString.end(), [] (char c) { return c == '\\'; });
+       auto nixPathCount = std::count_if(copyString.begin(), copyString.end(), [](char c) { return c == '/'; });
+       return windowsPathCount > nixPathCount;
+   }
 }
