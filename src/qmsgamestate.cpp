@@ -86,7 +86,7 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
         return LoadGameStateResult::UnableToOpenHashFile;
     }
     auto savedHash = hashFile.readAll();
-
+    hashFile.close();
     if (fileHash != savedHash) {
         return LoadGameStateResult::HashVerificationFailed;
     }
