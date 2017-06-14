@@ -33,9 +33,9 @@ namespace QmsUtilities
     const std::list<char> KNOWN_DIMENSIONS_SEPARATORS{'x', ',', '.'};
 
     #if defined(_WIN32)
-        static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-win32.json"};
+        static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-win32.xml"};
     #else
-        static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-nix.json"};
+        static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-nix.xml"};
     #endif
 
     QString getUserConfigurationFilePath()
@@ -45,9 +45,9 @@ namespace QmsUtilities
         }
         QString settingsDirectory{getProgramSettingsDirectory()};
     #if defined(_WIN32)
-        return QString{settingsDirectory + "config\\settings.json"};
+        return QString{settingsDirectory + "config\\settings.xml"};
     #else
-        return QString{settingsDirectory + "config/settings.json"};
+        return QString{settingsDirectory + "config/settings.xml"};
     #endif
 
     }
@@ -58,9 +58,9 @@ namespace QmsUtilities
             return configurationFilePath;
         }
     #if defined(_WIN32)
-        QString testString{getInstallDirectory() + "config\\settings.json"};
+        QString testString{getInstallDirectory() + "config\\settings.xml"};
     #else
-        QString testString{getInstallDirectory() + "config/settings.json"};
+        QString testString{getInstallDirectory() + "config/settings.xml"};
     #endif
         if (QFile(testString).exists()) {
             //Systemwide settings
@@ -87,6 +87,15 @@ namespace QmsUtilities
                 throw std::runtime_error(QString{"Unable to delete corrupt file %1, the binary for QMineSweeper may be corrupt, a reinstall is recommended (errorString = %2)"}.arg(systemSettingsFilePath, fileToCreate.errorString()).toStdString());
             }
         }
+#if defined (_WIN32)
+        QStringList fileToCreateSplit{fileToCreate.fileName().split("\\")};
+        QString fileToCreateSplitPath{""};
+        for (const auto &it : fileToCreateSplit) {
+            if (it != fileToCreateSplit.at(fileToCreateSplit.size()-1)) {
+                fileToCreateSplitPath += ("\\" + it);
+            }
+        }
+#else
         QStringList fileToCreateSplit{fileToCreate.fileName().split("/")};
         QString fileToCreateSplitPath{""};
         for (const auto &it : fileToCreateSplit) {
@@ -94,6 +103,8 @@ namespace QmsUtilities
                 fileToCreateSplitPath += ("/" + it);
             }
         }
+#endif
+
         QDir fileToCreateDirectory{fileToCreateSplitPath};
         if (!fileToCreateDirectory.exists()) {
             if (!fileToCreateDirectory.mkpath(".")) {
@@ -293,7 +304,11 @@ namespace QmsUtilities
                 throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
             }
         }
+#if defined(_WIN32)
+        settings = settings + "log\\";
+#else
         settings = settings + "log/";
+#endif
         settingsDirectory = QDir{settings};
         if (settingsDirectory.exists()) {
             LOG_INFO() << QString{"Detected log directory at %1"}.arg(settings);
@@ -306,6 +321,18 @@ namespace QmsUtilities
         }
     }
 
+#if defined(_WIN32)
+    QString getLogFilePath()
+    {
+        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
+            return QString{"%1log\\%2"}.arg(programSettingsDirectory, logFileName);
+        } else {
+            QString log{getLogFileName()};
+            QString settings{getProgramSettingsDirectory()};
+            return  QString{"%1log\\%2"}.arg(settings, log);
+        }
+    }
+#else
     QString getLogFilePath()
     {
         if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
@@ -316,6 +343,8 @@ namespace QmsUtilities
             return  QString{"%1log/%2"}.arg(settings, log);
         }
     }
+#endif
+
 
     QString getLogFileName()
     {
