@@ -262,7 +262,7 @@ void MainWindow::onOpenActionTriggered()
     QFileDialog fileDialog;
     fileDialog.setDirectory(QmsUtilities::getProgramSettingsDirectory());
     fileDialog.setDefaultSuffix(QmsStrings::SAVED_GAME_FILE_EXTENSION);
-    fileDialog.setConfirmOverwrite(true);
+    fileDialog.setConfirmOverwrite(false);
     fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
     fileDialog.setNameFilter(QString{"*."} + QmsStrings::SAVED_GAME_FILE_EXTENSION);
