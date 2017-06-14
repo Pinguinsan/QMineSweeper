@@ -30,6 +30,7 @@ class QString;
 class QmsSoundEffects
 {
 public:
+    QmsSoundEffects();
     QmsSoundEffects(int audioVolume);
     ~QmsSoundEffects();
 

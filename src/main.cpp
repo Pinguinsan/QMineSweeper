@@ -182,8 +182,12 @@ int main(int argc, char *argv[])
     std::shared_ptr<QmsIcons> gameIcons{std::make_shared<QmsIcons>()};
     std::shared_ptr<QmsSettingsLoader> settingsLoader{std::make_shared<QmsSettingsLoader>()};
     std::shared_ptr<GameController> gameController{std::make_shared<GameController>(columnCount, rowCount)};
-    std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
+#if defined(__ANDROID__)
+    std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>()};
+#else
     std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>(settings.audioVolume())};
+#endif
+    std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
     std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons,
                                                                         soundEffects,
                                                                         settingsLoader,

@@ -47,6 +47,12 @@ QmsSoundEffects::QmsSoundEffects(int audioVolume) :
     this->m_explosionEffect.setVolume(this->m_audioVolume);
 }
 
+QmsSoundEffects::QmsSoundEffects() :
+    QmsSoundEffects(0)
+{
+
+}
+
 QMediaPlayer &QmsSoundEffects::explosionEffect()
 {
     return this->m_explosionEffect;
