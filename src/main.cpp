@@ -79,14 +79,13 @@ using namespace QmsGlobalSettings;
 
 int main(int argc, char *argv[])
 {
-
     installSignalHandlers(interruptHandler);
+    qInstallMessageHandler(globalLogHandler);
     QCoreApplication::setOrganizationName(AUTHOR_NAME);
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
-    qInstallMessageHandler(globalLogHandler);
 
      std::cout << std::endl;
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
