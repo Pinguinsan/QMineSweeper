@@ -241,14 +241,16 @@ void MainWindow::onSaveAsActionTriggered()
 
 void MainWindow::doSaveGame(const QString &filePath)
 {
-    auto saveGameResut = this->m_gameController->saveGame(filePath);
-    if (saveGameResut == SaveGameStateResult::Success) {
+    auto saveGameResult = this->m_gameController->saveGame(filePath);
+    if (saveGameResult == SaveGameStateResult::Success) {
         LOG_INFO() << QString{"Successfully saved game to %1"}.arg(filePath);
-    } else if (saveGameResut == SaveGameStateResult::FileDoesNotExist) {
+    } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingFile) {
 
-    } else if (saveGameResut == SaveGameStateResult::UnableToDeleteExistingFile) {
+    } else if (saveGameResult == SaveGameStateResult::UnableToOpenFile) {
 
-    } else if (saveGameResut == SaveGameStateResult::UnableToOpenFile) {
+    } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingHashFile) {
+
+    } else if (saveGameResult == SaveGameStateResult::UnableToOpenFileToWriteHash) {
 
     }
     //TODO: Error checking
@@ -256,7 +258,36 @@ void MainWindow::doSaveGame(const QString &filePath)
 
 void MainWindow::onOpenActionTriggered()
 {
+    emit(gamePaused());
+    QFileDialog fileDialog;
+    fileDialog.setDirectory(QmsUtilities::getProgramSettingsDirectory());
+    fileDialog.setDefaultSuffix(QmsStrings::SAVED_GAME_FILE_EXTENSION);
+    fileDialog.setConfirmOverwrite(true);
+    fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
+    fileDialog.setNameFilter(QString{"*."} + QmsStrings::SAVED_GAME_FILE_EXTENSION);
+    QString maybeNewGamePath{fileDialog.getSaveFileName(this, QFileDialog::tr(QmsStrings::OPEN_FILE_CAPTION))};
 
+    if (maybeNewGamePath == "") {
+        return;
+    } else {
+        if (!maybeNewGamePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
+            maybeNewGamePath = maybeNewGamePath + QmsStrings::SAVED_GAME_FILE_EXTENSION;
+        }
+    }
+    LoadGameStateResult loadResult{this->m_gameController->loadGame(maybeNewGamePath)};
+    if (loadResult == LoadGameStateResult::Success) {
+
+    } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
+
+    } else if (loadResult == LoadGameStateResult::HashFileDoesNotExist) {
+
+    } else if (loadResult == LoadGameStateResult::HashVerificationFailed) {
+
+    } else if (loadResult == LoadGameStateResult::UnableToOpenFile) {
+
+    }
+    //TODO: Error handling
 }
 
 /* displayStatusMessage() : Called to include a space in the beginning

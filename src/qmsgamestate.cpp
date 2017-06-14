@@ -26,9 +26,16 @@
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
+#include <QFileInfo>
 
 const std::pair<double, double> QmsGameState::s_CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
 const int QmsGameState::s_CELL_TO_MINE_THRESHOLD{82};
+
+QmsGameState::QmsGameState() :
+    QmsGameState{0, 0}
+{
+
+}
 
 QmsGameState::QmsGameState(int columnCount, int rowCount) :
     m_playTimer{new SteadyEventTimer{}},
@@ -58,21 +65,28 @@ QmsGameState::~QmsGameState()
 }
 
 
-static QmsGameState loadFromFile(const QString &filePath)
+
+LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState)
 {
     QFile inputFile{filePath};
     QXmlStreamReader readFromFile{};
     if (!inputFile.exists()) {
-        throw std::runtime_error(QString{"In QmsGameState::loadFromFile(const QString &): input file %1 does not exist"}.arg(filePath).toStdString());
+        return LoadGameStateResult::FileDoesNotExist;
     }
     if (!inputFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
-        throw std::runtime_error(QString{"In QmsGameState::loadFromFile(const QString &): could not open input file %1"}.arg(filePath).toStdString());
+        return LoadGameStateResult::UnableToOpenFile;
+    }
+    auto fileHash = QmsUtilities::getFileChecksum(&inputFile, QCryptographicHash::Sha512);
+    QFile hashFile{QString{"%1.%2.hash"}.arg(QFileInfo{inputFile.fileName()}.filePath(), QFileInfo{inputFile.fileName()}.fileName())};
+    if (!hashFile.exists()) {
+        return LoadGameStateResult::HashFileDoesNotExist;
+    }
+    auto savedHash = hashFile.readAll();
+
+    if (fileHash != savedHash) {
+        return LoadGameStateResult::HashVerificationFailed;
     }
     readFromFile.setDevice(&inputFile);
-    //TODO:
-    if (true) {
-        throw std::runtime_error("In QmsGameState::loadFromFile(const QString &): this feature is not implemented yet");
-    }
 
     while (!readFromFile.atEnd()) {
         readFromFile.readNext();
@@ -81,7 +95,17 @@ static QmsGameState loadFromFile(const QString &filePath)
         // do error handling
     }
     inputFile.close();
-    return QmsGameState{0, 0};
+    return LoadGameStateResult::Success; //QmsGameState{0, 0};
+}
+
+LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath)
+{
+    QmsGameState loadedState;
+    auto result = QmsGameState::loadFromFile(filePath, loadedState);
+    if (result == LoadGameStateResult::Success) {
+        //Save state to this
+    }
+    return result;
 }
 
 SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
@@ -139,8 +163,29 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
     writeToFile.writeEndDocument();
     outputFile.seek(0);
     auto fileHash = QmsUtilities::getFileChecksum(&outputFile, QCryptographicHash::Sha512);
-    outputFile.seek(outputFile.size());
-    //outputFile.write(fileHash.constData());
+    QFile hashFile{QString{"%1.%2.hash"}.arg(QFileInfo{outputFile.fileName()}.filePath(), QFileInfo{outputFile.fileName()}.fileName())};
+    if (hashFile.exists()) {
+        if (!hashFile.remove()) {
+            if (!outputFile.remove()) {
+                return SaveGameStateResult::UnableToDeleteExistingFile;
+            } else {
+                return SaveGameStateResult::UnableToDeleteExistingHashFile;
+            }
+        }
+    }
+    if (!hashFile.open(QIODevice::OpenModeFlag::WriteOnly)) {
+        if (!hashFile.remove()) {
+            if (!outputFile.remove()) {
+                return SaveGameStateResult::UnableToDeleteExistingFile;
+            } else {
+                return SaveGameStateResult::UnableToDeleteExistingHashFile;
+            }
+        } else {
+            return SaveGameStateResult::UnableToOpenFileToWriteHash;
+        }
+    }
+    hashFile.write(fileHash);
+    hashFile.close();
     outputFile.close();
     return SaveGameStateResult::Success;
 }

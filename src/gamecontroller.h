@@ -99,6 +99,7 @@ public:
     GameState gameState() const;
 
     SaveGameStateResult saveGame(const QString &filePath);
+    LoadGameStateResult loadGame(const QString &filePath);
 
     static double DEFAULT_NUMBER_OF_MINES();
     static int GAME_TIMER_INTERVAL();

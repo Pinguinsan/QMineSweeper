@@ -264,6 +264,15 @@ SaveGameStateResult GameController::saveGame(const QString &filePath)
     return this->m_qmsGameState->saveToFile(filePath);
 }
 
+LoadGameStateResult GameController::loadGame(const QString &filePath)
+{
+    auto result = this->m_qmsGameState->loadGameInPlace(filePath);
+    if (result == LoadGameStateResult::Success) {
+        //Do stuff
+    }
+    return result;
+}
+
 void GameController::clearRandomMinePlacement()
 {
     this->m_qmsGameState->m_mineCoordinates.clear();

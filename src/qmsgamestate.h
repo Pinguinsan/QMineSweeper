@@ -47,22 +47,33 @@ enum class GameState {
 
 enum class SaveGameStateResult {
     Success,
-    FileDoesNotExist,
     UnableToDeleteExistingFile,
-    UnableToOpenFile
+    UnableToOpenFile,
+    UnableToOpenFileToWriteHash,
+    UnableToDeleteExistingHashFile
+};
+
+enum class LoadGameStateResult {
+    Success,
+    FileDoesNotExist,
+    UnableToOpenFile,
+    HashFileDoesNotExist,
+    HashVerificationFailed
 };
 
 class QmsGameState
 {
     friend class GameController;
 public:
+    QmsGameState();
     QmsGameState(int columnCount, int rowCount);
-    QmsGameState(const QmsGameState &) = default;
-    QmsGameState(QmsGameState &&) = default;
+    QmsGameState(const QmsGameState &) = delete;
+    QmsGameState(QmsGameState &&) = delete;
     virtual ~QmsGameState();
 
-    static QmsGameState loadFromFile(const QString &filePath);
+    LoadGameStateResult loadGameInPlace(const QString &filePath);
     SaveGameStateResult saveToFile(const QString &filePath);
+
 private:
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
     std::set<std::pair<int, int>> m_mineCoordinates;
@@ -81,6 +92,7 @@ private:
     static const std::pair<double, double> s_CELL_TO_MINE_RATIOS;
     static const int s_CELL_TO_MINE_THRESHOLD;
 
+    static LoadGameStateResult loadFromFile(const QString &filePath, QmsGameState &targetState);
     void writeQmsButtonToXmlStream(QXmlStreamWriter *writeToFile, const MineCoordinates &coordinates, std::shared_ptr<QmsButton> targetButton);
 
 };
