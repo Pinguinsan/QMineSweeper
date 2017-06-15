@@ -48,6 +48,7 @@ class QActionGroup;
 class QTranslator;
 class QLabel;
 class QDialog;
+class QPoint;
 
 
 class MainWindow : public QMainWindow
@@ -116,6 +117,7 @@ private:
     bool m_tempPauseFlag;
     bool m_boardSizeGeometrySet;
     QString m_saveFilePath;
+    QPoint m_mousePressLocation;
 
     static const int s_TASKBAR_HEIGHT;
     static const int s_GAME_TIMER_INTERVAL;
@@ -145,6 +147,9 @@ private:
 
     void displayStatusMessage(QString statusMessage);
     void doSaveGame(const QString &filePath);
+    void mouseMoveEvent(QMouseEvent *mouseEvent) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 signals:
     void resetButtonClicked();
     void resetGame();

@@ -89,7 +89,7 @@ QmsButton::QmsButton(std::shared_ptr<QmsButton>& other) :
 
 void QmsButton::initialize()
 {
-    this->installEventFilter(this);
+    //this->installEventFilter(this);
 }
 
 /*
@@ -98,20 +98,6 @@ int QMineSweeperButton::heightForWidth(int width) const
     return width;
 }
 */
-
-bool QmsButton::eventFilter(QObject *pObject, QEvent *pEvent)
-{
-    if (pEvent->type() == QEvent::KeyPress)  {
-        QKeyEvent* pKeyEvent{static_cast<QKeyEvent*>(pEvent)};
-        int pressedKey{pKeyEvent->key()};
-        if ((pressedKey == Qt::Key_Return) || (pressedKey == Qt::Key_Space)) {
-            return true;
-        }
-    } else  {
-        return QObject::eventFilter(pObject, pEvent);
-    }
-    return false;
-}
 
 bool QmsButton::operator==(const QmsButton &other) const
 {

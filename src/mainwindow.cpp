@@ -105,10 +105,14 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_maxMineSizeCacheIsValid{false},
     m_tempPauseFlag{false},
     m_boardSizeGeometrySet{false},
-    m_saveFilePath{""}
+    m_saveFilePath{""},
+    m_mousePressLocation{-1, -1}
 {
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
+    this->m_ui->centralwidget->setMouseTracking(true);
+    //this->centralWidget()->setMouseTracking(true);
+    //this->setMouseTracking(true);
 
     QFont tempFont{this->m_statusBarLabel->font()};
     tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);
@@ -202,6 +206,34 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
 
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *mouseEvent)
+{
+    auto mousePosition = mouseEvent->pos();
+    if (this->m_ui->centralwidget->underMouse()) {
+        if (!this->m_ui->mineFrame->underMouse()) {
+            if (this->m_mousePressLocation == QPoint{-1, -1}) {
+                this->m_mousePressLocation = mousePosition;
+            }
+        }
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *mouseEvent)
+{
+    this->m_mousePressLocation = QPoint{-1, -1};
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *mouseEvent)
+{
+    auto mousePosition = mouseEvent->pos();
+    if (!this->m_ui->mineFrame->underMouse()) {
+        if (this->m_mousePressLocation != QPoint{-1, -1}) {
+            this->move(mousePosition);
+        }
+        std::cout << QString{"mousePosition = (%1, %2)"}.arg(QS_NUMBER(mousePosition.x()), QS_NUMBER(mousePosition.y())).toStdString() << std::endl;
+    }
 }
 
 void MainWindow::onSaveActionTriggered()

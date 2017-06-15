@@ -51,7 +51,7 @@ public:
     virtual ~QmsButton();
 
     bool operator==(const QmsButton &other) const;
-    bool eventFilter(QObject *pObject, QEvent *pEvent) override;
+    //bool eventFilter(QObject *pObject, QEvent *pEvent) override;
     //int heightForWidth(int width) const override;
 
 
