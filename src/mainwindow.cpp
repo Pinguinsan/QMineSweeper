@@ -218,11 +218,13 @@ void MainWindow::mousePressEvent(QMouseEvent *mouseEvent)
             }
         }
     }
+    return QMainWindow::mousePressEvent(mouseEvent);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *mouseEvent)
 {
     this->m_mousePressLocation = QPoint{-1, -1};
+    return QMainWindow::mouseReleaseEvent(mouseEvent);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *mouseEvent)
@@ -230,10 +232,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent *mouseEvent)
     auto mousePosition = mouseEvent->pos();
     if (!this->m_ui->mineFrame->underMouse()) {
         if (this->m_mousePressLocation != QPoint{-1, -1}) {
+            //this->m_ui->centralwidget->setMouseTracking(false);
             this->move(mousePosition);
         }
         std::cout << QString{"mousePosition = (%1, %2)"}.arg(QS_NUMBER(mousePosition.x()), QS_NUMBER(mousePosition.y())).toStdString() << std::endl;
     }
+    return QMainWindow::mouseMoveEvent(mouseEvent);
+}
+
+void MainWindow::moveEvent(QMoveEvent *moveEvent)
+{
+    if (this->m_mousePressLocation != QPoint{-1, -1}) {
+        this->setMouseTracking(true);
+    }
+    return QMainWindow::moveEvent(moveEvent);
 }
 
 void MainWindow::onSaveActionTriggered()

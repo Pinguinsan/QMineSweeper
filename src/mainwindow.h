@@ -49,6 +49,7 @@ class QTranslator;
 class QLabel;
 class QDialog;
 class QPoint;
+class QMoveEvent;
 
 
 class MainWindow : public QMainWindow
@@ -150,6 +151,7 @@ private:
     void mouseMoveEvent(QMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void moveEvent(QMoveEvent *moveEvent) override;
 signals:
     void resetButtonClicked();
     void resetGame();
