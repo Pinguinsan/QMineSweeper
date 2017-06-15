@@ -232,8 +232,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *mouseEvent)
     auto mousePosition = mouseEvent->pos();
     if (!this->m_ui->mineFrame->underMouse()) {
         if (this->m_mousePressLocation != QPoint{-1, -1}) {
-            //this->m_ui->centralwidget->setMouseTracking(false);
-            this->move(mousePosition);
+            if (mouseEvent->buttons() & Qt::LeftButton) {
+                QPoint diff{mouseEvent->pos() - this->m_mousePressLocation};
+                this->move(this->pos() + diff);
+            }
         }
         std::cout << QString{"mousePosition = (%1, %2)"}.arg(QS_NUMBER(mousePosition.x()), QS_NUMBER(mousePosition.y())).toStdString() << std::endl;
     }
