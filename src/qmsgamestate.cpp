@@ -65,6 +65,15 @@ QmsGameState::~QmsGameState()
 }
 
 
+LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath)
+{
+    QmsGameState loadedState;
+    auto result = QmsGameState::loadFromFile(filePath, loadedState);
+    if (result == LoadGameStateResult::Success) {
+        //Save state to this
+    }
+    return result;
+}
 
 LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState)
 {
@@ -91,26 +100,27 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
         return LoadGameStateResult::HashVerificationFailed;
     }
     readFromFile.setDevice(&inputFile);
-
-    while (!readFromFile.atEnd()) {
+    inputFile.seek(0);
+    while (!readFromFile.atEnd() && !readFromFile.hasError()) {
         readFromFile.readNext();
+        if (readFromFile.isStartElement()) {
+            if (readFromFile.name() == "QmsGameState") {
+                continue;
+            } else if (readFromFile.name() == "PlayTime") {
+                //ReadPlayTime?
+                continue;
+            }
+            LOG_DEBUG() << QString{"element name: %1, text: %2"}.arg(readFromFile.name().toString(), readFromFile.readElementText(QXmlStreamReader::ReadElementTextBehaviour::SkipChildElements));
+        }
     }
     if (readFromFile.hasError()) {
-        // do error handling
+        LOG_CRITICAL() << QString{"An XML parsing error occurred: %1"}.arg(readFromFile.errorString());
     }
     inputFile.close();
+
     return LoadGameStateResult::Success; //QmsGameState{0, 0};
 }
 
-LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath)
-{
-    QmsGameState loadedState;
-    auto result = QmsGameState::loadFromFile(filePath, loadedState);
-    if (result == LoadGameStateResult::Success) {
-        //Save state to this
-    }
-    return result;
-}
 
 SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
 {
@@ -142,7 +152,6 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
                 writeToFile.writeTextElement("IsStopped", boolToQString(this->m_playTimer->m_isStopped));
                 writeToFile.writeTextElement("TotalTime", QS_NUMBER(this->m_playTimer->m_totalTime));
             writeToFile.writeEndElement(); //PlayTime
-            writeToFile.writeTextElement("PlayTime", QString::fromStdString(this->m_playTimer->toString()));
             writeToFile.writeStartElement("MineCoordinateList");
                 for (auto &it: this->m_mineCoordinates) {
                     writeToFile.writeTextElement("MineCoordinates", QString{MineCoordinates{it}.toString().c_str()});
