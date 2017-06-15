@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
     }
 #endif
     LOG_INFO() << QString{"Using log file %1"}.arg(QmsUtilities::getLogFilePath());
-    LOG_INFO() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
+    LOG_DEBUG() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     //TODO: Load language from config file
 
     QApplication qApplication(argc, argv);

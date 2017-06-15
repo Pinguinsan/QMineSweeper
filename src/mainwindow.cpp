@@ -304,7 +304,7 @@ void MainWindow::displayStatusMessage(QString statusMessage)
 QmsApplicationSettings MainWindow::collectApplicationSettings() const
 {
 #if defined(__ANDROID__)
-
+    return QmsApplicationSettings{};
 #else
     QmsApplicationSettings returnSettings;
     returnSettings.setNumberOfColumns(this->m_gameController->numberOfColumns());
@@ -322,7 +322,7 @@ void MainWindow::setLanguage(QmsSettingsLoader::SupportedLanguage language)
 {
     //TODO: Retranslate all non-ui set strings
     if (this->m_language == language) {
-        //LOG_DEBUG() << QString{"Attempted to set language to %1, but that language is already loaded"}.arg(QmsSettingsLoader::languageToString(language));
+        LOG_DEBUG() << QString{"Attempted to set language to %1, but that language is already loaded"}.arg(QmsSettingsLoader::languageToString(language));
     } else {
         const char *targetTranslationFile{};
         if (language == QmsSettingsLoader::SupportedLanguage::English) {
@@ -337,6 +337,7 @@ void MainWindow::setLanguage(QmsSettingsLoader::SupportedLanguage language)
             LOG_DEBUG() << "Language action checked, but it was not a known QAction (this should never happen)";
             return;
         }
+        LOG_DEBUG() << QString{"Changing program language to %1"}.arg(targetTranslationFile);
         this->m_translator->load(targetTranslationFile);
         this->m_language = language;
         this->displayStatusMessage(QStatusBar::tr(this->m_ui->statusBar->currentMessage().toStdString().c_str()));
@@ -351,7 +352,6 @@ void MainWindow::onLanguageSelected(bool checked)
 {
     (void)checked;
     QAction *checkedAction{this->m_languageActionGroup->checkedAction()};
-    checkedAction->dumpObjectTree();
     checkedAction->dumpObjectInfo();
     if (checkedAction == this->m_ui->actionEnglish) {
         this->setLanguage(QmsSettingsLoader::SupportedLanguage::English);
@@ -498,6 +498,7 @@ void MainWindow::centerAndFitWindow()
  * is used to change the smiley face to a sleepy face */
 void MainWindow::onGameStarted()
 {
+    LOG_DEBUG() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(this->m_gameController->numberOfColumns()), QS_NUMBER(this->m_gameController->numberOfRows()));
     this->startGameTimer();
     this->startUserIdleTimer();
     this->m_ui->actionSave->setEnabled(true);
