@@ -122,7 +122,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
 
-    this->connect(this->m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     this->connect(this->m_ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveActionTriggered);
     this->connect(this->m_ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsActionTriggered);
     this->connect(this->m_ui->actionOpen, &QAction::triggered, this, &MainWindow::onOpenActionTriggered);
@@ -304,11 +303,15 @@ void MainWindow::displayStatusMessage(QString statusMessage)
  * passing them to QMineSweeperSettingsLoader to write them to peristant storage. */
 QmsApplicationSettings MainWindow::collectApplicationSettings() const
 {
+#if defined(__ANDROID__)
+
+#else
     QmsApplicationSettings returnSettings;
     returnSettings.setNumberOfColumns(this->m_gameController->numberOfColumns());
     returnSettings.setNumberOfRows(this->m_gameController->numberOfRows());
     returnSettings.setAudioVolume(this->m_gameSoundEffects->audioVolume());
     return returnSettings;
+#endif //defined(__ANDROID__)
 }
 
 /* setLanguage() : Called when the UI must have it's language set (from
@@ -521,8 +524,10 @@ void MainWindow::setupNewGame()
  * disable them, so the user cannot play the game until it is resumed */
 void MainWindow::onGamePaused()
 {
-    for (auto &it : this->m_gameController->mineSweeperButtons()) {
-        it.second->setEnabled(false);
+    if (this->m_gameController->gameState() == GameState::GameActive) {
+        for (auto &it : this->m_gameController->mineSweeperButtons()) {
+            it.second->setEnabled(false);
+        }
     }
 }
 
@@ -531,8 +536,10 @@ void MainWindow::onGamePaused()
  * so the user can continue with their game */
 void MainWindow::onGameResumed()
 {
-    for (auto &it : this->m_gameController->mineSweeperButtons()) {
-        it.second->setEnabled(true);
+    if (this->m_gameController->gameState() == GameState::GamePaused) {
+        for (auto &it : this->m_gameController->mineSweeperButtons()) {
+            it.second->setEnabled(true);
+        }
     }
 }
 
@@ -970,17 +977,19 @@ void MainWindow::onAboutQmsWindowClosed()
     }
 }
 
+/* onAboutQmsActionTriggered() : Called when the About->About Qt menu
+ * option is clicked, causing the About Qt window (supplied by the Qt toolchain)
+ * to show. This separate event is also hooked, allowing the game to be paused if necessary */
+void MainWindow::onAboutQtActionTriggered()
+{
+    emit(gamePaused());
+    QMessageBox::aboutQt(this, QmsStrings::ABOUT_QT_WINDOW_TITLE);
+    emit(gameResumed());
+}
+
 /* onAboutQMineSweeperActionTriggered() : Called when the About->About QMineSweeper menu
  * option is clicked, causing the About QMineSweeper window (defined in forms/aboutqmsdialog.ui)
  * to show. This method also pauses the game while the window is active */
-void MainWindow::onAboutQtActionTriggered()
-{
-
-}
-
-/* onAboutQmActionTriggered() : Called when the About->About Qt menu
- * option is clicked, causing the About Qt window (supplied by the Qt toolchain)
- * to show. This separate event is also hooked, allowing the game to be paused if necessary */
 void MainWindow::onAboutQMineSweeperActionTriggered()
 {
     using namespace QmsGlobalSettings;

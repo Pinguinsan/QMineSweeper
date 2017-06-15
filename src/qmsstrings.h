@@ -62,6 +62,8 @@ namespace QmsStrings
     extern const char *SAVE_FILE_CAPTION;
     extern const char *OPEN_FILE_CAPTION;
 
+    extern const char *ABOUT_QT_WINDOW_TITLE;
+
     extern const char *ENGLISH_STRING;
     extern const char *FRENCH_STRING;
     extern const char *SPANISH_STRING;

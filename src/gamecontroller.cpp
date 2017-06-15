@@ -93,14 +93,14 @@ void GameController::onBoardResizeTriggered(int columns, int rows)
 
 void GameController::onGamePaused()
 {
-    if (!this->m_qmsGameState->m_initialClickFlag) {
+    if ((!this->m_qmsGameState->m_initialClickFlag) && (this->m_qmsGameState->m_gameState == GameState::GameActive)) {
         this->m_qmsGameState->m_gameState = GameState::GamePaused;
     }
 }
 
 void GameController::onGameResumed()
 {
-    if (!this->m_qmsGameState->m_initialClickFlag) {
+    if ((!this->m_qmsGameState->m_initialClickFlag) && (this->m_qmsGameState->m_gameState == GameState::GamePaused)) {
         this->m_qmsGameState->m_gameState = GameState::GameActive;
     }
 }

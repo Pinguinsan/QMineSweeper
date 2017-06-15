@@ -63,6 +63,8 @@ namespace QmsStrings
     const char *SAVE_FILE_CAPTION{"Save game?"};
     const char *OPEN_FILE_CAPTION{"Open existing game?"};
 
+    const char *ABOUT_QT_WINDOW_TITLE{"About Qt"};
+
     const char *ENGLISH_TRANSLATION_PATH{":/translations/english.qm"};
     const char *FRENCH_TRANSLATION_PATH{":/translations/french.qm"};
     const char *SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};
