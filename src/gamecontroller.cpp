@@ -95,6 +95,7 @@ void GameController::onGamePaused()
 {
     if ((!this->m_qmsGameState->m_initialClickFlag) && (this->m_qmsGameState->m_gameState == GameState::GameActive)) {
         this->m_qmsGameState->m_gameState = GameState::GamePaused;
+        LOG_INFO() << "Game paused";
     }
 }
 
@@ -102,6 +103,7 @@ void GameController::onGameResumed()
 {
     if ((!this->m_qmsGameState->m_initialClickFlag) && (this->m_qmsGameState->m_gameState == GameState::GamePaused)) {
         this->m_qmsGameState->m_gameState = GameState::GameActive;
+        LOG_INFO() << "Game resumed";
     }
 }
 
@@ -116,6 +118,7 @@ void GameController::onMineExplosionEventTriggered()
     for (auto &it : this->m_qmsGameState->m_mineSweeperButtons) {
         it.second->setBlockClicks(true);
     }
+    LOG_INFO() << "Mine explosion event triggered (game over)";
 }
 
 void GameController::setNumberOfMinesRemaining(int numberOfMinesRemaining)
@@ -165,6 +168,7 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
     using namespace QmsStrings;
     try {
         this->m_qmsGameState->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton> (new QmsButton{columnIndex, rowIndex, nullptr})));
+        LOG_DEBUG() << QString{"Added minesweeper button at (%1, %2)"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex));
     } catch (std::exception &e) {
         LOG_WARNING() << QString{STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING}.arg(e.what());
     }
