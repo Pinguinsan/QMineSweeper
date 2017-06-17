@@ -995,6 +995,7 @@ void MainWindow::onMineExplosionEventTriggered()
 void MainWindow::onActionMuteSoundChecked(bool checked)
 {
     this->m_gameSoundEffects->setAudioMuted(checked);
+    LOG_INFO() << QString{"Game audio volume set to %1"}.arg((checked ? QS_NUMBER(QmsSettingsLoader::DEFAULT_AUDIO_VOLUME()) : "0"));
 }
 
 /* onChangeBoardSizeActionTriggered() : Called when the "change board size" menu option
