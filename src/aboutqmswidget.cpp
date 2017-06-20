@@ -1,13 +1,13 @@
 /***********************************************************************
-*    aboutqmsdialog.cpp:                                               *
-*    Custom QDialog for showing information about QMineSweeper         *
+*    aboutqmswidget.cpp:                                               *
+*    Custom QWidget for showing information about QMineSweeper         *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a source file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
-*    This file holds the implementation of an AboutQmsDialog class     *
-*    The AboutQmsDialog class is a window showing information about    *
+*    This file holds the implementation of an AboutQmsWidget class     *
+*    The AboutQmsWidget class is a window showing information about    *
 *    QMineSweeper, using the same format used by the program GHex      *
 *                                                                      *
 *    You should have received a copy of the GNU Lesser General         *
@@ -15,8 +15,8 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "aboutqmsdialog.h"
-#include "ui_aboutqmsdialog.h"
+#include "aboutqmswidget.h"
+#include "ui_aboutqmswidget.h"
 
 #include "globaldefinitions.h"
 #include "qmsapplicationsettings.h"
@@ -30,11 +30,10 @@
 
 #include <memory>
 
-AboutQmsDialog::AboutQmsDialog() :
-    m_ui{new Ui::AboutQmsDialog{}},
-    m_licenseHiddenHeight{-1},
-    m_xPlacement{0},
-    m_yPlacement{0}
+AboutQmsWidget::AboutQmsWidget(QWidget *parent) :
+    MouseMoveableQWidget{parent},
+    m_ui{new Ui::AboutQmsWidget{}},
+    m_licenseHiddenHeight{-1}
 {
     using namespace QmsGlobalSettings;
     using namespace QmsStrings;
@@ -51,18 +50,18 @@ AboutQmsDialog::AboutQmsDialog() :
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_ui->tbAboutQmsLicense->setVisible(false);
 
-    this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutQmsDialog::onLicenseButtonClicked);
-    this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutQmsDialog::onCloseButtonClicked);
+    this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutQmsWidget::onLicenseButtonClicked);
+    this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutQmsWidget::onCloseButtonClicked);
 }
 
-AboutQmsDialog::~AboutQmsDialog()
+AboutQmsWidget::~AboutQmsWidget()
 {
 
 }
 
 /* onAboutQmsWindowLicenseButtonClicked() : called when the license button on the
  * AboutQmsWindow is clicked. This method displays the licence for QMineSweeper*/
-void AboutQmsDialog::onLicenseButtonClicked(bool checked)
+void AboutQmsWidget::onLicenseButtonClicked(bool checked)
 {
     (void)checked;
     if (this->m_ui->tbAboutQmsLicense->isVisible()) {
@@ -82,7 +81,7 @@ void AboutQmsDialog::onLicenseButtonClicked(bool checked)
     //this->setFixedSize(this->minimumSize());
 }
 
-void AboutQmsDialog::populateLicenseText()
+void AboutQmsWidget::populateLicenseText()
 {
     QFile licenseFile{QmsStrings::QMINESWEEPER_LICENSE_PATH};
     licenseFile.open(QIODevice::OpenModeFlag::ReadOnly);
@@ -92,45 +91,22 @@ void AboutQmsDialog::populateLicenseText()
     this->m_ui->tbAboutQmsLicense->ensureCursorVisible();
 }
 
-void AboutQmsDialog::clearLicenseText()
+void AboutQmsWidget::clearLicenseText()
 {
     this->m_ui->tbAboutQmsLicense->clear();
 }
 
 /* onAboutQmsWindowCloseButtonClicked() : called when the close button on the
  * AboutQmsWindow is clicked. This method closes the window */
-void AboutQmsDialog::onCloseButtonClicked(bool checked)
+void AboutQmsWidget::onCloseButtonClicked(bool checked)
 {
     (void)checked;
     this->close();
 }
 
-/* centerAndFitWindow() : Called whenever code requests the main window to be centered
- * Typically called after resizing the UI on this widget / window */
-void AboutQmsDialog::centerAndFitWindow(QDesktopWidget *desktopWidget)
-{
-    this->setFixedSize(this->minimumSize());
-    this->calculateXYPlacement(desktopWidget);
-    this->move(this->m_xPlacement, this->m_yPlacement);
-}
-
-/* calculateXYPlacement() : Checks the currently available screen geometry, and calulates
- * where the widget must be moved to appear on at the center of the users screen */
-void AboutQmsDialog::calculateXYPlacement(QDesktopWidget *desktopWidget)
-{
-    std::unique_ptr<QRect> avail{new QRect{desktopWidget->availableGeometry()}};
-    this->m_xPlacement = (avail->width()/2)-(this->width()/2);
-#if defined(__ANDROID__)
-    this->m_yPlacement = avail->height() - this->height();
-#else
-    this->m_yPlacement = (avail->height()/2)-(this->height()/2);
-#endif
-}
-
-
-void AboutQmsDialog::closeEvent(QCloseEvent *ce)
+void AboutQmsWidget::closeEvent(QCloseEvent *ce)
 {
     emit (aboutToClose());
-    QDialog::closeEvent(ce);
+    MouseMoveableQWidget::closeEvent(ce);
 }
 

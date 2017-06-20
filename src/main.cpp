@@ -33,7 +33,6 @@
 #define SIGNAL_STRING_BUFFER_SIZE 255
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QString>
 #include <QRect>
 #include <QDateTime>
@@ -186,30 +185,20 @@ int main(int argc, char *argv[])
 #else
     std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>(settings.audioVolume())};
 #endif
-    std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
     std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons,
                                                                         soundEffects,
                                                                         settingsLoader,
                                                                         gameController,
-                                                                        qDesktopWidget,
                                                                         QmsSettingsLoader::DEFAULT_LANGUAGE())};
     gameController->bindMainWindow(mainWindow);
     mainWindow->setupNewGame();
 
-    QObject::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
+    QMainWindow::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
     mainWindow->setWindowIcon(gameIcons->MINE_ICON_72);
     mainWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-#if defined(__ANDROID__)
-    mainWindow->showMaximized();
-    mainWindow->setFixedSize(mainWindow->minimumSize());
-    mainWindow->resizeResetIcon();
-    mainWindow->centerAndFitWindow();
-#else
     mainWindow->show();
-    mainWindow->setFixedSize(mainWindow->minimumSize());
+    mainWindow->centerAndFitWindow(true);
     mainWindow->resizeResetIcon();
-    mainWindow->centerAndFitWindow();
-#endif
     return qApplication.exec();
 }
 

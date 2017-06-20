@@ -29,7 +29,6 @@
 #include <QTranslator>
 #include <QSettings>
 #include <QDateTime>
-#include <QSpacerItem>
 
 #include <cctype>
 #include <algorithm>
@@ -37,8 +36,8 @@
 #include "qmsbutton.h"
 #include "qmsicons.h"
 #include "gamecontroller.h"
-#include "aboutqmsdialog.h"
-#include "boardresizedialog.h"
+#include "aboutqmswidget.h"
+#include "boardresizewidget.h"
 #include "qmssoundeffects.h"
 #include "qmsutilities.h"
 #include "qmsstrings.h"
@@ -48,10 +47,6 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_boardresizedialog.h"
-#include "ui_aboutqmsdialog.h"
-
-/* static const initializations */
 
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};
@@ -80,15 +75,14 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
                        std::shared_ptr<QmsSoundEffects> gameSoundEffects,
                        std::shared_ptr<QmsSettingsLoader> settingsLoader,
                        std::shared_ptr<GameController> gameController,
-                       std::shared_ptr<QDesktopWidget> desktopWidget,
                        QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
                        QWidget *parent) :
-    QMainWindow{parent},
+    MouseMoveableQMainWindow{parent},
     m_eventTimer{new QTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
     m_ui{new Ui::MainWindow{}},
-    m_aboutQmsDialog{new AboutQmsDialog{}},
-    m_boardSizeDialog{new BoardResizeDialog{}},
+    m_aboutQmsDialog{new AboutQmsWidget{}},
+    m_boardResizeDialog{new BoardResizeWidget{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
     m_translator{new QTranslator{}},
     m_statusBarLabel{new QLabel{}},
@@ -96,23 +90,16 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_gameSoundEffects{gameSoundEffects},
     m_settingsLoader{settingsLoader},
     m_gameController{gameController},
-    m_qDesktopWidget{desktopWidget},
     m_language{initialDisplayLanguage},
-    m_xPlacement{0},
-    m_yPlacement{0},
     m_currentDefaultMineSize{QSize{0,0}},
     m_currentMaxMineSize{QSize{0,0}},
     m_maxMineSizeCacheIsValid{false},
-    m_tempPauseFlag{false},
     m_boardSizeGeometrySet{false},
-    m_saveFilePath{""},
-    m_mousePressLocation{-1, -1}
+    m_saveFilePath{""}
 {
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
     this->m_ui->centralwidget->setMouseTracking(true);
-    //this->centralWidget()->setMouseTracking(true);
-    //this->setMouseTracking(true);
 
     QFont tempFont{this->m_statusBarLabel->font()};
     tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);
@@ -179,7 +166,7 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this->m_ui->actionFrench, &QAction::triggered, this, &MainWindow::onLanguageSelected);
     this->connect(this->m_ui->actionJapanese, &QAction::triggered, this, &MainWindow::onLanguageSelected);
 
-    std::unique_ptr<QRect> avail{new QRect{this->m_qDesktopWidget->availableGeometry()}};
+    std::unique_ptr<QRect> avail{new QRect{QDesktopWidget{}.availableGeometry()}};
 
     #if defined(__ANDROID__)
         this->m_reductionSizeScaleFactor = 1;
@@ -194,60 +181,18 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     using namespace QmsGlobalSettings;
 
     /* initialize all strings and stuff for the BoardResizeWindow */
-    this->m_boardSizeDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-    this->m_boardSizeDialog->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    this->m_boardSizeDialog->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
-    this->connect(this->m_boardSizeDialog.get(), &BoardResizeDialog::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
+    this->m_boardResizeDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
+    this->m_boardResizeDialog->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
+    this->m_boardResizeDialog->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
+    this->connect(this->m_boardResizeDialog.get(), &BoardResizeWidget::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
 
     this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
-    this->connect(this->m_aboutQmsDialog.get(), &AboutQmsDialog::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
+    this->connect(this->m_aboutQmsDialog.get(), &AboutQmsWidget::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
 
     this->m_eventTimer->start();
     this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
 
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *mouseEvent)
-{
-    auto mousePosition = mouseEvent->pos();
-    if (this->m_ui->centralwidget->underMouse()) {
-        if (!this->m_ui->mineFrame->underMouse()) {
-            if (this->m_mousePressLocation == QPoint{-1, -1}) {
-                this->m_mousePressLocation = mousePosition;
-            }
-        }
-    }
-    return QMainWindow::mousePressEvent(mouseEvent);
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *mouseEvent)
-{
-    this->m_mousePressLocation = QPoint{-1, -1};
-    return QMainWindow::mouseReleaseEvent(mouseEvent);
-}
-
-void MainWindow::mouseMoveEvent(QMouseEvent *mouseEvent)
-{
-    auto mousePosition = mouseEvent->pos();
-    if (!this->m_ui->mineFrame->underMouse()) {
-        if (this->m_mousePressLocation != QPoint{-1, -1}) {
-            if (mouseEvent->buttons() & Qt::LeftButton) {
-                QPoint diff{mouseEvent->pos() - this->m_mousePressLocation};
-                this->move(this->pos() + diff);
-            }
-        }
-        std::cout << QString{"mousePosition = (%1, %2)"}.arg(QS_NUMBER(mousePosition.x()), QS_NUMBER(mousePosition.y())).toStdString() << std::endl;
-    }
-    return QMainWindow::mouseMoveEvent(mouseEvent);
-}
-
-void MainWindow::moveEvent(QMoveEvent *moveEvent)
-{
-    if (this->m_mousePressLocation != QPoint{-1, -1}) {
-        this->setMouseTracking(true);
-    }
-    return QMainWindow::moveEvent(moveEvent);
 }
 
 void MainWindow::onSaveActionTriggered()
@@ -417,7 +362,7 @@ void MainWindow::onLanguageSelected(bool checked)
  * the form is visible, for use in pausing or unpausing the game */
 bool MainWindow::boardResizeDialogVisible()
 {
-    return this->m_boardSizeDialog->isVisible();
+    return this->m_boardResizeDialog->isVisible();
 }
 
 /* showEvent() : Called when the main window is shown, and emits a
@@ -471,10 +416,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 /* onCustomDialogClosed() : Called when a custom dialog (board resize, etc)
  * is closed, signaling to the main game window to resume the game, if a game is in progress */
-void MainWindow::onBoardResizeDialogClosed(int columns, int rows, QDialog::DialogCode userAction)
+void MainWindow::onBoardResizeDialogClosed(BoardResizeWidget::ResizeWidgetResult result)
 {
+    int columns{result.columns};
+    int rows{result.rows};
+    BoardResizeWidget::ResizeWidgetExitCode userAction{result.userAction};
     this->setEnabled(true);
-    if (userAction == QDialog::DialogCode::Accepted) {
+    if (userAction == BoardResizeWidget::ResizeWidgetExitCode::Accepted) {
         this->invalidateSizeCaches();
         emit(boardResize(columns, rows));
     } else {
@@ -523,21 +471,6 @@ void MainWindow::onGameWon()
     winBox->exec();
 }
 
-/* centerAndFitWindow() : Called whenever code requests the main window to be centered
- * Typically called after resizing the UI on the main window */
-void MainWindow::centerAndFitWindow()
-{
-    /*
-#if defined(ANDROID)
-    this->setGeometry(this->x(), this->y(), this->minimumWidth(), this->minimumHeight());
-#else
-    this->setFixedSize(this->minimumSize());
-#endif
-    */
-    this->setFixedSize(this->minimumSize());
-    this->calculateXYPlacement();
-    this->move(this->m_xPlacement, this->m_yPlacement);
-}
 
 /* onGameStarted() : Called when a gameStarted() signal is emitted
  * Start the game timer, as well as starting the user idle timer, which
@@ -563,7 +496,7 @@ void MainWindow::setupNewGame()
     }
     this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
     this->populateMineField();
-    this->centerAndFitWindow();
+    this->centerAndFitWindow(true, true);
 }
 
 /* onGamePaused() : Called when a gamePaused() signal is emitted
@@ -668,19 +601,20 @@ QSize MainWindow::getIconReductionSize()
 QSize MainWindow::getMaxMineSize()
 {
     using namespace QmsStrings;
+    QDesktopWidget qDesktopWidget{};
     if (!this->m_maxMineSizeCacheIsValid) {
-        int defaultMineSize{this->m_qDesktopWidget->availableGeometry().height()/this->s_DEFAULT_MINE_SIZE_SCALE_FACTOR};
+        int defaultMineSize{qDesktopWidget.availableGeometry().height()/this->s_DEFAULT_MINE_SIZE_SCALE_FACTOR};
         this->m_currentDefaultMineSize = QSize{defaultMineSize, defaultMineSize};
         int statusBarHeight{this->m_ui->statusBar->height()};
         int menuBarHeight{this->m_ui->menuBar->height()};
         int titleFrameHeight{this->m_ui->titleFrame->height()};
         int gridSpacingHeight{this->centralWidget()->layout()->margin()*this->s_NUMBER_OF_VERTIAL_MARGINS};
         int gridSpacingWidth{this->centralWidget()->layout()->margin()*this->s_NUMBER_OF_HORIZONTAL_MARGINS};
-        int heightScale{this->m_qDesktopWidget->availableGeometry().height()/this->s_HEIGHT_SCALE_FACTOR};
-        int widthScale{this->m_qDesktopWidget->availableGeometry().width()/this->s_WIDTH_SCALE_FACTOR};
+        int heightScale{qDesktopWidget.availableGeometry().height()/this->s_HEIGHT_SCALE_FACTOR};
+        int widthScale{qDesktopWidget.availableGeometry().width()/this->s_WIDTH_SCALE_FACTOR};
         int extraHeight{statusBarHeight + menuBarHeight + titleFrameHeight + gridSpacingHeight};
-        int x{(this->m_qDesktopWidget->availableGeometry().height()-extraHeight-s_TASKBAR_HEIGHT-heightScale)/this->m_gameController->numberOfRows()};
-        int y{(this->m_qDesktopWidget->availableGeometry().width()-gridSpacingWidth-widthScale)/this->m_gameController->numberOfColumns()};
+        int x{(qDesktopWidget.availableGeometry().height()-extraHeight-s_TASKBAR_HEIGHT-heightScale)/this->m_gameController->numberOfRows()};
+        int y{(qDesktopWidget.availableGeometry().width()-gridSpacingWidth-widthScale)/this->m_gameController->numberOfColumns()};
         if ((x < 5) || (y < 5)) {
             //TODO: Deal with too small to play mines
             std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
@@ -822,7 +756,7 @@ void MainWindow::onResetButtonClicked()
 void MainWindow::doGameReset()
 {
     using namespace QmsStrings;
-    this->m_boardSizeDialog->hide();
+    this->m_boardResizeDialog->hide();
     for (auto &it : this->m_gameController->mineSweeperButtons()) {
         it.second->setChecked(false);
         it.second->setFlat(false);
@@ -845,9 +779,9 @@ void MainWindow::doGameReset()
  * updating the visible game timer, and any resizing of the geometry */
 void MainWindow::eventLoop()
 {
-    updateVisibleGameTimer();
-    updateUserIdleTimer();
-    updateGeometry();
+    this->updateVisibleGameTimer();
+    this->updateUserIdleTimer();
+    this->updateGeometry();
 }
 
 /* updateGeometry() : Convenience function to center and fit the window,
@@ -855,7 +789,7 @@ void MainWindow::eventLoop()
 void MainWindow::updateGeometry()
 {
     if (this->size() != this->minimumSize()) {
-        this->centerAndFitWindow();
+        this->centerAndFitWindow(true, true);
     }
 }
 
@@ -1007,8 +941,8 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     using namespace QmsUtilities;
     using namespace QmsStrings;
     this->setEnabled(false);
-    this->m_boardSizeDialog->show(this->m_gameController->numberOfColumns(), this->m_gameController->numberOfRows());
-    this->m_boardSizeDialog->centerAndFitWindow(this->m_qDesktopWidget.get());
+    this->m_boardResizeDialog->show(this->m_gameController->numberOfColumns(), this->m_gameController->numberOfRows());
+    this->m_boardResizeDialog->centerAndFitWindow();
     emit(gamePaused());
 }
 
@@ -1044,7 +978,7 @@ void MainWindow::onAboutQMineSweeperActionTriggered()
     this->setEnabled(false);
     emit(gamePaused());
     this->m_aboutQmsDialog->show();
-    this->m_aboutQmsDialog->centerAndFitWindow(this->m_qDesktopWidget.get());
+    this->m_aboutQmsDialog->centerAndFitWindow();
 }
 
 
@@ -1062,15 +996,6 @@ void MainWindow::bindGameController(std::shared_ptr<GameController> gameControll
 {
     this->m_gameController.reset();
     this->m_gameController = gameController;
-}
-
-/* bindQDesktopWidget() : Convenience function for late binding of a shared_ptr
- * to the QDesktopWidget instance, to support dependancy injection for MainWindow,
- * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget)
-{
-    this->m_qDesktopWidget.reset();
-    this->m_qDesktopWidget = qDesktopWidget;
 }
 
 /* bindQMineSweeperIcons() : Convenience function for late binding of a shared_ptr
@@ -1129,32 +1054,6 @@ void MainWindow::drawNumberOfSurroundingMines(QmsButton *msb)
         msb->setIcon(this->m_gameIcons->COUNT_MINES_0);
     }
 }
-
-/* xPlacement() : Member access function for MainWindow::m_xPlacement */
-int MainWindow::xPlacement() const
-{
-    return this->m_xPlacement;
-}
-
-/* yPlacement() : Member access function for MainWindow::m_yPlacement */
-int MainWindow::yPlacement() const
-{
-    return this->m_yPlacement;
-}
-
-/* calculateXYPlacement() : Checks the currently available screen geometry, and calulates
- * where the MainWindow must be moved to appear on at the center of the users screen */
-void MainWindow::calculateXYPlacement()
-{
-    std::unique_ptr<QRect> avail{new QRect{this->m_qDesktopWidget->availableGeometry()}};
-    this->m_xPlacement = (avail->width()/2)-(this->width()/2);
-#if defined(__ANDROID__)
-    this->m_yPlacement = avail->height() - this->height();
-#else
-    this->m_yPlacement = (avail->height()/2)-(this->height()/2) - this->s_TASKBAR_HEIGHT;
-#endif
-}
-
 
 /* ~MainWindow() : Destructor, empty by default, as all ownership is taken care
  * of by c++11's smart pointers (unique_ptr and shared_ptr) */

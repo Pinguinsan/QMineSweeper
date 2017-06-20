@@ -24,6 +24,8 @@
 
 #include "eventtimer.h"
 #include "qmssettingsloader.h"
+#include "mousemoveableqmainwindow.h"
+#include "boardresizewidget.h"
 
 
 namespace Ui
@@ -33,8 +35,7 @@ namespace Ui
 
 class QmsButton;
 class GameController;
-class AboutQmsDialog;
-class BoardResizeDialog;
+class AboutQmsWidget;
 class QmsIcons;
 class QmsSoundEffects;
 class QmsApplicationSettings;
@@ -51,17 +52,14 @@ class QDialog;
 class QPoint;
 class QMoveEvent;
 
-
-class MainWindow : public QMainWindow
+class MainWindow : public MouseMoveableQMainWindow
 {
-    Q_OBJECT
-
+        Q_OBJECT
 public:
     explicit MainWindow(std::shared_ptr<QmsIcons> gameIcons,
                            std::shared_ptr<QmsSoundEffects> gameSoundEffects,
                            std::shared_ptr<QmsSettingsLoader> settingsLoader,
                            std::shared_ptr<GameController> gameController,
-                           std::shared_ptr<QDesktopWidget> desktopWidget,
                            QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
                            QWidget *parent = nullptr);
     ~MainWindow();
@@ -72,15 +70,11 @@ public:
     void displayMine(QmsButton *msb);
     void bindGameController(std::shared_ptr<GameController> gameController);
     void bindQMineSweeperIcons(std::shared_ptr<QmsIcons> programIcons);
-    void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget);
     void bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> programSoundEffects);
     void bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoader> programSettingsLoader);
     void setResetButtonIcon(const QIcon &icon);
     void drawNumberOfSurroundingMines(QmsButton *msb);
     void setLanguage(QmsSettingsLoader::SupportedLanguage newLanguage);
-    int xPlacement() const;
-    int yPlacement() const;
-    void centerAndFitWindow();
     bool boardResizeDialogVisible();
 
     QmsApplicationSettings collectApplicationSettings() const;
@@ -92,8 +86,8 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
     std::unique_ptr<Ui::MainWindow> m_ui;
-    std::unique_ptr<AboutQmsDialog> m_aboutQmsDialog;
-    std::unique_ptr<BoardResizeDialog>  m_boardSizeDialog;
+    std::unique_ptr<AboutQmsWidget> m_aboutQmsDialog;
+    std::unique_ptr<BoardResizeWidget>  m_boardResizeDialog;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
     std::unique_ptr<QLabel> m_statusBarLabel;
@@ -102,23 +96,17 @@ private:
     std::shared_ptr<QmsSoundEffects> m_gameSoundEffects;
     std::shared_ptr<QmsSettingsLoader> m_settingsLoader;
     std::shared_ptr<GameController> m_gameController;
-    std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
-
 
     QmsSettingsLoader::SupportedLanguage m_language;
     double m_reductionSizeScaleFactor;
     QString m_saveStyleSheet;
-    int m_xPlacement;
-    int m_yPlacement;
     QSize m_currentDefaultMineSize;
     QSize m_currentMaxMineSize;
     QSize m_currentIconReductionSize;
     bool m_maxMineSizeCacheIsValid;
     bool m_iconReductionSizeCacheIsValid;
-    bool m_tempPauseFlag;
     bool m_boardSizeGeometrySet;
     QString m_saveFilePath;
-    QPoint m_mousePressLocation;
 
     static const int s_TASKBAR_HEIGHT;
     static const int s_GAME_TIMER_INTERVAL;
@@ -139,7 +127,6 @@ private:
     void doGameReset();
     QSize getMaxMineSize();
     QSize getIconReductionSize();
-    void calculateXYPlacement();
     std::string getLCDPadding(uint8_t howMuch);
     static const long long int constexpr MILLISECONDS_PER_SECOND{1000};
     static const long long int constexpr MICROSECONDS_PER_MILLISECOND{1000};
@@ -148,10 +135,10 @@ private:
 
     void displayStatusMessage(QString statusMessage);
     void doSaveGame(const QString &filePath);
-    void mouseMoveEvent(QMouseEvent *mouseEvent) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void moveEvent(QMoveEvent *moveEvent) override;
+    //void mouseMoveEvent(QMouseEvent *mouseEvent) override;
+    //void mouseReleaseEvent(QMouseEvent *event) override;
+    //void mousePressEvent(QMouseEvent *event) override;
+    //void moveEvent(QMoveEvent *moveEvent) override;
 signals:
     void resetButtonClicked();
     void resetGame();
@@ -171,7 +158,7 @@ public slots:
     void onMineExplosionEventTriggered();
     void setupNewGame();
     void onGameWon();
-    void onBoardResizeDialogClosed(int columns, int rows, QDialog::DialogCode userResult);
+    void onBoardResizeDialogClosed(BoardResizeWidget::ResizeWidgetResult result);
     void startUserIdleTimer();
 
 private slots:

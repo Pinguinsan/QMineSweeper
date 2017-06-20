@@ -46,13 +46,6 @@ namespace QmsStrings
     const char *LAST_CHANCE_CONFIGURATION_FILE{"/opt/GitHub/QMineSweeper/config/qminesweeper.config"};
     const char *DEFAULT_PARAMETER_FILE_PATH{"config/defaults.config"};
 
-    const char *NUMBER_OF_SURROUND_MINES_NEGATIVE_STRING{"ERROR: Argument passed to numberOfSurroundingMines(int) cannot be negative ("};
-    const char *LESS_THAN_ZERO_STRING{" < 0)"};
-    const char *NUMBER_OF_SURROUNDING_MINES_TOO_LARGE_STRING{"ERROR: Argument passed to numberOfSurroundMines(int) cannot be greater than 8 ("};
-    const char *GREATER_THAN_8_STRING{" > 8)"};
-    const char *COLUMN_INDEX_NEGATIVE_STRING{"ERROR: Argument to setRowIndex(int) cannot be negative ("};
-    const char *ROW_INDEX_NEGATIVE_STRING{"ERROR: Argument to setRowIndex(int) cannot be negative ("};
-    const char *STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING{"Standard exception caught in addMineSweeperButton(int, int): %1"};
     const char *LCD_OVERFLOW_STRING{"999"};
     const char *ENGLISH_STRING{"English"};
     const char *FRENCH_STRING{"French"};

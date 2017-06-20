@@ -1,51 +1,54 @@
 /***********************************************************************
-*    boardresizedialog.h:                                              *
-*    Custom QDialog for settings the board dimensions                  *
+*    boardresizewidget.h:                                              *
+*    Custom QWidget for settings the board dimensions                  *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for QMineSweeper:                           *
 *    https://github.com/tlewiscpp/QMineSweeper                         *
 *    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of a BoardResizeDialog class     *
-*    The BoardResizeDialog is used to change the size of the game board*
+*    This file holds the declarations of a BoardResizeWidget class     *
+*    The BoardResizeWidget is used to change the size of the game board*
 *                                                                      *
 *    You should have received a copy of the GNU Lesser General         *
 *    Public license along with QMineSweeper                            *
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#ifndef QMINESWEEPER_BOARDRESIZEDIALOG_H
-#define QMINESWEEPER_BOARDRESIZEDIALOG_H
+#ifndef QMINESWEEPER_BOARDRESIZEWIDGET_H
+#define QMINESWEEPER_BOARDRESIZEWIDGET_H
 
 namespace Ui {
-    class BoardResizeDialog;
+    class BoardResizeWidget;
 }
 
-#include <QDialog>
 #include <memory>
+#include "mousemoveableqwidget.h"
 
 class QDesktopWidget;
 
-class BoardResizeDialog : public QDialog
+class BoardResizeWidget : public MouseMoveableQWidget
 {
-
-    struct ResizeDialogResult {
-        int columns;
-        int rows;
-        DialogCode userAction;
-    };
-
     Q_OBJECT
 public:
-    BoardResizeDialog();
-    ~BoardResizeDialog();
-    void centerAndFitWindow(QDesktopWidget *desktopWidget);
+    enum class ResizeWidgetExitCode {
+        Accepted,
+        Rejected
+    };
+
+    struct ResizeWidgetResult {
+        int columns;
+        int rows;
+        ResizeWidgetExitCode userAction;
+    };
+
+    BoardResizeWidget(QWidget *parent = nullptr);
+    ~BoardResizeWidget();
     void show(int columns, int rows);
     void closeEvent(QCloseEvent *event) override;
     void showEvent(QShowEvent *event) override;
 
 signals:
-    void aboutToClose(int columns, int rows, DialogCode userRequest);
+    void aboutToClose(ResizeWidgetResult result);
     void keyPressEvent(QKeyEvent *event);
 
 private slots:
@@ -55,14 +58,14 @@ private slots:
     void onBoardResizeActionClicked();
 
 private:
-    std::unique_ptr<Ui::BoardResizeDialog> m_ui;
+    std::unique_ptr<Ui::BoardResizeWidget> m_ui;
     int m_numberOfColumns;
     int m_numberOfRows;
     int m_xPlacement;
     int m_yPlacement;
-    ResizeDialogResult m_resultToEmit;
+    ResizeWidgetResult m_resultToEmit;
 
     void calculateXYPlacement(QDesktopWidget *desktopWidget);
 };
 
-#endif //QMINESWEEPER_BOARDRESIZEDIALOG_H
+#endif //QMINESWEEPER_BOARDRESIZEWIDGET_H

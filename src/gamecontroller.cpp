@@ -170,7 +170,7 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
         this->m_qmsGameState->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton> (new QmsButton{columnIndex, rowIndex, nullptr})));
         LOG_DEBUG() << QString{"Added minesweeper button at (%1, %2)"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex));
     } catch (std::exception &e) {
-        LOG_WARNING() << QString{STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING}.arg(e.what());
+        LOG_WARNING() << QString{"std::exception caught in GameController::addMineSweeperButton(int, int), with first argument = %1, second argument = %2, and std::exception::what() = %3"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex), e.what());
     }
 }
 

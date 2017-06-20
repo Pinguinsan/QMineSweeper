@@ -22,6 +22,15 @@
 #include "minecoordinates.h"
 #include "gamecontroller.h"
 #include "qmsstrings.h"
+#include "globaldefinitions.h"
+
+#include <QString>
+
+#if defined (__3D_QMINESWEEPER__)
+const int QmsButton::MAXIMUM_NUMBER_OF_SURROUNDING_MINES{27};
+#else
+const int QmsButton::MAXIMUM_NUMBER_OF_SURROUNDING_MINES{8};
+#endif
 
 QmsButton::QmsButton(int columnIndex, int rowIndex, QWidget *parent) :
     QPushButton{parent},
@@ -89,15 +98,19 @@ QmsButton::QmsButton(std::shared_ptr<QmsButton>& other) :
 
 void QmsButton::initialize()
 {
-    //this->installEventFilter(this);
+
 }
 
-/*
-int QMineSweeperButton::heightForWidth(int width) const
+std::string QmsButton::toString() const
 {
-    return width;
+    //return QmsUtilities::TStringFormat("[QmsButtom] ({0}, {1})", this->m_columnIndex, this->m_rowIndex);
+    return this->toQString().toStdString();
 }
-*/
+
+QString QmsButton::toQString() const
+{
+    return QString{"[QmsButton] (%1, %2)"}.arg(QS_NUMBER(this->m_columnIndex), QS_NUMBER(this->m_rowIndex));
+}
 
 bool QmsButton::operator==(const QmsButton &other) const
 {
@@ -107,6 +120,7 @@ bool QmsButton::operator==(const QmsButton &other) const
 void QmsButton::mousePressEvent(QMouseEvent *mouseEvent)
 {
     if (this->m_blockClicks) {
+        LOG_DEBUG() << QString{"%1 experienced a mousePressEvent, but it's blockClicks property was set, so the event was ignored"}.arg(this->toQString());
         return;
     }
     if (this->isChecked()) {
@@ -114,10 +128,12 @@ void QmsButton::mousePressEvent(QMouseEvent *mouseEvent)
     }
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
+            LOG_DEBUG() << QString{"%1 was left clicked (mouse down only)"}.arg(this->toQString());
             emit(leftClicked(this));
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
+            LOG_DEBUG() << QString{"%1 was right clicked (mouse down only)"}.arg(this->toQString());
             emit(rightClicked(this));
         }
     }
@@ -158,22 +174,25 @@ void QmsButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
             if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+                LOG_DEBUG() << QString{"%1 was long left clicked"}.arg(this->toQString());
                 emit (longLeftClickReleased(this));
             } else {
+                LOG_DEBUG() << QString{"%1 was left clicked"}.arg(this->toQString());
                 emit(leftClickReleased(this));
             }
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
             if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
-                emit longLeftClickReleased(this);
+                LOG_DEBUG() << QString{"%1 was long right clicked"}.arg(this->toQString());
+                emit longRightClickReleased(this);
             } else {
+                LOG_DEBUG() << QString{"%1 was right clicked"}.arg(this->toQString());
                 emit(rightClickReleased(this));
             }
         }
     }
     this->m_isBeingLongClicked = false;
-    //this->m_longClickTimer->stop();
 }
 
 
@@ -242,9 +261,9 @@ void QmsButton::setNumberOfSurroundingMines(int numberOfSurroundingMines)
     using namespace QmsUtilities;
     using namespace QmsStrings;
     if (numberOfSurroundingMines < 0) {
-        throw std::runtime_error(NUMBER_OF_SURROUND_MINES_NEGATIVE_STRING + toString(numberOfSurroundingMines) + LESS_THAN_ZERO_STRING);
+        throw std::runtime_error(TStringFormat("ERROR: In QmsButton::setNumberOfSurroundingMines(int): Argument may not be less than zero ({0} < 0)", numberOfSurroundingMines));
     } else if (numberOfSurroundingMines > 8) {
-        throw std::runtime_error(NUMBER_OF_SURROUNDING_MINES_TOO_LARGE_STRING + toString(numberOfSurroundingMines) + GREATER_THAN_8_STRING);
+        throw std::runtime_error(TStringFormat("ERROR: In QmsButton::setNumberOfSurroundingMines(int): Argument may not be greater than maximum number of surrounding mines ({0} > {1})", numberOfSurroundingMines, QmsButton::MAXIMUM_NUMBER_OF_SURROUNDING_MINES));
     } else {
         this->m_numberOfSurroundingMines = numberOfSurroundingMines;
     }

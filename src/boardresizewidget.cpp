@@ -14,8 +14,8 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "boardresizedialog.h"
-#include "ui_boardresizedialog.h"
+#include "boardresizewidget.h"
+#include "ui_boardresizewidget.h"
 
 #include <QDesktopWidget>
 #include <QMessageBox>
@@ -29,51 +29,50 @@
 
 #include <memory>
 
-BoardResizeDialog::BoardResizeDialog() :
-    m_ui{new Ui::BoardResizeDialog{}},
+BoardResizeWidget::BoardResizeWidget(QWidget *parent) :
+    MouseMoveableQWidget{parent},
+    m_ui{new Ui::BoardResizeWidget{}},
     m_numberOfColumns{0},
     m_numberOfRows{0},
-    m_xPlacement{0},
-    m_yPlacement{0},
-    m_resultToEmit{0, 0, DialogCode::Rejected}
+    m_resultToEmit{0, 0, BoardResizeWidget::ResizeWidgetExitCode::Rejected}
 {
     this->m_ui->setupUi(this);
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
 
-    this->connect(this->m_ui->btnOkay, &QPushButton::clicked, this, &BoardResizeDialog::onOkayButtonClicked);
-    this->connect(this->m_ui->btnCancel, &QPushButton::clicked, this, &BoardResizeDialog::onCancelButtonClicked);
-    this->connect(this->m_ui->btnIncrementRows, &QPushButton::clicked, this, &BoardResizeDialog::onBoardResizeActionClicked);
-    this->connect(this->m_ui->btnDecrementRows, &QPushButton::clicked, this, &BoardResizeDialog::onBoardResizeActionClicked);
-    this->connect(this->m_ui->btnIncrementColumns, &QPushButton::clicked, this, &BoardResizeDialog::onBoardResizeActionClicked);
-    this->connect(this->m_ui->btnDecrementColumns, &QPushButton::clicked, this, &BoardResizeDialog::onBoardResizeActionClicked);
+    this->connect(this->m_ui->btnOkay, &QPushButton::clicked, this, &BoardResizeWidget::onOkayButtonClicked);
+    this->connect(this->m_ui->btnCancel, &QPushButton::clicked, this, &BoardResizeWidget::onCancelButtonClicked);
+    this->connect(this->m_ui->btnIncrementRows, &QPushButton::clicked, this, &BoardResizeWidget::onBoardResizeActionClicked);
+    this->connect(this->m_ui->btnDecrementRows, &QPushButton::clicked, this, &BoardResizeWidget::onBoardResizeActionClicked);
+    this->connect(this->m_ui->btnIncrementColumns, &QPushButton::clicked, this, &BoardResizeWidget::onBoardResizeActionClicked);
+    this->connect(this->m_ui->btnDecrementColumns, &QPushButton::clicked, this, &BoardResizeWidget::onBoardResizeActionClicked);
 
-    this->connect(this->m_ui->btnBeginner, &QPushButton::clicked, this, &BoardResizeDialog::onPresetBoardSizeActionTriggered);
-    this->connect(this->m_ui->btnIntermediate, &QPushButton::clicked, this, &BoardResizeDialog::onPresetBoardSizeActionTriggered);
-    this->connect(this->m_ui->btnAdvanced, &QPushButton::clicked, this, &BoardResizeDialog::onPresetBoardSizeActionTriggered);
-    this->connect(this->m_ui->btnExtreme, &QPushButton::clicked, this, &BoardResizeDialog::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_ui->btnBeginner, &QPushButton::clicked, this, &BoardResizeWidget::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_ui->btnIntermediate, &QPushButton::clicked, this, &BoardResizeWidget::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_ui->btnAdvanced, &QPushButton::clicked, this, &BoardResizeWidget::onPresetBoardSizeActionTriggered);
+    this->connect(this->m_ui->btnExtreme, &QPushButton::clicked, this, &BoardResizeWidget::onPresetBoardSizeActionTriggered);
 
 }
 
-BoardResizeDialog::~BoardResizeDialog()
+BoardResizeWidget::~BoardResizeWidget()
 {
 
 }
 
-void BoardResizeDialog::showEvent(QShowEvent *event)
+void BoardResizeWidget::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
     this->m_resultToEmit.columns = 0;
     this->m_resultToEmit.rows = 0;
-    this->m_resultToEmit.userAction = DialogCode::Rejected;
+    this->m_resultToEmit.userAction = BoardResizeWidget::ResizeWidgetExitCode::Rejected;
 }
 
-void BoardResizeDialog::closeEvent(QCloseEvent *event)
+void BoardResizeWidget::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
-    emit(aboutToClose(this->m_resultToEmit.columns, this->m_resultToEmit.rows, this->m_resultToEmit.userAction));
+    emit(this->aboutToClose(this->m_resultToEmit));
 }
 
-void BoardResizeDialog::show(int columns, int rows)
+void BoardResizeWidget::show(int columns, int rows)
 {
     this->m_ui->lblColumns->setText(QS_NUMBER(columns));
     this->m_ui->lblRows->setText(QS_NUMBER(rows));
@@ -82,7 +81,7 @@ void BoardResizeDialog::show(int columns, int rows)
     this->setVisible(true);
 }
 
-void BoardResizeDialog::onPresetBoardSizeActionTriggered(bool checked)
+void BoardResizeWidget::onPresetBoardSizeActionTriggered(bool checked)
 {
     using namespace QmsUtilities;
     Q_UNUSED(checked);
@@ -102,29 +101,7 @@ void BoardResizeDialog::onPresetBoardSizeActionTriggered(bool checked)
 
 }
 
-/* centerAndFitWindow() : Called whenever code requests the main window to be centered
- * Typically called after resizing the UI on this widget / window */
-void BoardResizeDialog::centerAndFitWindow(QDesktopWidget *desktopWidget)
-{
-    this->setFixedSize(this->minimumSize());
-    this->calculateXYPlacement(desktopWidget);
-    this->move(this->m_xPlacement, this->m_yPlacement);
-}
-
-/* calculateXYPlacement() : Checks the currently available screen geometry, and calulates
- * where the widget must be moved to appear on at the center of the users screen */
-void BoardResizeDialog::calculateXYPlacement(QDesktopWidget *desktopWidget)
-{
-    std::unique_ptr<QRect> avail{new QRect{desktopWidget->availableGeometry()}};
-    this->m_xPlacement = (avail->width()/2)-(this->width()/2);
-#if defined(__ANDROID__)
-    this->m_yPlacement = avail->height() - this->height();
-#else
-    this->m_yPlacement = (avail->height()/2)-(this->height()/2);
-#endif
-}
-
-void BoardResizeDialog::onOkayButtonClicked(bool checked)
+void BoardResizeWidget::onOkayButtonClicked(bool checked)
 {
     Q_UNUSED(checked);
     using namespace QmsUtilities;
@@ -145,14 +122,14 @@ void BoardResizeDialog::onOkayButtonClicked(bool checked)
     if (userReply == QMessageBox::Yes) {
         this->m_resultToEmit.columns = this->m_ui->lblColumns->text().toInt();
         this->m_resultToEmit.rows = this->m_ui->lblRows->text().toInt();
-        this->m_resultToEmit.userAction = DialogCode::Accepted;
+        this->m_resultToEmit.userAction = BoardResizeWidget::ResizeWidgetExitCode::Accepted;
         this->close();
     } else {
         this->onCancelButtonClicked(false);
     }
 }
 
-void BoardResizeDialog::onBoardResizeActionClicked()
+void BoardResizeWidget::onBoardResizeActionClicked()
 {
     using namespace QmsUtilities;
     if (QPushButton *pressedButton{dynamic_cast<QPushButton *>(QObject::sender())}) {
@@ -174,12 +151,12 @@ void BoardResizeDialog::onBoardResizeActionClicked()
     }
 }
 
-void BoardResizeDialog::onCancelButtonClicked(bool checked)
+void BoardResizeWidget::onCancelButtonClicked(bool checked)
 {
     Q_UNUSED(checked);
     this->m_resultToEmit.columns = 0;
     this->m_resultToEmit.rows = 0;
-    this->m_resultToEmit.userAction = DialogCode::Rejected;
+    this->m_resultToEmit.userAction = BoardResizeWidget::ResizeWidgetExitCode::Rejected;
     this->close();
 }
 

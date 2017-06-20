@@ -51,11 +51,7 @@ public:
     virtual ~QmsButton();
 
     bool operator==(const QmsButton &other) const;
-    //bool eventFilter(QObject *pObject, QEvent *pEvent) override;
-    //int heightForWidth(int width) const override;
 
-
-    /*Member access functions*/
     int rowIndex() const;
     int columnIndex() const;
     int numberOfSurroundingMines() const;
@@ -75,6 +71,11 @@ public:
     void drawNumberOfSurroundingMines();
     void setBlockClicks(bool blockClicks);
     bool isBlockingClicks() const;
+    std::string toString() const;
+    QString toQString() const;
+
+    static const int MAXIMUM_NUMBER_OF_SURROUNDING_MINES;
+
 signals:
     void leftClicked(QmsButton *msbp);
     void rightClicked(QmsButton *msbp);
@@ -89,7 +90,6 @@ protected slots:
     void doInformLongClick();
 
 private:
-    /*Private data members regarding mine status*/
     bool m_hasMine;
     bool m_hasFlag;
     bool m_hasQuestionMark;
