@@ -34,6 +34,7 @@
 
 #include <QApplication>
 #include <QString>
+#include <QDir>
 #include <QRect>
 #include <QDateTime>
 
@@ -275,6 +276,10 @@ void displayHelp()
 template <typename StringType, typename FileStringType>
 void logToFile(const StringType &str, const FileStringType &filePath)
 {
+    QDir directoryCheck{getFileDirectoryPath(filePath)};
+    if (!directoryCheck.exists()) {
+        directoryCheck.mkpath(".");
+    }
     QFile qFile{filePath};
     QString stringCopy{toQString(str)};
     if (qFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
@@ -282,7 +287,11 @@ void logToFile(const StringType &str, const FileStringType &filePath)
             throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(toQString(str), toQString(filePath)).toStdString());
         }
     } else {
+#if (defined __ANDROID__)
+
+#else
         throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (could not open file)"}.arg(toQString(str), toQString(filePath)).toStdString());
+#endif
     }
 
 }
@@ -340,8 +349,8 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     }
     if (outputStream) {
         *outputStream << logMessage.toStdString();
+        outputStream->flush();
     }
     logToFile(logMessage.toStdString(), QmsUtilities::getLogFilePath());
-    outputStream->flush();
 }
 
