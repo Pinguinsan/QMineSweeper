@@ -118,7 +118,6 @@ void GameController::onMineExplosionEventTriggered()
     for (auto &it : this->m_qmsGameState->m_mineSweeperButtons) {
         it.second->setBlockClicks(true);
     }
-    LOG_INFO() << "Mine explosion event triggered (game over)";
 }
 
 void GameController::setNumberOfMinesRemaining(int numberOfMinesRemaining)
@@ -431,16 +430,17 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
     if ((msbp->hasFlag()) || (msbp->hasQuestionMark())) {
         msbp->setChecked(false);
     } else if (msbp->hasMine()) {
+        LOG_INFO() << QString{"Mine explosion event triggered (game over, caused by %1)"}.arg(msbp->toQString());
         emit(mineExplosionEvent());
     } else if (msbp->isChecked() || msbp->isRevealed()) {
 
     } else {
-        incrementNumberOfMovesMade();
+        this->incrementNumberOfMovesMade();
         this->m_mainWindow->displayMine(msbp);
         if (msbp->numberOfSurroundingMines() == 0) {
-            startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_BIG_SMILEY);
+            this->startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_BIG_SMILEY);
         } else {
-            startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_WINKY);
+            this->startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_WINKY);
         }
     }
     emit(userIsNoLongerIdle());
@@ -454,7 +454,7 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
         return;
     }
     if (this->m_qmsGameState->m_initialClickFlag) {
-        generateRandomMinePlacement(msbp);
+        this->generateRandomMinePlacement(msbp);
         try {
             this->assignAllMines();
             this->determineNeighborMineCounts();
