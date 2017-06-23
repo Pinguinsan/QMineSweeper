@@ -295,11 +295,12 @@ namespace QmsUtilities
     {
         QString settings{getProgramSettingsDirectory()};
         QDir settingsDirectory{settings};
+        std::vector<QString> toLogInfo{};
         if (settingsDirectory.exists()) {
-            LOG_INFO() << QString{"Detected settings directory at %1"}.arg(settings);
+            toLogInfo.push_back(QString{"Detected settings directory at %1"}.arg(settings));
         } else {
             if (settingsDirectory.mkpath(".")) {
-                LOG_INFO() << QString{"Settings directory not found, created new directory at %1"}.arg(settings);
+                toLogInfo.push_back(QString{"Settings directory not found, created new directory at %1"}.arg(settings));
             } else {
                 throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
             }
@@ -311,13 +312,16 @@ namespace QmsUtilities
 #endif
         settingsDirectory = QDir{settings};
         if (settingsDirectory.exists()) {
-            LOG_INFO() << QString{"Detected log directory at %1"}.arg(settings);
+            toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(settings));
         } else {
             if (settingsDirectory.mkpath(".")) {
-                LOG_INFO() << QString{"Log directory not found, created new directory at %1"}.arg(settings);
+                toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(settings));
             } else {
                 throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
             }
+        }
+        for (auto &it : toLogInfo) {
+            LOG_INFO() << it;
         }
     }
 
