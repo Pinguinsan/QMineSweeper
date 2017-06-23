@@ -49,13 +49,6 @@ namespace QmsStrings
     extern const char *LAST_CHANCE_CONFIGURATION_FILE;
     extern const char *DEFAULT_PARAMETER_FILE_PATH;
 
-    extern const char *NUMBER_OF_SURROUND_MINES_NEGATIVE_STRING;
-    extern const char *LESS_THAN_ZERO_STRING;
-    extern const char *NUMBER_OF_SURROUNDING_MINES_TOO_LARGE_STRING;
-    extern const char *GREATER_THAN_8_STRING;
-    extern const char *COLUMN_INDEX_NEGATIVE_STRING;
-    extern const char *ROW_INDEX_NEGATIVE_STRING;
-    extern const char *STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING;
     extern const char *LCD_OVERFLOW_STRING;
 
     extern const char *SAVED_GAME_FILE_EXTENSION;

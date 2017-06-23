@@ -118,7 +118,6 @@ void GameController::onMineExplosionEventTriggered()
     for (auto &it : this->m_qmsGameState->m_mineSweeperButtons) {
         it.second->setBlockClicks(true);
     }
-    LOG_INFO() << "Mine explosion event triggered (game over)";
 }
 
 void GameController::setNumberOfMinesRemaining(int numberOfMinesRemaining)
@@ -170,7 +169,7 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
         this->m_qmsGameState->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton> (new QmsButton{columnIndex, rowIndex, nullptr})));
         LOG_DEBUG() << QString{"Added minesweeper button at (%1, %2)"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex));
     } catch (std::exception &e) {
-        LOG_WARNING() << QString{STANDARD_EXCEPTION_CAUGHT_IN_ADD_MINESWEEPER_BUTTON_STRING}.arg(e.what());
+        LOG_WARNING() << QString{"std::exception caught in GameController::addMineSweeperButton(int, int), with first argument = %1, second argument = %2, and std::exception::what() = %3"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex), e.what());
     }
 }
 
@@ -431,16 +430,17 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
     if ((msbp->hasFlag()) || (msbp->hasQuestionMark())) {
         msbp->setChecked(false);
     } else if (msbp->hasMine()) {
+        LOG_INFO() << QString{"Mine explosion event triggered (game over, caused by %1)"}.arg(msbp->toQString());
         emit(mineExplosionEvent());
     } else if (msbp->isChecked() || msbp->isRevealed()) {
 
     } else {
-        incrementNumberOfMovesMade();
+        this->incrementNumberOfMovesMade();
         this->m_mainWindow->displayMine(msbp);
         if (msbp->numberOfSurroundingMines() == 0) {
-            startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_BIG_SMILEY);
+            this->startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_BIG_SMILEY);
         } else {
-            startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_WINKY);
+            this->startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_WINKY);
         }
     }
     emit(userIsNoLongerIdle());
@@ -454,7 +454,7 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
         return;
     }
     if (this->m_qmsGameState->m_initialClickFlag) {
-        generateRandomMinePlacement(msbp);
+        this->generateRandomMinePlacement(msbp);
         try {
             this->assignAllMines();
             this->determineNeighborMineCounts();

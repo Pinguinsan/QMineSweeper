@@ -33,9 +33,7 @@
 #define SIGNAL_STRING_BUFFER_SIZE 255
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QString>
-#include <QDir>
 #include <QRect>
 #include <QDateTime>
 
@@ -187,30 +185,20 @@ int main(int argc, char *argv[])
 #else
     std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>(settings.audioVolume())};
 #endif
-    std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
     std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons,
                                                                         soundEffects,
                                                                         settingsLoader,
                                                                         gameController,
-                                                                        qDesktopWidget,
                                                                         QmsSettingsLoader::DEFAULT_LANGUAGE())};
     gameController->bindMainWindow(mainWindow);
     mainWindow->setupNewGame();
 
-    QObject::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
+    QMainWindow::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
     mainWindow->setWindowIcon(gameIcons->MINE_ICON_72);
     mainWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-#if defined(__ANDROID__)
-    mainWindow->showMaximized();
-    mainWindow->setFixedSize(mainWindow->minimumSize());
-    mainWindow->resizeResetIcon();
-    mainWindow->centerAndFitWindow();
-#else
     mainWindow->show();
-    mainWindow->setFixedSize(mainWindow->minimumSize());
+    mainWindow->centerAndFitWindow(true);
     mainWindow->resizeResetIcon();
-    mainWindow->centerAndFitWindow();
-#endif
     return qApplication.exec();
 }
 
@@ -287,10 +275,6 @@ void displayHelp()
 template <typename StringType, typename FileStringType>
 void logToFile(const StringType &str, const FileStringType &filePath)
 {
-    QDir directoryCheck{getFileDirectoryPath(filePath)};
-    if (!directoryCheck.exists()) {
-        directoryCheck.mkpath(".");
-    }
     QFile qFile{filePath};
     QString stringCopy{toQString(str)};
     if (qFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
@@ -298,11 +282,7 @@ void logToFile(const StringType &str, const FileStringType &filePath)
             throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(toQString(str), toQString(filePath)).toStdString());
         }
     } else {
-#if (defined __ANDROID__)
-
-#else
         throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (could not open file)"}.arg(toQString(str), toQString(filePath)).toStdString());
-#endif
     }
 
 }
@@ -360,8 +340,8 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     }
     if (outputStream) {
         *outputStream << logMessage.toStdString();
-        outputStream->flush();
     }
     logToFile(logMessage.toStdString(), QmsUtilities::getLogFilePath());
+    outputStream->flush();
 }
 
