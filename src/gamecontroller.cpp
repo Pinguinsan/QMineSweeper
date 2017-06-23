@@ -95,7 +95,7 @@ void GameController::onGamePaused()
 {
     if ((!this->m_qmsGameState->m_initialClickFlag) && (this->m_qmsGameState->m_gameState == GameState::GameActive)) {
         this->m_qmsGameState->m_gameState = GameState::GamePaused;
-        LOG_INFO() << "Game paused";
+        LOG_INFO() << "The game was paused";
     }
 }
 
@@ -103,7 +103,7 @@ void GameController::onGameResumed()
 {
     if ((!this->m_qmsGameState->m_initialClickFlag) && (this->m_qmsGameState->m_gameState == GameState::GamePaused)) {
         this->m_qmsGameState->m_gameState = GameState::GameActive;
-        LOG_INFO() << "Game resumed";
+        LOG_INFO() << "The game was resumed";
     }
 }
 
