@@ -463,10 +463,13 @@ void MainWindow::onGameWon()
     }
     std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    winBox->setText(QString{"%1%2%3%4"}.arg(QMessageBox::tr(WIN_DIALOG_BASE),
-                                           QS_NUMBER(this->m_gameController->numberOfMovesMade()),
-                                           QMessageBox::tr(WIN_DIALOG_MIDDLE),
-                                           QMessageBox::tr(this->statusBar()->currentMessage().toStdString().c_str())));
+    QString winText{QString{"%1%2%3%4"}.arg(QMessageBox::tr(WIN_DIALOG_BASE),
+                                            QS_NUMBER(this->m_gameController->numberOfMovesMade()),
+                                            QMessageBox::tr(WIN_DIALOG_MIDDLE),
+                                            QMessageBox::tr(this->statusBar()->currentMessage().toStdString().c_str()))};
+    LOG_INFO() << winText;
+    winBox->setText(winText);
+
     winBox->setWindowIcon(this->m_gameIcons->MINE_ICON_48);
     winBox->exec();
 }
@@ -903,9 +906,9 @@ void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
     } else if (numberOfMovesMade <= 0) {
         this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(3)));
     } else if (numberOfMovesMade < 10) {
-        this->m_ui->numberOfMoves->display(QStringFormat("%s%i", this->getLCDPadding(2).c_str(), numberOfMovesMade));
+        this->m_ui->numberOfMoves->display(QString{"%1%2"}.arg(this->getLCDPadding(2).c_str(), QS_NUMBER(numberOfMovesMade)));
     } else if (numberOfMovesMade < 100) {
-        this->m_ui->numberOfMoves->display(QStringFormat("%s%i", this->getLCDPadding(2).c_str(), numberOfMovesMade));
+        this->m_ui->numberOfMoves->display(QString{"%1%2"}.arg(this->getLCDPadding(2).c_str(), QS_NUMBER(numberOfMovesMade)));
     } else {
         this->m_ui->numberOfMoves->display(numberOfMovesMade);
     }
