@@ -58,7 +58,11 @@
     const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{14};
     const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.8};
 #else
-    const int MainWindow::s_TASKBAR_HEIGHT{10};
+    #if defined(_WIN32)
+        const int MainWindow::s_TASKBAR_HEIGHT{25};
+    #else
+        const int MainWindow::s_TASKBAR_HEIGHT{15};
+    #endif //defined(_WIN32)
     const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
     const int MainWindow::s_WIDTH_SCALE_FACTOR{28};
     const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
