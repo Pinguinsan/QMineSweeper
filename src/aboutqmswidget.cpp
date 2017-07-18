@@ -66,15 +66,19 @@ void AboutQmsWidget::onLicenseButtonClicked(bool checked)
     (void)checked;
     if (this->m_ui->tbAboutQmsLicense->isVisible()) {
         this->clearLicenseText();
+        /*
         if (this->m_licenseHiddenHeight != -1) {
             QRect thisGeometry{this->geometry()};
             thisGeometry.setHeight(this->m_licenseHiddenHeight);
             this->setGeometry(thisGeometry);
         }
+        */
     } else {
+        /*
         if (this->m_licenseHiddenHeight == -1) {
             this->m_licenseHiddenHeight = this->height();
         }
+        */
         this->populateLicenseText();
     }
     this->m_ui->tbAboutQmsLicense->setVisible(!this->m_ui->tbAboutQmsLicense->isVisible());
