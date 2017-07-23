@@ -104,12 +104,6 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
     while (!readFromFile.atEnd() && !readFromFile.hasError()) {
         readFromFile.readNext();
         if (readFromFile.isStartElement()) {
-            if (readFromFile.name() == "QmsGameState") {
-                continue;
-            } else if (readFromFile.name() == "PlayTime") {
-                //ReadPlayTime?
-                continue;
-            }
             LOG_DEBUG() << QString{"element name: %1, text: %2"}.arg(readFromFile.name().toString(), readFromFile.readElementText(QXmlStreamReader::ReadElementTextBehaviour::SkipChildElements));
         }
     }

@@ -93,7 +93,7 @@ void BoardResizeWidget::onPresetBoardSizeActionTriggered(bool checked)
         auto maybeDimensions = rawString.substr(foundBeginningSpace + 1);
         auto dimensions = tryParseDimensions(maybeDimensions);
         if ((dimensions.first == -1) || (dimensions.second == -1)) {
-            throw std::runtime_error(TStringFormat("In BoardResizeDialog::onBeginnerBoardSizeTriggered() : dimensions parsed from QPushButton menu item are not valid (QAction::text() = \"{0}\", this should never happen)", maybeDimensions));
+            throw std::runtime_error(QString{"In BoardResizeDialog::onBeginnerBoardSizeTriggered() : dimensions parsed from QPushButton menu item are not valid (QAction::text() = \"%1\", this should never happen)"}.arg(maybeDimensions.c_str()).toStdString());
         }
         this->m_ui->lblColumns->setText(QS_NUMBER(dimensions.first));
         this->m_ui->lblRows->setText(QS_NUMBER(dimensions.second));
@@ -113,10 +113,10 @@ void BoardResizeWidget::onOkayButtonClicked(bool checked)
         return;
     }
     QMessageBox::StandardButton userReply{};
-    QString questionBoxMessage{QStringFormat("%s%i%s%i%s", RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
-                                                         maybeNewColumns,
+    QString questionBoxMessage{QString{"%1%2%3%4%5"}.arg(RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
+                                                         QS_NUMBER(maybeNewColumns),
                                                          RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
-                                                         maybeNewRows,
+                                                         QS_NUMBER(maybeNewRows),
                                                          RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
     userReply = static_cast<QMessageBox::StandardButton>(QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No));
     if (userReply == QMessageBox::Yes) {

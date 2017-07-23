@@ -19,6 +19,7 @@
 
 #include "qmssoundeffects.h"
 #include "qmsutilities.h"
+#include "globaldefinitions.h"
 
 #include <limits>
 #include <exception>
@@ -48,7 +49,7 @@ QmsSoundEffects::QmsSoundEffects(int audioVolume) :
 }
 
 QmsSoundEffects::QmsSoundEffects() :
-    QmsSoundEffects(0)
+    QmsSoundEffects{0}
 {
 
 }
@@ -63,9 +64,9 @@ void QmsSoundEffects::setAudioVolume(int volume)
 {
     using namespace QmsUtilities;
     if (volume < 0) {
-        throw std::runtime_error(TStringFormat("In QmsSoundEffects::setSoundVolume(int): volume cannot be negative ({0} < 0)", volume, s_MAXIMUM_SOUND_VOLUME));
+        throw std::runtime_error(QString{"In QmsSoundEffects::setSoundVolume(int): volume cannot be negative (%1 < 0)"}.arg(QS_NUMBER(volume)).toStdString());
     } else if (volume > s_MAXIMUM_SOUND_VOLUME) {
-        throw std::runtime_error(TStringFormat("In QmsSoundEffects::setSoundVolume(int): volume cannot be greater than maximum sound volume ({0} > {1})", volume));
+        throw std::runtime_error(QString{"In QmsSoundEffects::setSoundVolume(int): volume cannot be greater than maximum sound volume (%1 > %2)"}.arg(volume, s_MAXIMUM_SOUND_VOLUME).toStdString());
     } else {
         if (volume == 0) {
             this->m_storedMuteVolume = this->m_audioVolume;

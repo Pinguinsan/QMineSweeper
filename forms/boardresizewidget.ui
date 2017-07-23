@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>732</width>
-    <height>421</height>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -289,6 +289,11 @@
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QFrame" name="okayCancelButtonFrame">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -306,7 +311,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>32</pointsize>
+          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -327,14 +332,14 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>32</pointsize>
+          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Accept the above columns and rows to start a new game&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>Okay</string>
+         <string>OK</string>
         </property>
         <property name="default">
          <bool>true</bool>
