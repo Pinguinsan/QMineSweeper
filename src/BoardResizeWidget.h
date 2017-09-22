@@ -22,7 +22,7 @@ namespace Ui {
 }
 
 #include <memory>
-#include "mousemoveableqwidget.h"
+#include "MouseMoveableQWidget.h"
 
 class QDesktopWidget;
 

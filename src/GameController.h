@@ -30,9 +30,9 @@
 #include <set>
 #include <unordered_map>
 
-#include "eventtimer.h"
-#include "qmsgamestate.h"
-#include "minecoordinatehash.h"
+#include "EventTimer.h"
+#include "QmsGameState.h"
+#include "MineCoordinateHash.h"
 
 class QmsButton;
 class MineCoordinates;

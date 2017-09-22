@@ -44,6 +44,8 @@ namespace QmsUtilities
     void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath);
     QString getProgramSettingsDirectory();
     QString getInstallDirectory();
+    bool clearDirectoryOfFiles(const QString &dir);
+    void checkOrCreateProgramLogDirectory();
     void checkOrCreateProgramSettingsDirectory();
     QString getLogFilePath();
     QString getLogFileName();

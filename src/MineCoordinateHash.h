@@ -19,7 +19,7 @@
 #ifndef QMINESWEEPER_MINECOORDINATEHASH_H
 #define QMINESWEEPER_MINECOORDINATEHASH_H
 
-#include "minecoordinates.h"
+#include "MineCoordinates.h"
 #include <utility>
 
 class MineCoordinateHash

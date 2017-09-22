@@ -15,14 +15,14 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qmsbutton.h"
-#include "qmsicons.h"
-#include "qmsutilities.h"
-#include "mainwindow.h"
-#include "minecoordinates.h"
-#include "gamecontroller.h"
-#include "qmsstrings.h"
-#include "globaldefinitions.h"
+#include "QmsButton.h"
+#include "QmsIcons.h"
+#include "QmsUtilities.h"
+#include "MainWindow.h"
+#include "MineCoordinates.h"
+#include "GameController.h"
+#include "QmsStrings.h"
+#include "GlobalDefinitions.h"
 
 #include <QString>
 

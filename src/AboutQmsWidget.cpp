@@ -15,12 +15,12 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "aboutqmswidget.h"
+#include "AboutQmsWidget.h"
 #include "ui_aboutqmswidget.h"
 
-#include "globaldefinitions.h"
-#include "qmsapplicationsettings.h"
-#include "qmsstrings.h"
+#include "GlobalDefinitions.h"
+#include "QmsApplicationSettings.h"
+#include "QmsStrings.h"
 
 #include <QDesktopWidget>
 #include <QRect>

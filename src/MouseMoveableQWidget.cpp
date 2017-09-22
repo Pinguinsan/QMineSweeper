@@ -1,4 +1,4 @@
-#include "mousemoveableqwidget.h"
+#include "MouseMoveableQWidget.h"
 
 #include <QPoint>
 #include <QMouseEvent>

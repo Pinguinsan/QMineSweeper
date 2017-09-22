@@ -28,8 +28,8 @@
 #include <chrono>
 #include <map>
 
-#include "minecoordinatehash.h"
-#include "eventtimer.h"
+#include "MineCoordinateHash.h"
+#include "EventTimer.h"
 
 class QString;
 class QmsButton;

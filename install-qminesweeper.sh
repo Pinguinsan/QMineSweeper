@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 ##########################################
@@ -10,7 +9,7 @@
 #
 ##########################################
 
-baseName="qminesweeper"
+baseName="QMineSweeper"
 programLongName="QMineSweeper"
 programName="QMineSweeper"
 iconName="$baseName.png"
@@ -25,12 +24,7 @@ utilityDir="$filePath/utility/"
 resourceDir="$filePath/resources/"
 iconPath="$resourceDir/$iconName"
 globalBinDir="/usr/bin/"
-dependancyLibName="lib$dependancyRootName.so"
-libDir="/usr/lib/"
-dependancy="$libDir/$dependancyLibName"
-dependancyRootName="tjlutils"
-dependancySource="https://github.com/tlewiscpp/$dependancyRootName"
-dependancyInstallCommand="$dependancyRootName-install.sh"
+buildType="Release"
 
 function bailout() {
     rm -rf "$buildDir"
@@ -210,8 +204,8 @@ function runGitPullOrigin() {
 }
 
 function runCmake() {
-    echo -n "Running cmake from source directory \"$1\"..."
-    cmake "$1"
+    echo -n "Running cmake (BuildType = $buildType) from source directory \"$1\"..."
+    cmake -DCMAKE_BUILD_TYPE=$buildType "$1"
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
@@ -235,7 +229,7 @@ function runQmake() {
 
 function runMake() {
     echo -n "Running make..."
-    make
+    make -j2
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
@@ -249,28 +243,6 @@ function bailout() {
     rm -rf "$buildDir"
 }
 
-function buildDependancy() {
-     source "$dependancyDir/$dependancyRootName/$dependancyInstallCommand" "$buildDir" || { echo "Failed to build dependancy, bailing out"; exit 1; }
-}
-
-function retrieveDependancy() {
-    dependancyDir="$buildDir/lib"
-    
-    if ! [[ -d "$dependancyDir" ]]; then
-        echo "$dependancyDir does NOT exist"
-        createDirectory "$dependancyDir" || { echo "Failed to make dependancy lib directory, bailing out"; exit 1; }
-    fi
-    
-    if ! [[ -d "$dependancyDir/$dependancyRootName" ]]; then
-        changeDirectory "$dependancyDir"  || { echo "Failed to enter dependancy lib directory, bailing out"; exit 1; }
-        runGitClone "$dependancySource" || { echo "Failed to retrieve dependancy source, bailing out"; exit 1; }
-        changeDirectory "$dependancyDir/$dependancyRootName" || { echo "Failed to enter dependancy lib directory, bailing out"; exit 1; }
-    else
-        changeDirectory "$dependancyDir/$dependancyRootName"  || { echo "Failed to enter dependancy lib directory, bailing out"; exit 1; }
-        runGitPullOrigin "$dependancySource" || { echo "Failed to retrieve dependancy source, bailing out"; exit 1; }
-    fi
-}
-
 function generateDesktopFile() {
     copyFile "$utilityDir/$skeletonDesktopFileName" "$buildDir/$desktopFileName" || { echo "Failed to generate desktop file, bailing out"; exit 1; }
     copyFile "$iconPath" "$buildDir/" || { echo "Failed to generate desktop file, bailing out"; exit 1; }  
@@ -278,40 +250,48 @@ function generateDesktopFile() {
     appendStringToFile "Icon=$buildDir/$iconName" "$buildDir/$desktopFileName" || { echo "Failed to generate desktop file, bailing out"; exit 1; }
 }
 
-
 buildDir="build"
 appDir="$HOME/.local/share/applications/"
 
+if [[ "$EUID" -eq "0" ]]; then
+    SUDO=
+else
+    SUDO=sudo
+fi
+
 trap bailout INT QUIT TERM
-if [[ $# -gt 0 ]]; then
-    if [[ "$1" == "--uninstall" ]]; then
-        echo "Success"
-        exit 0
+
+for var in "$@"; do
+    if [[ "$var" == "-r" || "$var" == "--r" || "$var" == "-release" || "$var" == "--release" ]]; then
+        buildType="Release"
+    elif [[ "$var" == "-d" || "$var" == "--d" || "$var" == "-debug" || "$var" == "--debug" ]]; then
+        buildType="Debug"
     fi
-    buildDir="$1"
-    if ! [[ -d "$buildDir" ]]; then
-        createDirectory "$buildDir" || { echo "Unable to create build directory \"$buildDir\", exiting"; exit 1; }
-    fi
+done
+
+if [[ $# -gt 0 ]]; then 
+    var=""
+    buildDir="$filePath/$buildDir"
+    for var in "$@"; do
+        if [[ $var == -* ]]; then
+            continue
+        fi
+        buildDir="$var"
+    done
 else
     buildDir="$filePath/$buildDir"
-    if ! [[ -d "$buildDir" ]]; then
-        createDirectory "$buildDir" || { echo "Unable to make build directory \"$buildDir\", exiting"; exit 1; }
-    fi
+fi
+if ! [[ -d "$buildDir" ]]; then
+    createDirectory "$buildDir" || { echo "Unable to make build directory \"$buildDir\", exiting"; exit 1; }
 fi
 
 changeDirectory "$buildDir" || { echo "Unable to enter build directory \"$buildDir\""; exit 1; }
-dependancyResult=$(ls "$libDir" | grep "$dependancyRootName")
-if [[ -z "$dependancyResult" ]]; then
-    doInternetCheck || { echo "There is no active internet connection, so dependancy cannot be retrieved, bailing out"; exit 1; }
-    retrieveDependancy || { echo "Coult not retrieve dependancy source, bailing out"; exit 1; }
-    buildDependancy || { echo "Building dependancy failed, bailing out"; exit 1; }
-fi
-doCygwinCheck
-runQmake "$filePath" || { echo "qmake failed, bailing out"; exit 1; }
+runCmake "$filePath" || { echo "cmake failed, bailing out"; exit 1; }
 runMake || { echo "make failed, bailing out"; exit 1; }
 generateDesktopFile || { echo "Could not generate desktop file, bailing out"; exit 1; }
 copyFile "$buildDir/$desktopFileName" "$appDir" || { echo "Could not copy desktop file to application directory, bailing out"; exit 1; }
 suLinkFile "$buildDir/$programName" "$globalBinDir"  || { echo "Could not link file, bailing out"; exit 1; }
+copyFile "$buildDir/$desktopFileName" "$HOME/Desktop/"
 
 installMessage="$programLongName Installed Successfully!"
 totalLength=${#installMessage} 

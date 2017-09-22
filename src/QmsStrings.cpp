@@ -16,7 +16,7 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qmsstrings.h"
+#include "QmsStrings.h"
 
 namespace QmsStrings
 {

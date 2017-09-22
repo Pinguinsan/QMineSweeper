@@ -15,12 +15,13 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qmsutilities.h"
-#include "globaldefinitions.h"
+#include "QmsUtilities.h"
+#include "GlobalDefinitions.h"
 
 #include <QDateTime>
 #include <QByteArray>
 #include <QDir>
+#include <QtCore/QCoreApplication>
 
 namespace QmsUtilities
 {
@@ -32,93 +33,101 @@ namespace QmsUtilities
     static QString userConfigurationFilePath{""};
     const std::list<char> KNOWN_DIMENSIONS_SEPARATORS{'x', ',', '.'};
 
-    #if defined(_WIN32)
-        static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-win32.xml"};
-    #else
-        static QString bundledSettingsFilePath{":/qminesweeper-configurations/qminesweeper-defaults-nix.xml"};
-    #endif
 
-    QString getUserConfigurationFilePath()
-    {
-        if (!userConfigurationFilePath.isEmpty()) {
-            return userConfigurationFilePath;
-        }
-        QString settingsDirectory{getProgramSettingsDirectory()};
-    #if defined(_WIN32)
-        return QString{settingsDirectory + "config\\settings.xml"};
-    #else
-        return QString{settingsDirectory + "config/settings.xml"};
-    #endif
-
+std::string stripLineEndings(const std::string &str)
+{
+    std::string copyString{str};
+    if (copyString.empty()) {
+        return copyString;
     }
-
-    QString getConfigurationFilePath()
-    {
-        if (!configurationFilePath.isEmpty()) {
-            return configurationFilePath;
+    if (copyString.length() >= 2) {
+        if (endsWith(copyString, '\r') || endsWith(copyString, '\n')) {
+            copyString.pop_back();
         }
-    #if defined(_WIN32)
-        QString testString{getInstallDirectory() + "config\\settings.xml"};
-    #else
-        QString testString{getInstallDirectory() + "config/settings.xml"};
-    #endif
-        if (QFile(testString).exists()) {
-            //Systemwide settings
-            configurationFilePath = testString;
+        if (endsWith(copyString, '\r') || endsWith(copyString, '\n')) {
+            copyString.pop_back();
+        }
+    } else if (copyString.length() >= 1) {
+        if (endsWith(copyString, '\r') || endsWith(copyString, '\n')) {
+            copyString.pop_back();
+        }
+    }
+    return copyString;
+}
+
+
+bool clearDirectoryOfFiles(const QString &directoryPath) {
+    QDir directory{directoryPath};
+    if (!directory.exists()) {
+        return false;
+    }
+    directory.setNameFilters({"*.*"});
+    directory.setFilter(QDir::Files);
+    for (auto &it : directory.entryList()) {
+        directory.remove(it);
+    }
+    return true;
+}
+
+void checkOrCreateProgramLogDirectory()
+{
+    std::vector<QString> toLogInfo{};
+    QString settings{QDir::tempPath() + '/' + QCoreApplication::applicationName()};
+    QDir settingsDirectory{settings};
+    if (settingsDirectory.exists()) {
+        clearDirectoryOfFiles(settings);
+        toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(settings));
+        toLogInfo.emplace_back("Cleared stale log entries");
+    } else {
+        if (settingsDirectory.mkpath(".")) {
+            toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(settings));
         } else {
-            regenerateSystemwideSettingsFile(testString);
-            configurationFilePath = testString;
+            throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
         }
-        return configurationFilePath;
     }
+    for (auto &it : toLogInfo) {
+        LOG_INFO() << it;
+    }
+}
 
-    void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath)
+#if defined(_WIN32)
+QString getLogFilePath()
     {
-        LOG_WARNING() << QString{"Systemwide settings file at %1 was not found, regenerating system defaults"}.arg(systemSettingsFilePath);
-        QFile bundledSettingsFile{bundledSettingsFilePath};
-        bool settingsFileOpen{bundledSettingsFile.open(QIODevice::OpenModeFlag::ReadOnly)};
-        if (!settingsFileOpen) {
-            throw std::runtime_error(QString{"Unable to open bundled settings file %1, the binary for QMineSweeper may be corrupt, a reinstall is recommended (errorString = %2)"}.arg(bundledSettingsFilePath, bundledSettingsFile.errorString()).toStdString());
+        if (!logFileName.isEmpty()) {
+            return QString{"%1log\\%2"}.arg(programSettingsDirectory, logFileName);
+        } else {
+            QString log{getLogFileName()};
+            QString settings{getProgramSettingsDirectory()};
+            return  QString{"%1log\\%2"}.arg(settings, log);
         }
-        QFile fileToCreate{systemSettingsFilePath};
-        if (fileToCreate.exists()) {
-            bool deleteFileSuccess{fileToCreate.remove()};
-            if (!deleteFileSuccess) {
-                throw std::runtime_error(QString{"Unable to delete corrupt file %1, the binary for QMineSweeper may be corrupt, a reinstall is recommended (errorString = %2)"}.arg(systemSettingsFilePath, fileToCreate.errorString()).toStdString());
-            }
-        }
-#if defined (_WIN32)
-        QStringList fileToCreateSplit{fileToCreate.fileName().split("\\")};
-        QString fileToCreateSplitPath{""};
-        for (const auto &it : fileToCreateSplit) {
-            if (it != fileToCreateSplit.at(fileToCreateSplit.size()-1)) {
-                fileToCreateSplitPath += ("\\" + it);
-            }
-        }
+    }
 #else
-        QStringList fileToCreateSplit{fileToCreate.fileName().split("/")};
-        QString fileToCreateSplitPath{""};
-        for (const auto &it : fileToCreateSplit) {
-            if (it != fileToCreateSplit.at(fileToCreateSplit.size()-1)) {
-                fileToCreateSplitPath += ("/" + it);
-            }
-        }
+QString getLogFilePath()
+{
+    if (logFileName.isEmpty()) {
+        QString log{getLogFileName()};
+    }
+    return QString{"%1/%2/%3"}.arg(QDir::tempPath(), QCoreApplication::applicationName(), logFileName);
+}
 #endif
 
-        QDir fileToCreateDirectory{fileToCreateSplitPath};
-        if (!fileToCreateDirectory.exists()) {
-            if (!fileToCreateDirectory.mkpath(".")) {
-                throw std::runtime_error(QString{"Unable to create new application path %1, the permissions for the directory may be wrong, a reinstall is recommended"}.arg(fileToCreateSplitPath).toStdString());
+QString getLogFileName()
+{
+    if (logFileName.isEmpty()) {
+        QString currentDateTime{QDateTime::currentDateTime().toString()};
+        QString newDateTime{""};
+        for (const auto &it : currentDateTime) {
+            if ((it == ' ') || (it == ':')) {
+                newDateTime += '-';
+            } else {
+                newDateTime += it.toLower();
             }
         }
-        bool newSettingsFileOpen{fileToCreate.open(QIODevice::OpenModeFlag::WriteOnly)};
-        if (!newSettingsFileOpen) {
-            throw std::runtime_error(QString{"Unable to open new settings file %1, the binary for QMineSweeper may be corrupt, a reinstall is recommended (errorString = %2)"}.arg(systemSettingsFilePath, fileToCreate.errorString()).toStdString());
-        }
-        fileToCreate.write(bundledSettingsFile.readAll());
-        LOG_INFO() << QString{"Systemwide settings file at %1 successfuly recreated from bundled default settings"}.arg(systemSettingsFilePath);
-
+        //logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
+        logFileName = QString{"%1.log"}.arg(newDateTime);
     }
+    return logFileName;
+}
 
     QString getProgramSettingsDirectory()
     {
@@ -154,7 +163,7 @@ namespace QmsUtilities
             return "C:\\QMineSweeper\\";
         }
     #else
-        return "/opt/QMineSweeper/";
+        return "/opt/" + QCoreApplication::applicationName();
     #endif
     }
 
@@ -305,67 +314,9 @@ namespace QmsUtilities
                 throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
             }
         }
-#if defined(_WIN32)
-        settings = settings + "log\\";
-#else
-        settings = settings + "log/";
-#endif
-        settingsDirectory = QDir{settings};
-        if (settingsDirectory.exists()) {
-            toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(settings));
-        } else {
-            if (settingsDirectory.mkpath(".")) {
-                toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(settings));
-            } else {
-                throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
-            }
-        }
         for (auto &it : toLogInfo) {
             LOG_INFO() << it;
         }
-    }
-
-#if defined(_WIN32)
-    QString getLogFilePath()
-    {
-        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
-            return QString{"%1log\\%2"}.arg(programSettingsDirectory, logFileName);
-        } else {
-            QString log{getLogFileName()};
-            QString settings{getProgramSettingsDirectory()};
-            return  QString{"%1log\\%2"}.arg(settings, log);
-        }
-    }
-#else
-    QString getLogFilePath()
-    {
-        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
-            return QString{"%1log/%2"}.arg(programSettingsDirectory, logFileName);
-        } else {
-            QString log{getLogFileName()};
-            QString settings{getProgramSettingsDirectory()};
-            return  QString{"%1log/%2"}.arg(settings, log);
-        }
-    }
-#endif
-
-
-    QString getLogFileName()
-    {
-        if (logFileName.isEmpty()) {
-            QString currentDateTime{QDateTime::currentDateTime().toString()};
-            QString newDateTime{""};
-            for (const auto &it : currentDateTime) {
-                if ((it == ' ') || (it == ':')) {
-                    newDateTime += '-';
-                } else {
-                    newDateTime += it.toLower();
-                }
-            }
-            //logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
-            logFileName = QString{"%1.log"}.arg(newDateTime);
-        }
-        return logFileName;
     }
 
 

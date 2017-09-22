@@ -16,11 +16,11 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "qmsicons.h"
+#include "QmsIcons.h"
 
 #include <QString>
 #include <QIcon>
-#include "qmsstrings.h"
+#include "QmsStrings.h"
 
 using namespace QmsStrings;
 

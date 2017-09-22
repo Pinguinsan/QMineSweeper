@@ -3,13 +3,18 @@
 cmake_minimum_required (VERSION 3.2)
 set (PROJECT_NAME QMineSweeper)
 project(${PROJECT_NAME} CXX)
-
-set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 if (WIN32 OR CYGWIN)
     set(Qt5Core_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5Core")
@@ -28,26 +33,26 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Multimedia REQUIRED)
 
 set (${PROJECT_NAME}_SOURCES
-        src/main.cpp
-      src/mainwindow.cpp src/mainwindow.h
-      src/gamecontroller.cpp src/gamecontroller.h
-      src/minecoordinates.cpp src/minecoordinates.h
-      src/qmsicons.cpp src/qmsicons.h
-      src/qmsutilities.cpp src/qmsutilities.h
-      src/qmssoundeffects.cpp src/qmssoundeffects.h
-      src/qmsstrings.cpp src/qmsstrings.h
-      src/qmsbutton.cpp src/qmsbutton.h
-      src/qmssettingsloader.cpp src/qmssettingsloader.h
-      src/qmsapplicationsettings.cpp src/qmsapplicationsettings.h
-      src/boardresizewidget.cpp src/boardresizewidget.h
-      src/aboutqmswidget.cpp src/aboutqmswidget.h
-        src/mousemoveableqmainwindow.cpp src/mousemoveableqmainwindow.h
-        src/mousemoveableqwidget.cpp src/mousemoveableqwidget.h
-        src/qmsgamestate.cpp src/qmsgamestate.h
-        src/version.h
-        src/eventtimer.h
-        src/globaldefinitions.h
-        src/minecoordinatehash.h
+        src/Main.cpp
+        src/MainWindow.cpp src/MainWindow.h
+        src/GameController.cpp src/GameController.h
+        src/MineCoordinates.cpp src/MineCoordinates.h
+        src/QmsIcons.cpp src/QmsIcons.h
+        src/QmsUtilities.cpp src/QmsUtilities.h
+        src/QmsSoundEffects.cpp src/QmsSoundEffects.h
+        src/QmsStrings.cpp src/QmsStrings.h
+        src/QmsButton.cpp src/QmsButton.h
+        src/QmsSettingsLoader.cpp src/QmsSettingsLoader.h
+        src/QmsApplicationSettings.cpp src/QmsApplicationSettings.h
+        src/BoardResizeWidget.cpp src/BoardResizeWidget.h
+        src/AboutQmsWidget.cpp src/AboutQmsWidget.h
+        src/MouseMoveableQMainWindow.cpp src/MouseMoveableQMainWindow.h
+        src/MouseMoveableQWidget.cpp src/MouseMoveableQWidget.h
+        src/QmsGameState.cpp src/QmsGameState.h
+        src/Version.h
+        src/EventTimer.h
+        src/GlobalDefinitions.h
+        src/MineCoordinateHash.h
         )
 
 

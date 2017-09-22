@@ -19,10 +19,10 @@
 ***********************************************************************/
 
 
-#include "qmsgamestate.h"
-#include "qmsstrings.h"
-#include "globaldefinitions.h"
-#include "qmsbutton.h"
+#include "QmsGameState.h"
+#include "QmsStrings.h"
+#include "GlobalDefinitions.h"
+#include "QmsButton.h"
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -77,6 +77,7 @@ LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath)
 
 LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState)
 {
+    Q_UNUSED(targetState);
     using namespace QmsUtilities;
     QFile inputFile{filePath};
     QXmlStreamReader readFromFile{};

@@ -14,7 +14,7 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "boardresizewidget.h"
+#include "BoardResizeWidget.h"
 #include "ui_boardresizewidget.h"
 
 #include <QDesktopWidget>
@@ -22,10 +22,10 @@
 #include <QString>
 #include <QRect>
 
-#include "qmsutilities.h"
-#include "qmsstrings.h"
-#include "qmsapplicationsettings.h"
-#include "globaldefinitions.h"
+#include "QmsUtilities.h"
+#include "QmsStrings.h"
+#include "QmsApplicationSettings.h"
+#include "GlobalDefinitions.h"
 
 #include <memory>
 

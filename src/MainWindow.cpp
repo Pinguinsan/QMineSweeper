@@ -33,19 +33,19 @@
 #include <cctype>
 #include <algorithm>
 
-#include "qmsbutton.h"
-#include "qmsicons.h"
-#include "gamecontroller.h"
-#include "aboutqmswidget.h"
-#include "boardresizewidget.h"
-#include "qmssoundeffects.h"
-#include "qmsutilities.h"
-#include "qmsstrings.h"
-#include "qmssettingsloader.h"
-#include "globaldefinitions.h"
-#include "qmsapplicationsettings.h"
+#include "QmsButton.h"
+#include "QmsIcons.h"
+#include "GameController.h"
+#include "AboutQmsWidget.h"
+#include "BoardResizeWidget.h"
+#include "QmsSoundEffects.h"
+#include "QmsUtilities.h"
+#include "QmsStrings.h"
+#include "QmsSettingsLoader.h"
+#include "GlobalDefinitions.h"
+#include "QmsApplicationSettings.h"
 
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "ui_mainwindow.h"
 
 #if defined(__ANDROID__)

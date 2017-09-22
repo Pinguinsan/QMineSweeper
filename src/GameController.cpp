@@ -18,20 +18,20 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "gamecontroller.h"
+#include "GameController.h"
 
 #include <QString>
 #include <QMessageBox>
 
 #include <sstream>
 
-#include "qmsbutton.h"
-#include "minecoordinates.h"
-#include "mainwindow.h"
-#include "qmsicons.h"
-#include "qmsutilities.h"
-#include "qmsstrings.h"
-#include "globaldefinitions.h"
+#include "QmsButton.h"
+#include "MineCoordinates.h"
+#include "MainWindow.h"
+#include "QmsIcons.h"
+#include "QmsUtilities.h"
+#include "QmsStrings.h"
+#include "GlobalDefinitions.h"
 
 const double GameController::s_DEFAULT_NUMBER_OF_MINES{81.0};
 const int GameController::s_GAME_TIMER_INTERVAL{100};

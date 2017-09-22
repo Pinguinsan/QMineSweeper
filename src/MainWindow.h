@@ -22,10 +22,10 @@
 #include <iostream>
 #include <memory>
 
-#include "eventtimer.h"
-#include "qmssettingsloader.h"
-#include "mousemoveableqmainwindow.h"
-#include "boardresizewidget.h"
+#include "EventTimer.h"
+#include "QmsSettingsLoader.h"
+#include "MouseMoveableQMainWindow.h"
+#include "BoardResizeWidget.h"
 
 
 namespace Ui

@@ -26,7 +26,7 @@
 #include <iostream>
 #include <tuple>
 
-#include "qmsutilities.h"
+#include "QmsUtilities.h"
 
 class MineCoordinates
 {

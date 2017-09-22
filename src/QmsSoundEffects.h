@@ -24,8 +24,8 @@
 #include <QMediaPlayer>
 class QString;
 
-#include "qmsutilities.h"
-#include "qmsstrings.h"
+#include "QmsUtilities.h"
+#include "QmsStrings.h"
 
 class QmsSoundEffects
 {

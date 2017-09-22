@@ -37,16 +37,16 @@
 #include <QRect>
 #include <QDateTime>
 
-#include "mainwindow.h"
-#include "qmsbutton.h"
-#include "qmsicons.h"
-#include "qmsstrings.h"
-#include "qmssoundeffects.h"
-#include "qmssettingsloader.h"
-#include "qmsutilities.h"
-#include "gamecontroller.h"
-#include "globaldefinitions.h"
-#include "qmsapplicationsettings.h"
+#include "MainWindow.h"
+#include "QmsButton.h"
+#include "QmsIcons.h"
+#include "QmsStrings.h"
+#include "QmsSoundEffects.h"
+#include "QmsSettingsLoader.h"
+#include "QmsUtilities.h"
+#include "GameController.h"
+#include "GlobalDefinitions.h"
+#include "QmsApplicationSettings.h"
 
 /*
  * The program is organized like this:
@@ -65,12 +65,15 @@
 const std::list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
 const std::list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
 const std::list<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
+const std::list<const char *> VERBOSE_LOGGING_SWITCHES{"-o", "--o", "-verbose", "--verbose"};
 
 void displayHelp();
 void displayVersion();
 void interruptHandler(int signal);
 void installSignalHandlers(void (*signalHandler)(int));
 void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+
+static bool verboseLogging{false};
 
 using namespace QmsStrings;
 using namespace QmsUtilities;
@@ -84,6 +87,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
+    QmsUtilities::checkOrCreateProgramLogDirectory();
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
 
      std::cout << std::endl;
@@ -102,7 +106,9 @@ int main(int argc, char *argv[])
      bool columnsSetByCommandLine{false};
 
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
-         if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
+         if (isSwitch(*iter, VERBOSE_LOGGING_SWITCHES)) {
+             verboseLogging = true;
+         } else if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
             if (iter + 1) {
                 if (rowCount != -1) {
                     std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
@@ -294,6 +300,9 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     auto *outputStream = &std::cout;
     switch (type) {
     case QtDebugMsg:
+        if (!verboseLogging) {
+            return;
+        }
         logContext = "{Debug}: ";
         outputStream = &std::cout;
         break;
@@ -316,10 +325,10 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     }
     QString logMessage{""};
     std::string coreLogMessage{QString{localMsg}.toStdString()};
-    if (coreLogMessage.find("\"") == 0) {
+    if (coreLogMessage.find('\"') == 0) {
         coreLogMessage = coreLogMessage.substr(1);
     }
-    if (coreLogMessage.find_last_of("\"") == coreLogMessage.length() - 1) {
+    if (coreLogMessage.find_last_of('\"') == coreLogMessage.length() - 1) {
         coreLogMessage = coreLogMessage.substr(0, coreLogMessage.length() - 1);
     }
     //coreLogMessage.erase(std::remove_if(coreLogMessage.begin(), coreLogMessage.end(),[](char c) { return c == '\"'; }), coreLogMessage.end());
