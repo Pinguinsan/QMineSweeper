@@ -42,15 +42,8 @@ class QmsGameState;
 
 class GameController : public QObject
 {
-
     Q_OBJECT
 public:
-
-    GameController(int columnCount, int rowCount);
-    GameController(const GameController &other) = delete;
-    GameController(GameController &&other) = delete;
-    virtual ~GameController();
-
     /*Member access*/
     bool initialClickFlag() const;
     int numberOfColumns() const;
@@ -98,13 +91,13 @@ public:
     bool isEdgeButton(QmsButton *msb) const;
     GameState gameState() const;
 
+    static void initializeInstance(int columnCount, int rowCount);
+
     SaveGameStateResult saveGame(const QString &filePath);
     LoadGameStateResult loadGame(const QString &filePath);
 
     static double DEFAULT_NUMBER_OF_MINES();
     static int GAME_TIMER_INTERVAL();
-    static std::pair<double, double> CELL_TO_MINE_RATIOS();
-    static int CELL_TO_MINE_THRESHOLD();
     static int NORMAL_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES();
     static int EDGE_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES();
     static int CORNER_MINE_MAX_NUMBER_OF_NEIGHBOR_MINES();
@@ -160,7 +153,17 @@ private:
     static const int s_DEFAULT_SLEEPY_FACE_TIMEOUT;
     static const int s_LONG_CLICK_THRESHOLD;
     static const int s_MILLISECOND_DISPLAY_DIGITS;
+
+
+    GameController(int columnCount, int rowCount);
+    GameController(const GameController &other) = delete;
+    GameController(GameController &&other) = delete;
+
+    ~GameController() override;
+
 };
+
+extern GameController *gameController;
 
 
 #endif //QMINESWEEPER_GAMECONTROLLER_H

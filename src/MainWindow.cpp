@@ -72,14 +72,9 @@
     const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
 #endif
 
-/* MainWindow() : Constructor, passing in shared_ptrs to all of
- * the relevant media and logic controllers. All UI stuff if initialized and
- * relevant events are hooked (QObject::this->connect()) to set up the game to play */
-MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
-                       std::shared_ptr<QmsSoundEffects> gameSoundEffects,
-                       std::shared_ptr<QmsSettingsLoader> settingsLoader,
-                       std::shared_ptr<GameController> gameController,
-                       QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
+/* MainWindow() : Constructor. All UI stuff if initialized and
+ * relevant events are hooked (QObject::connect()) to set up the game to play */
+MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
                        QWidget *parent) :
     MouseMoveableQMainWindow{parent},
     m_eventTimer{new QTimer{}},
@@ -90,10 +85,6 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     m_languageActionGroup{new QActionGroup{nullptr}},
     m_translator{new QTranslator{}},
     m_statusBarLabel{new QLabel{}},
-    m_gameIcons{gameIcons},
-    m_gameSoundEffects{gameSoundEffects},
-    m_settingsLoader{settingsLoader},
-    m_gameController{gameController},
     m_language{initialDisplayLanguage},
     m_currentDefaultMineSize{QSize{0,0}},
     m_currentMaxMineSize{QSize{0,0}},
@@ -109,13 +100,13 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);
     this->m_statusBarLabel->setFont(tempFont);
     this->m_ui->statusBar->addWidget(this->m_statusBarLabel.get());
-    if (this->m_gameSoundEffects->isMuted()) {
+    if (applicationSoundEffects->isMuted()) {
         this->m_ui->actionMuteSound->setChecked(true);
     }
 
     this->setLanguage(this->m_language);
-    this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
-    this->m_eventTimer->setInterval(this->m_gameController->GAME_TIMER_INTERVAL());
+    this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
+    this->m_eventTimer->setInterval(gameController->GAME_TIMER_INTERVAL());
 
     this->connect(this->m_ui->actionSave, &QAction::triggered, this, &MainWindow::onSaveActionTriggered);
     this->connect(this->m_ui->actionSaveAs, &QAction::triggered, this, &MainWindow::onSaveAsActionTriggered);
@@ -130,34 +121,34 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     this->connect(this->m_ui->actionMuteSound, &QAction::triggered, this, &MainWindow::onActionMuteSoundChecked);
 
     this->connect(this->m_ui->resetButton, &QPushButton::clicked, this, &MainWindow::onResetButtonClicked);
-    this->connect(this->m_gameController.get(), &GameController::winEvent, this, &MainWindow::onGameWon);
-    this->connect(this->m_gameController.get(), &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
-    this->connect(this->m_gameController.get(), &GameController::userIsNoLongerIdle, this, &MainWindow::startUserIdleTimer);
-    this->connect(this->m_gameController.get(), &GameController::gameStarted, this, &MainWindow::onGameStarted);
+    this->connect(gameController, &GameController::winEvent, this, &MainWindow::onGameWon);
+    this->connect(gameController, &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
+    this->connect(gameController, &GameController::userIsNoLongerIdle, this, &MainWindow::startUserIdleTimer);
+    this->connect(gameController, &GameController::gameStarted, this, &MainWindow::onGameStarted);
 
     this->connect(this->m_eventTimer.get(), &QTimer::timeout, this, &MainWindow::eventLoop);
 
-    this->connect(this->m_gameController.get(), &GameController::numberOfMinesRemainingChanged, this, &MainWindow::updateNumberOfMinesLCD);
-    this->connect(this->m_gameController.get(), &GameController::numberOfMovesMadeChanged, this, &MainWindow::updateNumberOfMovesMadeLCD);
-    this->connect(this->m_gameController.get(), &GameController::gameResumed, this, &MainWindow::onGameResumed);
-    this->connect(this->m_gameController.get(), &GameController::mineExplosionEvent, this, &MainWindow::onMineExplosionEventTriggered);
+    this->connect(gameController, &GameController::numberOfMinesRemainingChanged, this, &MainWindow::updateNumberOfMinesLCD);
+    this->connect(gameController, &GameController::numberOfMovesMadeChanged, this, &MainWindow::updateNumberOfMovesMadeLCD);
+    this->connect(gameController, &GameController::gameResumed, this, &MainWindow::onGameResumed);
+    this->connect(gameController, &GameController::mineExplosionEvent, this, &MainWindow::onMineExplosionEventTriggered);
 
-    this->connect(this->m_ui->menuFile, &QMenu::aboutToShow, this->m_gameController.get(), &GameController::onContextMenuActive);
-    this->connect(this->m_ui->menuPreferences, &QMenu::aboutToShow, this->m_gameController.get(), &GameController::onContextMenuActive);
-    this->connect(this->m_ui->menuHelp, &QMenu::aboutToShow, this->m_gameController.get(), &GameController::onContextMenuActive);
+    this->connect(this->m_ui->menuFile, &QMenu::aboutToShow, gameController, &GameController::onContextMenuActive);
+    this->connect(this->m_ui->menuPreferences, &QMenu::aboutToShow, gameController, &GameController::onContextMenuActive);
+    this->connect(this->m_ui->menuHelp, &QMenu::aboutToShow, gameController, &GameController::onContextMenuActive);
 
-    this->connect(this->m_ui->menuFile, &QMenu::aboutToHide, this->m_gameController.get(), &GameController::onContextMenuInactive);
-    this->connect(this->m_ui->menuPreferences, &QMenu::aboutToHide, this->m_gameController.get(), &GameController::onContextMenuInactive);
-    this->connect(this->m_ui->menuHelp, &QMenu::aboutToHide, this->m_gameController.get(), &GameController::onContextMenuInactive);
+    this->connect(this->m_ui->menuFile, &QMenu::aboutToHide, gameController, &GameController::onContextMenuInactive);
+    this->connect(this->m_ui->menuPreferences, &QMenu::aboutToHide, gameController, &GameController::onContextMenuInactive);
+    this->connect(this->m_ui->menuHelp, &QMenu::aboutToHide, gameController, &GameController::onContextMenuInactive);
 
-    this->connect(this, &MainWindow::boardResize, this->m_gameController.get(), &GameController::onBoardResizeTriggered);
-    this->connect(this, &MainWindow::mineDisplayed, this->m_gameController.get(), &GameController::onMineDisplayed);
-    this->connect(this, &MainWindow::winEvent, this->m_gameController.get(), &GameController::onGameWon);
-    this->connect(this, &MainWindow::gamePaused, this->m_gameController.get(), &GameController::onGamePaused);
-    this->connect(this, &MainWindow::mineSweeperButtonCreated, this->m_gameController.get(), &GameController::onMineSweeperButtonCreated);
-    this->connect(this, &MainWindow::resetGame, this->m_gameController.get(), &GameController::onGameReset);
-    this->connect(this, &MainWindow::gameResumed, this->m_gameController.get(), &GameController::onGameResumed);
-    this->connect(this, &MainWindow::mineExplosionEvent, this->m_gameController.get(), &GameController::onMineExplosionEventTriggered);
+    this->connect(this, &MainWindow::boardResize, gameController, &GameController::onBoardResizeTriggered);
+    this->connect(this, &MainWindow::mineDisplayed, gameController, &GameController::onMineDisplayed);
+    this->connect(this, &MainWindow::winEvent, gameController, &GameController::onGameWon);
+    this->connect(this, &MainWindow::gamePaused, gameController, &GameController::onGamePaused);
+    this->connect(this, &MainWindow::mineSweeperButtonCreated, gameController, &GameController::onMineSweeperButtonCreated);
+    this->connect(this, &MainWindow::resetGame, gameController, &GameController::onGameReset);
+    this->connect(this, &MainWindow::gameResumed, gameController, &GameController::onGameResumed);
+    this->connect(this, &MainWindow::mineExplosionEvent, gameController, &GameController::onMineExplosionEventTriggered);
 
     this->m_languageActionGroup->addAction(this->m_ui->actionEnglish);
     this->m_languageActionGroup->addAction(this->m_ui->actionSpanish);
@@ -187,15 +178,15 @@ MainWindow::MainWindow(std::shared_ptr<QmsIcons> gameIcons,
     /* initialize all strings and stuff for the BoardResizeWindow */
     this->m_boardResizeDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_boardResizeDialog->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    this->m_boardResizeDialog->setWindowIcon(this->m_gameIcons->MINE_ICON_72);
+    this->m_boardResizeDialog->setWindowIcon(applicationIcons->MINE_ICON_72);
     this->connect(this->m_boardResizeDialog.get(), &BoardResizeWidget::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
 
     this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
     this->connect(this->m_aboutQmsDialog.get(), &AboutQmsWidget::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
 
     this->m_eventTimer->start();
-    this->updateNumberOfMovesMadeLCD(this->m_gameController->numberOfMovesMade());
-    this->updateNumberOfMinesLCD(this->m_gameController->userDisplayNumberOfMines());
+    this->updateNumberOfMovesMadeLCD(gameController->numberOfMovesMade());
+    this->updateNumberOfMinesLCD(gameController->userDisplayNumberOfMines());
 
 }
 
@@ -235,7 +226,7 @@ void MainWindow::onSaveAsActionTriggered()
 
 void MainWindow::doSaveGame(const QString &filePath)
 {
-    auto saveGameResult = this->m_gameController->saveGame(filePath);
+    auto saveGameResult = gameController->saveGame(filePath);
     if (saveGameResult == SaveGameStateResult::Success) {
         LOG_INFO() << QString{"Successfully saved game to %1"}.arg(filePath);
     } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingFile) {
@@ -269,7 +260,7 @@ void MainWindow::onOpenActionTriggered()
             maybeNewGamePath = maybeNewGamePath + QmsStrings::SAVED_GAME_FILE_EXTENSION;
         }
     }
-    LoadGameStateResult loadResult{this->m_gameController->loadGame(maybeNewGamePath)};
+    LoadGameStateResult loadResult{gameController->loadGame(maybeNewGamePath)};
     if (loadResult == LoadGameStateResult::Success) {
 
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
@@ -302,9 +293,9 @@ QmsApplicationSettings MainWindow::collectApplicationSettings() const
     return QmsApplicationSettings{};
 #else
     QmsApplicationSettings returnSettings;
-    returnSettings.setNumberOfColumns(this->m_gameController->numberOfColumns());
-    returnSettings.setNumberOfRows(this->m_gameController->numberOfRows());
-    returnSettings.setAudioVolume(this->m_gameSoundEffects->audioVolume());
+    returnSettings.setNumberOfColumns(gameController->numberOfColumns());
+    returnSettings.setNumberOfRows(gameController->numberOfRows());
+    returnSettings.setAudioVolume(applicationSoundEffects->audioVolume());
     return returnSettings;
 #endif //defined(__ANDROID__)
 }
@@ -375,7 +366,7 @@ void MainWindow::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
     //if ((!this->isHidden()) && (!this->isMinimized())) {
-        if (!this->m_gameController->initialClickFlag() && (!this->m_gameController->gameOver())) {
+        if (!gameController->initialClickFlag() && (!gameController->gameOver())) {
             emit (gameResumed());
         }
     //}
@@ -430,7 +421,7 @@ void MainWindow::onBoardResizeDialogClosed(BoardResizeWidget::ResizeWidgetResult
         this->invalidateSizeCaches();
         emit(boardResize(columns, rows));
     } else {
-        if (!this->m_gameController->initialClickFlag() && !this->m_gameController->gameOver()) {
+        if (!gameController->initialClickFlag() && !gameController->gameOver()) {
             emit (gameResumed());
         }
     }
@@ -446,21 +437,21 @@ void MainWindow::onGameWon()
     using namespace QmsStrings;
     this->m_ui->actionSave->setEnabled(false);
     this->m_ui->actionSaveAs->setEnabled(false);
-    this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_BIG_SMILEY);
-    this->m_gameController->setGameOver(true);
+    this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_BIG_SMILEY);
+    gameController->setGameOver(true);
 
-    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+    for (auto &it : gameController->mineSweeperButtons()) {
         if(it.second->hasMine()) {
             if (it.second->hasFlag()) {
-                it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
+                it.second->setIcon(applicationIcons->STATUS_ICON_FLAG_CHECK);
                 it.second->setChecked(true);
             } else {
-                it.second->setIcon(this->m_gameIcons->MINE_ICON_72);
+                it.second->setIcon(applicationIcons->MINE_ICON_72);
                 it.second->setChecked(true);
                 it.second->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
             }
         } else if (it.second->hasFlag()) {
-            it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
+            it.second->setIcon(applicationIcons->STATUS_ICON_FLAG_X);
             it.second->setChecked(true);
         }
         it.second->setIsRevealed(true);
@@ -468,13 +459,13 @@ void MainWindow::onGameWon()
     std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     QString winText{QString{"%1%2%3%4"}.arg(QMessageBox::tr(WIN_DIALOG_BASE),
-                                            QS_NUMBER(this->m_gameController->numberOfMovesMade()),
+                                            QS_NUMBER(gameController->numberOfMovesMade()),
                                             QMessageBox::tr(WIN_DIALOG_MIDDLE),
                                             QMessageBox::tr(this->statusBar()->currentMessage().toStdString().c_str()))};
     LOG_INFO() << winText;
     winBox->setText(winText);
 
-    winBox->setWindowIcon(this->m_gameIcons->MINE_ICON_48);
+    winBox->setWindowIcon(applicationIcons->MINE_ICON_48);
     winBox->exec();
 }
 
@@ -484,7 +475,7 @@ void MainWindow::onGameWon()
  * is used to change the smiley face to a sleepy face */
 void MainWindow::onGameStarted()
 {
-    LOG_DEBUG() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(this->m_gameController->numberOfColumns()), QS_NUMBER(this->m_gameController->numberOfRows()));
+    LOG_DEBUG() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(gameController->numberOfColumns()), QS_NUMBER(gameController->numberOfRows()));
     this->startGameTimer();
     this->startUserIdleTimer();
     this->m_ui->actionSave->setEnabled(true);
@@ -501,7 +492,7 @@ void MainWindow::setupNewGame()
     while ((wItem = this->m_ui->mineFrame->layout()->takeAt(0)) != 0) {
         delete wItem;
     }
-    this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
+    this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
     this->populateMineField();
     this->centerAndFitWindow(true, true);
 }
@@ -511,8 +502,8 @@ void MainWindow::setupNewGame()
  * disable them, so the user cannot play the game until it is resumed */
 void MainWindow::onGamePaused()
 {
-    if (this->m_gameController->gameState() == GameState::GameActive) {
-        for (auto &it : this->m_gameController->mineSweeperButtons()) {
+    if (gameController->gameState() == GameState::GameActive) {
+        for (auto &it : gameController->mineSweeperButtons()) {
             it.second->setEnabled(false);
         }
     }
@@ -523,8 +514,8 @@ void MainWindow::onGamePaused()
  * so the user can continue with their game */
 void MainWindow::onGameResumed()
 {
-    if (this->m_gameController->gameState() == GameState::GamePaused) {
-        for (auto &it : this->m_gameController->mineSweeperButtons()) {
+    if (gameController->gameState() == GameState::GamePaused) {
+        for (auto &it : gameController->mineSweeperButtons()) {
             it.second->setEnabled(true);
         }
     }
@@ -542,7 +533,7 @@ void MainWindow::displayMine(QmsButton* msb)
     msb->setChecked(true);
     emit(mineDisplayed());
     if (msb->numberOfSurroundingMines() == 0) {
-        this->m_gameController->checkForOtherEmptyMines(msb);
+        gameController->checkForOtherEmptyMines(msb);
     }
 }
 
@@ -552,10 +543,10 @@ void MainWindow::displayMine(QmsButton* msb)
  * recalled on a new game. The size of the icons and the button itself is also set */
 void MainWindow::populateMineField()
 {
-    for (int rowIndex = 0; rowIndex < this->m_gameController->numberOfRows(); rowIndex++) {
-        for (int columnIndex = 0; columnIndex <this->m_gameController->numberOfColumns(); columnIndex++) {
-            this->m_gameController->addMineSweeperButton(columnIndex, rowIndex);
-            std::shared_ptr<QmsButton> tempPtr{this->m_gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
+    for (int rowIndex = 0; rowIndex < gameController->numberOfRows(); rowIndex++) {
+        for (int columnIndex = 0; columnIndex <gameController->numberOfColumns(); columnIndex++) {
+            gameController->addMineSweeperButton(columnIndex, rowIndex);
+            std::shared_ptr<QmsButton> tempPtr{gameController->mineSweeperButtonAtIndex(columnIndex, rowIndex)};
             this->m_ui->mineFrameGridLayout->addWidget(tempPtr.get(), rowIndex, columnIndex, 1, 1);
             tempPtr->setFixedSize(getMaxMineSize());
             emit(mineSweeperButtonCreated(tempPtr));
@@ -568,7 +559,7 @@ void MainWindow::populateMineField()
             tempPtr->setCheckable(true);
         }
     }
-    this->m_saveStyleSheet = this->m_gameController->mineSweeperButtonAtIndex(0, 0)->styleSheet();
+    this->m_saveStyleSheet = gameController->mineSweeperButtonAtIndex(0, 0)->styleSheet();
 }
 
 /* invalidateSizeCaches() : The maximum size of a QMineSweeperButton and the
@@ -589,7 +580,7 @@ QSize MainWindow::getIconReductionSize()
 {
     using namespace QmsUtilities;
     if (!this->m_iconReductionSizeCacheIsValid) {
-        int reductionSize{roundIntuitively(this->m_reductionSizeScaleFactor - (this->m_gameController->totalButtonCount() + this->m_gameController->DEFAULT_NUMBER_OF_MINES()))};
+        int reductionSize{roundIntuitively(this->m_reductionSizeScaleFactor - (gameController->totalButtonCount() + gameController->DEFAULT_NUMBER_OF_MINES()))};
         if (reductionSize <= 0) {
             reductionSize = 0;
         }
@@ -620,14 +611,14 @@ QSize MainWindow::getMaxMineSize()
         int heightScale{qDesktopWidget.availableGeometry().height()/this->s_HEIGHT_SCALE_FACTOR};
         int widthScale{qDesktopWidget.availableGeometry().width()/this->s_WIDTH_SCALE_FACTOR};
         int extraHeight{statusBarHeight + menuBarHeight + titleFrameHeight + gridSpacingHeight};
-        int x{(qDesktopWidget.availableGeometry().height()-extraHeight-s_TASKBAR_HEIGHT-heightScale)/this->m_gameController->numberOfRows()};
-        int y{(qDesktopWidget.availableGeometry().width()-gridSpacingWidth-widthScale)/this->m_gameController->numberOfColumns()};
+        int x{(qDesktopWidget.availableGeometry().height()-extraHeight-s_TASKBAR_HEIGHT-heightScale)/gameController->numberOfRows()};
+        int y{(qDesktopWidget.availableGeometry().width()-gridSpacingWidth-widthScale)/gameController->numberOfColumns()};
         if ((x < 5) || (y < 5)) {
             //TODO: Deal with too small to play mines
             std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
             errorBox->setText(tr(GENERIC_ERROR_MESSAGE));
-            errorBox->setWindowIcon(this->m_gameIcons->MINE_ICON_48);
+            errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
             errorBox->exec();
             exit(EXIT_FAILURE);
         }
@@ -653,7 +644,7 @@ QSize MainWindow::getMaxMineSize()
 void MainWindow::resizeResetIcon()
 {
 #if defined(__ANDROID__)
-    this->m_ui->resetButton->setFixedSize(this->m_gameController->mineSweeperButtonAtIndex(0, 0)->size());
+    this->m_ui->resetButton->setFixedSize(gameController->mineSweeperButtonAtIndex(0, 0)->size());
     this->m_ui->resetButton->setIconSize(this->m_ui->resetButton->size());
     this->m_ui->numberOfMoves->setFixedSize(this->m_ui->numberOfMoves->size() * 3);
     this->m_ui->minesRemaining->setFixedSize(this->m_ui->numberOfMoves->size());
@@ -667,7 +658,7 @@ void MainWindow::resizeResetIcon()
  * to reset the icon back to the normal smiley face icon */
 void MainWindow::resetResetButtonIcon()
 {
-    this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
+    this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
 }
 
 /* setResetButtonIcon() : The reset button icon is changed in response to game events
@@ -684,20 +675,20 @@ void MainWindow::setResetButtonIcon(const QIcon &icon)
 void MainWindow::displayAllMines()
 {
     using namespace QmsStrings;
-    this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_FROWNY);
-    this->m_gameController->setGameOver(true);
-    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+    this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_FROWNY);
+    gameController->setGameOver(true);
+    for (auto &it : gameController->mineSweeperButtons()) {
         if(it.second->hasMine()) {
             if (it.second->hasFlag()) {
-                it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_CHECK);
+                it.second->setIcon(applicationIcons->STATUS_ICON_FLAG_CHECK);
                 it.second->setChecked(true);
             } else {
-                it.second->setIcon(this->m_gameIcons->MINE_ICON_72);
+                it.second->setIcon(applicationIcons->MINE_ICON_72);
                 it.second->setChecked(true);
                 it.second->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
             }
         } else if (it.second->hasFlag()) {
-            it.second->setIcon(this->m_gameIcons->STATUS_ICON_FLAG_X);
+            it.second->setIcon(applicationIcons->STATUS_ICON_FLAG_X);
             it.second->setChecked(true);
         }
         it.second->setIsRevealed(true);
@@ -712,28 +703,6 @@ QString MainWindow::saveStyleSheet() const
     return this->m_saveStyleSheet;
 }
 
-/* qmsiPtr() : All of the icons used in QMineSweeper are stored in an
- * instance of QMineSweeperIcons, and all relevant classes are supplied
- * with a shared_ptr to this instance either via their constructors or
- * via a late binding dependancy-injection function. This is a simple
- * member access function for this shared_ptr, in case it needs to be accessed
- * by an object that does not obtain this shared_ptr */
-std::shared_ptr<QmsIcons> MainWindow::gameIcons() const
-{
-    return this->m_gameIcons;
-}
-
-/* qmssePtr() : All of the sounds used in QMineSweeper are stored in an
- * instance of QMineSweeperIcons, and all relevant classes are supplied
- * with a shared_ptr to this instance either via their constructors or
- * via a late binding dependancy-injection function. This is a simple
- * member access function for this shared_ptr, in case it needs to be accessed
- * by an object that does not obtain this shared_ptr */
-std::shared_ptr<QmsSoundEffects> MainWindow::gameSounds() const
-{
-    return this->m_gameSoundEffects;
-}
-
 /* onResetButtonClicked() : When the reset button is clicked, the user is requesting
  * to reset the current game. First, a gamePaused() signal is emitted, then
  * if there is a current game in progress, the user is asked via a QMessageBox if they
@@ -743,7 +712,7 @@ void MainWindow::onResetButtonClicked()
 {
     using namespace QmsStrings;
     emit(gamePaused());
-    if (!this->m_gameController->gameOver() && !this->m_gameController->initialClickFlag()) {
+    if (!gameController->gameOver() && !gameController->initialClickFlag()) {
         QMessageBox::StandardButton userReply;
         userReply = static_cast<QMessageBox::StandardButton>(QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, START_NEW_GAME_PROMPT, QMessageBox::Yes|QMessageBox::No));
         if (userReply == QMessageBox::Yes) {
@@ -764,20 +733,20 @@ void MainWindow::doGameReset()
 {
     using namespace QmsStrings;
     this->m_boardResizeDialog->hide();
-    for (auto &it : this->m_gameController->mineSweeperButtons()) {
+    for (auto &it : gameController->mineSweeperButtons()) {
         it.second->setChecked(false);
         it.second->setFlat(false);
         it.second->setStyleSheet(this->m_saveStyleSheet);
-        it.second->setIcon(this->m_gameIcons->COUNT_MINES_0);
+        it.second->setIcon(applicationIcons->COUNT_MINES_0);
         it.second->setEnabled(true);
         it.second->setIsRevealed(false);
     }
 
     this->m_saveFilePath = "";
     emit(resetGame());
-    this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SMILEY);
+    this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
     this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
-    this->updateNumberOfMinesLCD(this->m_gameController->numberOfMines());
+    this->updateNumberOfMinesLCD(gameController->numberOfMines());
     this->updateNumberOfMovesMadeLCD(0);
 }
 
@@ -804,7 +773,7 @@ void MainWindow::updateGeometry()
  * This timer is to show the player how long they've been playing the current game */
 void MainWindow::startGameTimer()
 {
-    this->m_gameController->startPlayTimer();
+    gameController->startPlayTimer();
 }
 
 /* startUserIdleTimer() : Called after each move made by a player.
@@ -813,7 +782,7 @@ void MainWindow::startGameTimer()
  * threshold, the reset icon is changed to a sleepy face */
 void MainWindow::startUserIdleTimer()
 {
-    if (this->m_gameController->gameState() == GameState::GameActive) {
+    if (gameController->gameState() == GameState::GameActive) {
         this->m_userIdleTimer->restart();
     }
 }
@@ -828,15 +797,15 @@ void MainWindow::updateVisibleGameTimer()
     using namespace QmsUtilities;
     using namespace QmsStrings;
     QString gameTime{""};
-    if (this->m_gameController->gameState() == GameState::GameActive) {
-        if (this->m_gameController->playTimer().isPaused()) {
-            this->m_gameController->resumePlayTimer();
+    if (gameController->gameState() == GameState::GameActive) {
+        if (gameController->playTimer().isPaused()) {
+            gameController->resumePlayTimer();
         }
-        gameTime = toQString(this->m_gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
+        gameTime = toQString(gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
         this->displayStatusMessage(gameTime);
-    } else if (!this->m_gameController->initialClickFlag()){
-        this->m_gameController->pausePlayTimer();
-        gameTime = toQString(this->m_gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
+    } else if (!gameController->initialClickFlag()){
+        gameController->pausePlayTimer();
+        gameTime = toQString(gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())));
         this->displayStatusMessage(gameTime);
     } else {
         this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
@@ -849,17 +818,17 @@ void MainWindow::updateVisibleGameTimer()
  * a sleepy face. If it has not, the method returns */
 void MainWindow::updateUserIdleTimer()
 {
-    if (this->m_gameController->gameState() == GameState::GameActive) {
+    if (gameController->gameState() == GameState::GameActive) {
         if (this->m_userIdleTimer->isPaused()) {
             this->m_userIdleTimer->resume();
         }
-    } else if (!this->m_gameController->initialClickFlag()) {
+    } else if (!gameController->initialClickFlag()) {
         this->m_userIdleTimer->pause();
         this->m_userIdleTimer->update();
     }
-    if (this->m_gameController->gameState() == GameState::GameActive) {
-        if (this->m_userIdleTimer->totalTime() >= this->m_gameController->DEFAULT_SLEEPY_FACE_TIMEOUT()) {
-            this->m_ui->resetButton->setIcon(this->m_gameIcons->FACE_ICON_SLEEPY);
+    if (gameController->gameState() == GameState::GameActive) {
+        if (this->m_userIdleTimer->totalTime() >= gameController->DEFAULT_SLEEPY_FACE_TIMEOUT()) {
+            this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SLEEPY);
         }
     }
 }
@@ -926,7 +895,7 @@ void MainWindow::onMineExplosionEventTriggered()
 {
     using namespace QmsUtilities;
     displayAllMines();
-    this->m_gameSoundEffects->explosionEffect().play();
+    applicationSoundEffects->explosionEffect().play();
     emit(mineExplosionEvent());
 }
 
@@ -935,7 +904,7 @@ void MainWindow::onMineExplosionEventTriggered()
  * are disabled. If not, they are enabled */
 void MainWindow::onActionMuteSoundChecked(bool checked)
 {
-    this->m_gameSoundEffects->setAudioMuted(checked);
+    applicationSoundEffects->setAudioMuted(checked);
     LOG_INFO() << QString{"Game audio volume set to %1"}.arg((checked ? QS_NUMBER(QmsSettingsLoader::DEFAULT_AUDIO_VOLUME()) : "0"));
 }
 
@@ -948,7 +917,7 @@ void MainWindow::onChangeBoardSizeActionTriggered()
     using namespace QmsUtilities;
     using namespace QmsStrings;
     this->setEnabled(false);
-    this->m_boardResizeDialog->show(this->m_gameController->numberOfColumns(), this->m_gameController->numberOfRows());
+    this->m_boardResizeDialog->show(gameController->numberOfColumns(), gameController->numberOfRows());
     this->m_boardResizeDialog->centerAndFitWindow();
     emit(gamePaused());
 }
@@ -961,7 +930,7 @@ void MainWindow::onAboutQmsWindowClosed()
     this->setEnabled(true);
     this->show();
     this->m_aboutQmsDialog->hide();
-    if (!this->m_gameController->gameOver()) {
+    if (!gameController->gameOver()) {
         emit(gameResumed());
     }
 }
@@ -991,45 +960,8 @@ void MainWindow::onAboutQMineSweeperActionTriggered()
 
 /* onApplicationExit() : Called when the QApplication is about to close,
  * via hooking the QApplication::exit() event in main.cpp, empty by default */
-void MainWindow::onApplicationExit()
-{
+void MainWindow::onApplicationExit() {
 
-}
-
-/* bindGameController() : Convenience function for late binding of a shared_ptr
- * to the GameController instance, to support dependancy injection for MainWindow,
- * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindGameController(std::shared_ptr<GameController> gameController)
-{
-    this->m_gameController.reset();
-    this->m_gameController = gameController;
-}
-
-/* bindQMineSweeperIcons() : Convenience function for late binding of a shared_ptr
- * to the QMineSweeperIcons instance, to support dependancy injection for MainWindow,
- * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperIcons(std::shared_ptr<QmsIcons> gameIcons)
-{
-    this->m_gameIcons.reset();
-    this->m_gameIcons = gameIcons;
-}
-
-/* bindGameController() : Convenience function for late binding of a shared_ptr
- * to the GameController instance, to support dependancy injection for MainWindow,
- * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperSoundEffects(std::shared_ptr<QmsSoundEffects> gameSoundEffects)
-{
-    this->m_gameSoundEffects.reset();
-    this->m_gameSoundEffects = gameSoundEffects;
-}
-
-/* bindQMineSweeperSettingsLoader() : Convenience function for late binding of a shared_ptr
- * to the QMineSweeperSettingsLoader instance, to support dependancy injection for MainWindow,
- * as this shared_ptr is passed in via the constructor */
-void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoader> qmsslPtr)
-{
-    this->m_settingsLoader.reset();
-    this->m_settingsLoader = qmsslPtr;
 }
 
 
@@ -1040,25 +972,25 @@ void MainWindow::bindQMineSweeperSettingsLoader(std::shared_ptr<QmsSettingsLoade
 void MainWindow::drawNumberOfSurroundingMines(QmsButton *msb)
 {
     if (msb->numberOfSurroundingMines() == 0) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_0);
+        msb->setIcon(applicationIcons->COUNT_MINES_0);
     } else if (msb->numberOfSurroundingMines() == 1) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_1);
+        msb->setIcon(applicationIcons->COUNT_MINES_1);
     } else if (msb->numberOfSurroundingMines() == 2) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_2);
+        msb->setIcon(applicationIcons->COUNT_MINES_2);
     } else if (msb->numberOfSurroundingMines() == 3) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_3);
+        msb->setIcon(applicationIcons->COUNT_MINES_3);
     } else if (msb->numberOfSurroundingMines() == 4) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_4);
+        msb->setIcon(applicationIcons->COUNT_MINES_4);
     } else if (msb->numberOfSurroundingMines() == 5) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_5);
+        msb->setIcon(applicationIcons->COUNT_MINES_5);
     } else if (msb->numberOfSurroundingMines() == 6) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_6);
+        msb->setIcon(applicationIcons->COUNT_MINES_6);
     } else if (msb->numberOfSurroundingMines() == 7) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_7);
+        msb->setIcon(applicationIcons->COUNT_MINES_7);
     } else if (msb->numberOfSurroundingMines() == 8) {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_8);
+        msb->setIcon(applicationIcons->COUNT_MINES_8);
     } else {
-        msb->setIcon(this->m_gameIcons->COUNT_MINES_0);
+        msb->setIcon(applicationIcons->COUNT_MINES_0);
     }
 }
 

@@ -31,6 +31,8 @@ const char *QmsSettingsLoader::s_AUDIO_VOLUME_KEY{"volume"};
 
 const QmsSettingsLoader::SupportedLanguage QmsSettingsLoader::s_DEFAULT_LANGUAGE{QmsSettingsLoader::SupportedLanguage::English};
 
+QmsSettingsLoader *settingsLoader{nullptr};
+
 QmsSettingsLoader::QmsSettingsLoader(QObject *parent) :
     QObject{parent}
 {
@@ -102,4 +104,14 @@ int QmsSettingsLoader::DEFAULT_AUDIO_VOLUME()
 QmsSettingsLoader::SupportedLanguage QmsSettingsLoader::DEFAULT_LANGUAGE()
 {
     return QmsSettingsLoader::s_DEFAULT_LANGUAGE;
+}
+
+void QmsSettingsLoader::initializeInstance(QObject *parent) {
+    if (settingsLoader == nullptr) {
+        settingsLoader = new QmsSettingsLoader{parent};
+    }
+}
+
+QmsSettingsLoader::~QmsSettingsLoader() {
+    
 }

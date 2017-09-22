@@ -45,11 +45,20 @@ const int GameController::s_DEFAULT_SLEEPY_FACE_TIMEOUT{15000};
 const int GameController::s_LONG_CLICK_THRESHOLD{250};
 const int GameController::s_MILLISECOND_DISPLAY_DIGITS{1};
 
+GameController *gameController{nullptr};
+
 GameController::GameController(int columnCount, int rowCount) :
     m_qmsGameState{std::make_shared<QmsGameState>(columnCount, rowCount)},
     m_mainWindow{nullptr}
 {
     this->connect(this, &GameController::gamePaused, this, &GameController::onGamePaused);
+}
+
+void GameController::initializeInstance(int columnCount, int rowCount)
+{
+    if (gameController == nullptr) {
+        gameController = new GameController{columnCount, rowCount};
+    }
 }
 
 void GameController::onMineSweeperButtonCreated(std::shared_ptr<QmsButton> msb)
@@ -438,9 +447,9 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
         this->incrementNumberOfMovesMade();
         this->m_mainWindow->displayMine(msbp);
         if (msbp->numberOfSurroundingMines() == 0) {
-            this->startResetIconTimer(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_BIG_SMILEY);
+            this->startResetIconTimer(static_cast<unsigned int>(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT), applicationIcons->FACE_ICON_BIG_SMILEY);
         } else {
-            this->startResetIconTimer(this->s_DEFAULT_WINKY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_WINKY);
+            this->startResetIconTimer(static_cast<unsigned int>(this->s_DEFAULT_WINKY_FACE_TIMEOUT), applicationIcons->FACE_ICON_WINKY);
         }
     }
     emit(userIsNoLongerIdle());
@@ -461,7 +470,7 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
             errorBox->setText(GENERIC_ERROR_MESSAGE);
-            errorBox->setWindowIcon(this->m_mainWindow->gameIcons()->MINE_ICON_48);
+            errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
             errorBox->exec();
             logString(e.what());
             exit(EXIT_FAILURE);
@@ -475,17 +484,17 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
     } else if (msbp->hasFlag()) {
         msbp->setHasFlag(false);
         msbp->setHasQuestionMark(true);
-        msbp->setIcon(this->m_mainWindow->gameIcons()->STATUS_ICON_QUESTION);
+        msbp->setIcon(applicationIcons->STATUS_ICON_QUESTION);
         incrementUserMineCountDisplay();
     } else if (msbp->hasQuestionMark()) {
         msbp->setHasQuestionMark(false);
-        msbp->setIcon(this->m_mainWindow->gameIcons()->COUNT_MINES_0);
+        msbp->setIcon(applicationIcons->COUNT_MINES_0);
     } else {
         msbp->setHasFlag(true);
-        msbp->setIcon(this->m_mainWindow->gameIcons()->STATUS_ICON_FLAG);
+        msbp->setIcon(applicationIcons->STATUS_ICON_FLAG);
         decrementUserMineCountDisplay();
     }
-    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, this->m_mainWindow->gameIcons()->FACE_ICON_CRAZY);
+    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, applicationIcons->FACE_ICON_CRAZY);
     emit(userIsNoLongerIdle());
 }
 

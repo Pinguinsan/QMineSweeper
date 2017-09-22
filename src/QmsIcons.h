@@ -24,9 +24,6 @@
 class QmsIcons
 {
 public:
-    QmsIcons();
-    ~QmsIcons();
-
     const QIcon MINE_ICON_16;
     const QIcon MINE_ICON_24;
     const QIcon MINE_ICON_32;
@@ -57,6 +54,16 @@ public:
     const QIcon STATUS_ICON_QUESTION;
     const QIcon STATUS_ICON_FLAG_CHECK;
     const QIcon STATUS_ICON_FLAG_X;
+
+    static void initializeInstance();
+
+private:
+    QmsIcons();
+    ~QmsIcons();
+    QmsIcons(const QmsIcons &) = delete;
+    QmsIcons &operator=(const QmsIcons &rhs) = delete;
 };
+
+extern QmsIcons *applicationIcons;
 
 #endif // QMINESWEEPER_QMSRICONS_H

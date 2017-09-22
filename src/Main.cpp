@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
              }
              std::string copyString{*iter};
              size_t foundPosition{copyString.find('=')};
-             size_t foundEnd{copyString.substr(foundPosition).find(" ")};
+             size_t foundEnd{copyString.substr(foundPosition).find(' ')};
              if (copyString.substr(foundPosition+1, (foundEnd - foundPosition)) == "") {
                  std::cout << "WARNING: Switch \"" << *iter << "\" accepted, but no dimensions we specified after, skipping option" << std::endl;
              } else {
@@ -182,25 +182,21 @@ int main(int argc, char *argv[])
     //LOG_DEBUG() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     //TODO: Load language from config file
 
-    QApplication qApplication(argc, argv);
-    std::shared_ptr<QmsIcons> gameIcons{std::make_shared<QmsIcons>()};
-    std::shared_ptr<QmsSettingsLoader> settingsLoader{std::make_shared<QmsSettingsLoader>()};
-    std::shared_ptr<GameController> gameController{std::make_shared<GameController>(columnCount, rowCount)};
+    QApplication qApplication{argc, argv};
+    QmsIcons::initializeInstance();
+    QmsSettingsLoader::initializeInstance(nullptr);
+    GameController::initializeInstance(columnCount, rowCount);
 #if defined(__ANDROID__)
-    std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>()};
+    QmsSoundEffects::initializeInstance();
 #else
-    std::shared_ptr<QmsSoundEffects> soundEffects{std::make_shared<QmsSoundEffects>(settings.audioVolume())};
+    QmsSoundEffects::initializeInstance(settings.audioVolume());
 #endif
-    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(gameIcons,
-                                                                        soundEffects,
-                                                                        settingsLoader,
-                                                                        gameController,
-                                                                        QmsSettingsLoader::DEFAULT_LANGUAGE())};
+    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(QmsSettingsLoader::DEFAULT_LANGUAGE())};
     gameController->bindMainWindow(mainWindow);
     mainWindow->setupNewGame();
 
     QMainWindow::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));
-    mainWindow->setWindowIcon(gameIcons->MINE_ICON_72);
+    mainWindow->setWindowIcon(applicationIcons->MINE_ICON_72);
     mainWindow->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     mainWindow->show();
     mainWindow->centerAndFitWindow(true);
@@ -216,10 +212,7 @@ void interruptHandler(int signalNumber)
     if ((signalNumber == SIGUSR1) || (signalNumber == SIGUSR2) || (signalNumber == SIGCHLD)) {
         return;
     }
-    std::unique_ptr<char[]> signalString{new char[SIGNAL_STRING_BUFFER_SIZE]};
-    memset(signalString.get(), '\0', SIGNAL_STRING_BUFFER_SIZE);
-    signalString.reset(strsignal(signalNumber));
-    std::cout << std::endl << "Caught signal " << signalNumber << " (" << signalString.get() << "), exiting " << PROGRAM_NAME << std::endl;
+    std::cout << std::endl << "Caught signal " << signalNumber << " (" << strsignal(signalNumber) << "), exiting " << PROGRAM_NAME << std::endl;
     exit (signalNumber);
 #endif
 }
@@ -271,6 +264,7 @@ void displayHelp()
     LOG_INFO() << "    -h, --h, -help, --help: Display this help text";
     LOG_INFO() << "    -v, --v, -version, --version: Display the version";
     LOG_INFO() << "    -d, --d, -dimensions, --dimensions: Set the number of columns";
+    LOG_INFO() << "    -o, --o, -verbose, --verbose: Log debug output";
     LOG_INFO() << "Example: ";
     LOG_INFO() << "    To start a 14x9 game, any of the following command line options would work:";
     LOG_INFO() << "    QMineSweeper --dimensions 14x9";

@@ -24,6 +24,8 @@
 
 using namespace QmsStrings;
 
+QmsIcons *applicationIcons{nullptr};
+
 /* QmsIcons() : Constructor, setting up the QIcons used.
  * This thin wrapper class for the QIcons is necessary because all QObjects
  * must be instantiated and set up after a QApplication is instantiated, so using them
@@ -58,6 +60,13 @@ QmsIcons::QmsIcons() :
     STATUS_ICON_FLAG_X{QIcon{STATUS_ICON_FLAG_X_PATH}}
 {
     //Constructor
+}
+
+void QmsIcons::initializeInstance()
+{
+    if (applicationIcons == nullptr) {
+        applicationIcons = new QmsIcons{};
+    }
 }
 
 /* ~QmsIcons() : Destructor, empty by default */

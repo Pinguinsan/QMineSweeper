@@ -30,16 +30,14 @@ class QString;
 class QmsSoundEffects
 {
 public:
-    QmsSoundEffects();
-    QmsSoundEffects(int audioVolume);
-    ~QmsSoundEffects();
-
     void setAudioVolume(int volume);
     void setAudioMuted(bool soundMuted);
     int restoreVolumeFromMute();
     int audioVolume() const;
     bool isMuted() const;
     QMediaPlayer &explosionEffect();
+
+    static void initializeInstance(int audioVolume = 0);
 private:
     QMediaPlayer m_explosionEffect;
     QString m_explosionEffectSource;
@@ -49,6 +47,10 @@ private:
     static const int s_DEFAULT_EXPLOSION_EFFECT_VOLUME;
     static const int s_MAXIMUM_SOUND_VOLUME;
 
+    explicit QmsSoundEffects(int audioVolume = 0);
+    ~QmsSoundEffects();
 };
+
+extern QmsSoundEffects *applicationSoundEffects;
 
 #endif //QMINESWEEPER_QMSSOUNDEFFECTS_H

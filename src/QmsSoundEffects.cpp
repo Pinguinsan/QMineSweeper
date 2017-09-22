@@ -34,6 +34,8 @@ using namespace QmsStrings;
 
 const int QmsSoundEffects::s_MAXIMUM_SOUND_VOLUME{std::numeric_limits<uint16_t>::max()};
 
+QmsSoundEffects *applicationSoundEffects{nullptr};
+
 /* QmsSoundEffects() : Constructor, setting up the QSoundEffects used.
  * This thin wrapper class for the QSoundEffects is necessary because all QObjects
  * must be instantiated and set up after a QApplication is instantiated, so using them
@@ -46,12 +48,6 @@ QmsSoundEffects::QmsSoundEffects(int audioVolume) :
 {
     this->m_explosionEffect.setMedia(QUrl{this->m_explosionEffectSource});
     this->m_explosionEffect.setVolume(this->m_audioVolume);
-}
-
-QmsSoundEffects::QmsSoundEffects() :
-    QmsSoundEffects{0}
-{
-
 }
 
 QMediaPlayer &QmsSoundEffects::explosionEffect()
@@ -108,4 +104,10 @@ void QmsSoundEffects::setAudioMuted(bool audioMuted)
 QmsSoundEffects::~QmsSoundEffects()
 {
     //Destructor
+}
+
+void QmsSoundEffects::initializeInstance(int audioVolume) {
+    if (applicationSoundEffects == nullptr) {
+        applicationSoundEffects = new QmsSoundEffects{audioVolume};
+    }
 }

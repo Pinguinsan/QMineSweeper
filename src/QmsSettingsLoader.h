@@ -27,7 +27,6 @@ class QmsSettingsLoader : public QObject
 {
     Q_OBJECT
 public:
-    explicit QmsSettingsLoader(QObject *parent = nullptr);
 
     enum class SupportedLanguage {
         English,
@@ -35,6 +34,8 @@ public:
         Spanish,
         Japanese
     };
+
+    static void initializeInstance(QObject *parent = nullptr);
 
     static int DEFAULT_COLUMN_COUNT();
     static int DEFAULT_ROW_COUNT();
@@ -52,6 +53,13 @@ private:
     static const char *s_AUDIO_VOLUME_KEY;
     static const QmsSettingsLoader::SupportedLanguage s_DEFAULT_LANGUAGE;
 
+
+    explicit QmsSettingsLoader(QObject *parent = nullptr);
+    QmsSettingsLoader(const QmsSettingsLoader &)  = delete;
+    QmsSettingsLoader &operator=(const QmsSettingsLoader &) = delete;
+    ~QmsSettingsLoader();
 };
+
+extern QmsSettingsLoader *settingsLoader;
 
 #endif // QMINESWEEPER_QMSSETTINGSLOADER_H
