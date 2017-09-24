@@ -34,8 +34,7 @@
 
 class QmsGameState;
 
-struct TimePoint
-{
+struct TimePoint {
     unsigned long hours;
     unsigned long minutes;
     unsigned long seconds;
@@ -51,6 +50,7 @@ class EventTimer
 public:
     EventTimer<ClockType>() :
         m_startTime{platform_clock_t::now()},
+        m_rawTime{platform_clock_t::now()},
         m_totalTime{0},
         m_hours{0},
         m_minutes{0},
@@ -63,6 +63,7 @@ public:
 
     EventTimer<ClockType>(const EventTimer<ClockType> &other) :
         m_startTime{other.m_startTime},
+        m_rawTime{other.m_rawTime},
         m_totalTime{other.m_totalTime},
         m_hours{other.m_hours},
         m_minutes{other.m_minutes},
@@ -74,11 +75,9 @@ public:
     }
 
     template <typename T>
-    std::string TO_STRING(const T &item) const
+    static inline std::string toStdString(const T &item) const
     {
-        std::stringstream stringStream{};
-        stringStream << item;
-        return stringStream.str();
+        return dynamic_cast<std::stringstream &>(std::stringstream{} << item).str();
     }
 
     void start()
@@ -181,20 +180,20 @@ public:
         }
         std::string returnString{""};
         if (this->m_hours != 0) {
-            returnString = TO_STRING(this->m_hours) + ':';
+            returnString = toStdString(this->m_hours) + ':';
         }
-        returnString += TO_STRING(this->m_minutes)
+        returnString += toStdString(this->m_minutes)
                         + ':'
-                        + TO_STRING(this->m_seconds)
+                        + toStdString(this->m_seconds)
                         + '.';
         long long int millisecond{this->m_milliseconds};
         std::string millisecondsString{""};
         if (millisecond < 10) {
-            millisecondsString = "00" + TO_STRING(millisecond);
+            millisecondsString = "00" + toStdString(millisecond);
         } else if (millisecond < 100) {
-            millisecondsString = "0" + TO_STRING(millisecond);
+            millisecondsString = "0" + toStdString(millisecond);
         } else {
-            millisecondsString = TO_STRING(millisecond);
+            millisecondsString = toStdString(millisecond);
         }
         returnString += millisecondsString.substr(0, millisecondDigits);
 
@@ -233,7 +232,6 @@ public:
 
 private:
     mutable std::chrono::time_point<platform_clock_t> m_startTime;
-    mutable std::chrono::time_point<platform_clock_t> m_endTime;
     mutable std::chrono::milliseconds m_rawTime;
     mutable long long int m_totalTime;
     mutable long long int m_hours;
@@ -241,7 +239,6 @@ private:
     mutable long long int m_seconds;
     mutable long long int m_milliseconds;
     bool m_isPaused;
-    bool m_isStopped;
 
     static const int INVALIDATE_CACHE_TIMEOUT{100};
 

@@ -297,15 +297,15 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
         if (!verboseLogging) {
             return;
         }
-        logContext = "{Debug}: ";
+        logContext = "{  Debug }: ";
         outputStream = &std::cout;
         break;
     case QtInfoMsg:
-        logContext = "{Info}: ";
+        logContext = "{  Info  }: ";
         outputStream = &std::clog;
         break;
     case QtWarningMsg:
-        logContext = "{Warning}: ";
+        logContext = "{  Warn  }: ";
         outputStream = &std::cout;
         break;
     case QtCriticalMsg:
@@ -313,7 +313,7 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
         outputStream = &std::cerr;
         break;
     case QtFatalMsg:
-        logContext = "{Fatal}: ";
+        logContext = "{  Fatal }: ";
         outputStream = &std::cerr;
         abort();
     }
