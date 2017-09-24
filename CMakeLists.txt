@@ -68,9 +68,9 @@ set (${PROJECT_NAME}_SOURCES
 
 
 set (${PROJECT_NAME}_FORMS
-        forms/mainwindow.ui
-        forms/boardresizewidget.ui
-        forms/aboutqmswidget.ui
+        forms/MainWindow.ui
+        forms/BoardResizeWidget.ui
+        forms/AboutQmsWidget.ui
         )
 
 set (${PROJECT_NAME}_RESOURCES

@@ -144,7 +144,6 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
             writeToFile.writeTextElement("NumberOfMinesRemaining", QS_NUMBER(numberOfMinesRemaining));
             writeToFile.writeStartElement("PlayTime");
                 writeToFile.writeTextElement("IsPaused", boolToQString(this->m_playTimer->m_isPaused));
-                writeToFile.writeTextElement("IsStopped", boolToQString(this->m_playTimer->m_isStopped));
                 writeToFile.writeTextElement("TotalTime", QS_NUMBER(this->m_playTimer->m_totalTime));
             writeToFile.writeEndElement(); //PlayTime
             writeToFile.writeStartElement("MineCoordinateList");

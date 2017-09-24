@@ -50,7 +50,7 @@ class EventTimer
 public:
     EventTimer<ClockType>() :
         m_startTime{platform_clock_t::now()},
-        m_rawTime{platform_clock_t::now()},
+        m_rawTime{},
         m_totalTime{0},
         m_hours{0},
         m_minutes{0},
@@ -75,7 +75,7 @@ public:
     }
 
     template <typename T>
-    static inline std::string toStdString(const T &item) const
+    static inline std::string toStdString(const T &item)
     {
         return dynamic_cast<std::stringstream &>(std::stringstream{} << item).str();
     }
