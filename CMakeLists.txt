@@ -82,7 +82,7 @@ set (${PROJECT_NAME}_RESOURCES
 qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 qt5_add_resources(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
-if (WIN32 OR CMAKE)
+if (WIN32 OR CYGWIN)
 add_executable(QMineSweeper
         ${${PROJECT_NAME}_SOURCES}
         ${${PROJECT_NAME}_HEADERS}
@@ -97,6 +97,24 @@ target_link_libraries (${PROJECT_NAME}
         Qt5::Core
         Qt5::Multimedia
         )
+elseif(ANDROID)
+    add_library(QMineSweeper SHARED
+        ${${PROJECT_NAME}_SOURCES}
+        ${${PROJECT_NAME}_HEADERS}
+        ${${PROJECT_NAME}_FORMS}
+        ${${PROJECT_NAME}_RESOURCES_RCC}
+        )
+
+target_link_libraries (${PROJECT_NAME}
+        Qt5::Widgets
+        Qt5::Gui
+        Qt5::Core
+        Qt5::Multimedia
+        pthread
+        )
+
+    include(qt-android-cmake/AddQtAndroidApk.cmake)
+    add_qt_android_apk(${PROJECT_NAME}Apk ${PROJECT_NAME})
 else()
 add_executable(QMineSweeper
         ${${PROJECT_NAME}_SOURCES}
