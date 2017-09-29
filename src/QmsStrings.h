@@ -98,6 +98,8 @@ namespace QmsStrings
     extern const char *EXPLOSION_EFFECT_SOURCE_PATH;
 
     extern const char *QMINESWEEPER_LICENSE_PATH;
+    
+    
 }
 
 #endif //QMINESWEEPER_QMSSTRINGS_H

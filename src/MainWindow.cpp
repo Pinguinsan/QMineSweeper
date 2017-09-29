@@ -46,7 +46,7 @@
 #include "QmsApplicationSettings.h"
 
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};

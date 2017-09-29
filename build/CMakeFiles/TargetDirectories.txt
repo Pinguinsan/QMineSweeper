@@ -1,0 +1,4 @@
+/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/rebuild_cache.dir
+/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/QMineSweeper.dir
+/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/edit_cache.dir
+/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/QMineSweeper_autogen.dir

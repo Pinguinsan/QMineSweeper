@@ -16,7 +16,7 @@
 ***********************************************************************/
 
 #include "AboutQmsWidget.h"
-#include "ui_aboutqmswidget.h"
+#include "ui_AboutQmsWidget.h"
 
 #include "GlobalDefinitions.h"
 #include "QmsApplicationSettings.h"

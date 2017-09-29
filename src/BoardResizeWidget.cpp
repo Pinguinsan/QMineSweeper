@@ -15,7 +15,7 @@
 ***********************************************************************/
 
 #include "BoardResizeWidget.h"
-#include "ui_boardresizewidget.h"
+#include "ui_BoardResizeWidget.h"
 
 #include <QDesktopWidget>
 #include <QMessageBox>
