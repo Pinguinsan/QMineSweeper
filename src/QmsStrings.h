@@ -23,83 +23,107 @@
 
 namespace QmsStrings
 {
-    extern const char *MAIN_WINDOW_TITLE;
-    extern const char *GENERIC_ERROR_MESSAGE;
-    extern const char *START_NEW_GAME_WINDOW_TITLE;
-    extern const char *START_NEW_GAME_PROMPT;
-    extern const char *START_NEW_GAME_INSTRUCTION;
-    extern const char *CLOSE_APPLICATION_WINDOW_TITLE;
-    extern const char *CLOSE_APPLICATION_WINDOW_PROMPT;
-    extern const char *RESIZE_BOARD_WINDOW_CONFIRMATION_BASE;
-    extern const char *RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING;
-    extern const char *RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL;
-    extern const char *RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE;
-    extern const char *WIN_DIALOG_BASE;
-    extern const char *WIN_DIALOG_MIDDLE;
-    extern const char *UNCOVERED_NON_MINE_STYLESHEET;
-    extern const char *UNCOVERED_MINE_STYLESHEET;
-    extern const char *LONG_CLICKED_MINE_STYLESHEET;
-    extern const char *CONFIGURATION_FILE_NAME;
-#if (defined(_WIN32) || defined(__CYGWIN__))
-    extern const char *DEFAULT_CONFIGUATION_FILE;
-#else
-    extern const char *DEFAULT_CONFIGURATION_FILE;
-#endif
-    extern const char *BACKUP_CONFIGURATION_FILE;
-    extern const char *LAST_CHANCE_CONFIGURATION_FILE;
-    extern const char *DEFAULT_PARAMETER_FILE_PATH;
+    const char * const MAIN_WINDOW_TITLE{"QMineSweeper"};
+    const char * const GENERIC_ERROR_MESSAGE{"Something has gone terribly wrong and the application must exit"};
+    const char * const START_NEW_GAME_WINDOW_TITLE{"Start new game?"};
+    const char * const START_NEW_GAME_PROMPT{"Are you sure you'd like to reset the current game?"};
+    const char * const START_NEW_GAME_INSTRUCTION{"Click on a minesweeper button to begin"};
+    const char * const CLOSE_APPLICATION_WINDOW_TITLE{"Quit QMineSweeper?"};
+    const char * const CLOSE_APPLICATION_WINDOW_PROMPT{"Are you sure you'd like to quit?"};
+    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION_BASE{"Are you sure you'd like to end the current game and start a new "};
+    const char * const RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING{"Current (columns x rows): "};
+    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL{" game?"};
+    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE{"x"};
+    const char * const WIN_DIALOG_BASE{"You win! It took "};
+    const char * const WIN_DIALOG_MIDDLE{" moves and your total play time was "};
+    const char * const UNCOVERED_NON_MINE_STYLESHEET{"color: rgb(200, 170, 255); background-color: rgb(200, 170, 255);"};
+    const char * const UNCOVERED_MINE_STYLESHEET{"color: rgb(255, 0, 0); background-color: rgb(255, 0, 0);"};
+    const char * const LONG_CLICKED_MINE_STYLESHEET{"color: rgb(0, 255, 0); background-color: rgb(0, 255, 0);"};
+    const char * const CONFIGURATION_FILE_NAME{"qms.config"};
+    #if (defined(_WIN32) || defined(__CYGWIN__))
+    const char * const DEFAULT_CONFIGUATION_FILE{""};
+    #else
+    const char * const DEFAULT_CONFIGURATION_FILE{"~/.local/qminesweeper/qminesweeper.config"};
+    #endif
+    const char * const BACKUP_CONFIGURATION_FILE{"/usr/share/qminesweeper/qminesweeper.config"};
+    const char * const LAST_CHANCE_CONFIGURATION_FILE{"/opt/GitHub/QMineSweeper/config/qminesweeper.config"};
+    const char * const DEFAULT_PARAMETER_FILE_PATH{"config/defaults.config"};
 
-    extern const char *LCD_OVERFLOW_STRING;
+    const char * const LCD_OVERFLOW_STRING{"999"};
+    const char * const ENGLISH_STRING{"English"};
+    const char * const FRENCH_STRING{"French"};
+    const char * const SPANISH_STRING{"Spanish"};
+    const char * const JAPANESE_STRING{"Japanese"};
 
-    extern const char *SAVED_GAME_FILE_EXTENSION;
-    extern const char *SAVE_FILE_CAPTION;
-    extern const char *OPEN_FILE_CAPTION;
+    const char * const SAVED_GAME_FILE_EXTENSION{".qms"};
+    const char * const SAVE_FILE_CAPTION{"Save game?"};
+    const char * const OPEN_FILE_CAPTION{"Open existing game?"};
 
-    extern const char *ABOUT_QT_WINDOW_TITLE;
+    const char * const ABOUT_QT_WINDOW_TITLE{"About Qt"};
 
-    extern const char *ENGLISH_STRING;
-    extern const char *FRENCH_STRING;
-    extern const char *SPANISH_STRING;
-    extern const char *JAPANESE_STRING;
+    const char * const ENGLISH_TRANSLATION_PATH{":/translations/english.qm"};
+    const char * const FRENCH_TRANSLATION_PATH{":/translations/french.qm"};
+    const char * const SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};
+    const char * const JAPANESE_TRANSLATION_PATH{":/translations/japanese.qm"};
 
-    extern const char *ENGLISH_TRANSLATION_PATH;
-    extern const char *FRENCH_TRANSLATION_PATH;
-    extern const char *SPANISH_TRANSLATION_PATH;
-    extern const char *JAPANESE_TRANSLATION_PATH;
+    const char * const MINE_ICON_16_PATH{":/mine-icons/png/mine-icons/16-qminesweeper.png"};
+    const char * const MINE_ICON_24_PATH{":/mine-icons/png/mine-icons/24-qminesweeper.png"};
+    const char * const MINE_ICON_32_PATH{":/mine-icons/png/mine-icons/32-qminesweeper.png"};
+    const char * const MINE_ICON_48_PATH{":/mine-icons/png/mine-icons/48-qminesweeper.png"};
+    const char * const MINE_ICON_64_PATH{":/mine-icons/png/mine-icons/64-qminesweeper.png"};
+    const char * const MINE_ICON_72_PATH{":/mine-icons/png/mine-icons/72-qminesweeper.png"};
+    const char * const MINE_ICON_96_PATH{":/mine-icons/png/mine-icons/96-qminesweeper.png"};
+    const char * const MINE_ICON_128_PATH{":/mine-icons/png/mine-icons/128-qminesweeper.png"};
+    const char * const FACE_ICON_BIG_SMILEY_PATH{":/face-icons/png/face-icons/big-smiley-face.png"};
+    const char * const FACE_ICON_CRAZY_PATH{":/face-icons/png/face-icons/crazy-face.png"};
+    const char * const FACE_ICON_FROWNY_PATH{":/face-icons/png/face-icons/frowny-face.png"};
+    const char * const FACE_ICON_SLEEPY_PATH{":/face-icons/png/face-icons/sleepy-face.png"};
+    const char * const FACE_ICON_SMILEY_PATH{":/face-icons/png/face-icons/smiley-face.png"};
+    const char * const FACE_ICON_WINKY_PATH{":/face-icons/png/face-icons/winky-face.png"};
+    const char * const COUNT_MINES_0_PATH{};
+    const char * const COUNT_MINES_1_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/1.png"};
+    const char * const COUNT_MINES_2_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/2.png"};
+    const char * const COUNT_MINES_3_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/3.png"};
+    const char * const COUNT_MINES_4_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/4.png"};
+    const char * const COUNT_MINES_5_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/5.png"};
+    const char * const COUNT_MINES_6_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/6.png"};
+    const char * const COUNT_MINES_7_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/7.png"};
+    const char * const COUNT_MINES_8_PATH{":/surrounding-mine-icons/png/surrounding-mine-icons/8.png"};
+    const char * const STATUS_ICON_FLAG_PATH{":/status-icons/png/status-icons/flag.png"};
+    const char * const STATUS_ICON_QUESTION_PATH{":/status-icons/png/status-icons/question-mark.png"};
+    const char * const STATUS_ICON_FLAG_CHECK_PATH{":/status-icons/png/status-icons/flag-check.png"};
+    const char * const STATUS_ICON_FLAG_X_PATH{":/status-icons/png/status-icons/flag-x.png"};
 
-    extern const char *MINE_ICON_16_PATH;
-    extern const char *MINE_ICON_24_PATH;
-    extern const char *MINE_ICON_32_PATH;
-    extern const char *MINE_ICON_48_PATH;
-    extern const char *MINE_ICON_64_PATH;
-    extern const char *MINE_ICON_72_PATH;
-    extern const char *MINE_ICON_96_PATH;
-    extern const char *MINE_ICON_128_PATH;
-    extern const char *FACE_ICON_BIG_SMILEY_PATH;
-    extern const char *FACE_ICON_CRAZY_PATH;
-    extern const char *FACE_ICON_FROWNY_PATH;
-    extern const char *FACE_ICON_SLEEPY_PATH;
-    extern const char *FACE_ICON_SMILEY_PATH;
-    extern const char *FACE_ICON_WINKY_PATH;
-    extern const char *COUNT_MINES_0_PATH;
-    extern const char *COUNT_MINES_1_PATH;
-    extern const char *COUNT_MINES_2_PATH;
-    extern const char *COUNT_MINES_3_PATH;
-    extern const char *COUNT_MINES_4_PATH;
-    extern const char *COUNT_MINES_5_PATH;
-    extern const char *COUNT_MINES_6_PATH;
-    extern const char *COUNT_MINES_7_PATH;
-    extern const char *COUNT_MINES_8_PATH;
-    extern const char *STATUS_ICON_FLAG_PATH;
-    extern const char *STATUS_ICON_QUESTION_PATH;
-    extern const char *STATUS_ICON_FLAG_CHECK_PATH;
-    extern const char *STATUS_ICON_FLAG_X_PATH;
+    const char * const EXPLOSION_EFFECT_SOURCE_PATH{"qrc:/sounds/sounds/explosion-fast.wav"};
 
-    extern const char *EXPLOSION_EFFECT_SOURCE_PATH;
+    const char * const QMINESWEEPER_LICENSE_PATH{":/licenses/licenses/LICENSE"};
+    const char * const RESIZE_BOARD_BUTTON_GAME_DIMENSIONS_KEY{"GameDimensions"};
+    const char * const RESIZE_BOARD_BUTTON_MINE_RATIO_KEY{"MineRatio"};
+    const char * const RESIZE_BOARD_BUTTON_LAST_MOUSE_DOWN_TIME{"LastMouseDownTime"};
+    const char * const RESIZE_BOARD_BUTTON_LAST_MOUSE__TIME{"IsBeingLongPressed"};
 
-    extern const char *QMINESWEEPER_LICENSE_PATH;
-    
-    
+
+    static const char *const QMS_GAME_STATE_XML_KEY{"QmsGameState"};
+    static const char *const COLUMN_COUNT_XML_KEY{"NumberOfColumns"};
+    static const char *const ROW_COUNT_XML_KEY{"NumberOfRows"};
+    static const char *const MINE_COUNT_XML_KEY{"NumberOfMines"};
+    static const char *const MOVES_MADE_COUNT_XML_KEY{"NumberOfMovesMade"};
+    static const char *const MINES_REMAINING_COUNT_XML_KEY{"NumberOfMinesRemaining"};
+    static const char *const PLAY_TIMER_START_ELEMENT_XML_KEY{"PlayTimer"};
+    static const char *const PLAY_TIMER_IS_PAUSED_XML_KEY{"IsPaused"};
+    static const char *const PLAY_TIMER_TOTAL_TIME_XML_KEY{"TotalTime"};
+    static const char *const MINE_COORDINATE_LIST_XML_KEY{"MineCoordinateList"};
+    static const char *const MINE_COORDINATES_XML_KEY{"MineCoordinates"};
+    static const char *const QMS_BUTTON_LIST_START_ELEMENT_XML_KEY{"QmsButtons"};
+    static const char *const QMS_BUTTON_START_ELEMENT_XML_KEY{"QmsButton"};
+    static const char *const QMS_BUTTON_MINE_COORDINATES_XML_KEY{"MineCoordinates"};
+    static const char *const QMS_BUTTON_IS_BLOCKING_CLICKS_XML_KEY{"IsBlockingClicks"};
+    static const char *const QMS_BUTTON_SURROUNDING_MINE_COUNT_XML_KEY{"NumberOfSurroundingMines"};
+    static const char *const QMS_BUTTON_IS_CHECKED_XML_KEY{"IsChecked"};
+    static const char *const QMS_BUTTON_HAS_FLAG_XML_KEY{"HasFlag"};
+    static const char *const QMS_BUTTON_HAS_MINE_XML_KEY{"HasMine"};
+    static const char *const QMS_BUTTON_IS_REVEALED_XML_KEY{"IsRevealed"};
+
 }
 
 #endif //QMINESWEEPER_QMSSTRINGS_H

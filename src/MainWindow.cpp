@@ -421,8 +421,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
  * is closed, signaling to the main game window to resume the game, if a game is in progress */
 void MainWindow::onBoardResizeDialogClosed(BoardResizeWidget::ResizeWidgetResult result)
 {
-    int columns{result.columns};
-    int rows{result.rows};
+    int columns{result.boardSize.columns};
+    int rows{result.boardSize.rows};
     BoardResizeWidget::ResizeWidgetExitCode userAction{result.userAction};
     this->setEnabled(true);
     if (userAction == BoardResizeWidget::ResizeWidgetExitCode::Accepted) {

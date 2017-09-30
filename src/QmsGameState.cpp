@@ -28,6 +28,8 @@
 #include <QXmlStreamReader>
 #include <QFileInfo>
 
+using namespace QmsStrings;
+
 const std::pair<double, double> QmsGameState::s_CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
 const int QmsGameState::s_CELL_TO_MINE_THRESHOLD{82};
 
@@ -110,28 +112,6 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
 
     return LoadGameStateResult::Success; //QmsGameState{0, 0};
 }
-
-static const char *const QMS_GAME_STATE_XML_KEY{"QmsGameState"};
-static const char *const COLUMN_COUNT_XML_KEY{"NumberOfColumns"};
-static const char *const ROW_COUNT_XML_KEY{"NumberOfRows"};
-static const char *const MINE_COUNT_XML_KEY{"NumberOfMines"};
-static const char *const MOVES_MADE_COUNT_XML_KEY{"NumberOfMovesMade"};
-static const char *const MINES_REMAINING_COUNT_XML_KEY{"NumberOfMinesRemaining"};
-static const char *const PLAY_TIMER_START_ELEMENT_XML_KEY{"PlayTimer"};
-static const char *const PLAY_TIMER_IS_PAUSED_XML_KEY{"IsPaused"};
-static const char *const PLAY_TIMER_TOTAL_TIME_XML_KEY{"TotalTime"};
-static const char *const MINE_COORDINATE_LIST_XML_KEY{"MineCoordinateList"};
-static const char *const MINE_COORDINATES_XML_KEY{"MineCoordinates"};
-static const char *const QMS_BUTTON_LIST_START_ELEMENT_XML_KEY{"QmsButtons"};
-static const char *const QMS_BUTTON_START_ELEMENT_XML_KEY{"QmsButton"};
-static const char *const QMS_BUTTON_MINE_COORDINATES_XML_KEY{"MineCoordinates"};
-static const char *const QMS_BUTTON_IS_BLOCKING_CLICKS_XML_KEY{"IsBlockingClicks"};
-static const char *const QMS_BUTTON_SURROUNDING_MINE_COUNT_XML_KEY{"NumberOfSurroundingMines"};
-static const char *const QMS_BUTTON_IS_CHECKED_XML_KEY{"IsChecked"};
-static const char *const QMS_BUTTON_HAS_FLAG_XML_KEY{"HasFlag"};
-static const char *const QMS_BUTTON_HAS_MINE_XML_KEY{"HasMine"};
-static const char *const QMS_BUTTON_IS_REVEALED_XML_KEY{"IsRevealed"};
-
 
 
 SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)

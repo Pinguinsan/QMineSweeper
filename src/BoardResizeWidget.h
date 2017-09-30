@@ -21,10 +21,10 @@ namespace Ui {
     class BoardResizeWidget;
 }
 
-#include <memory>
 #include "MouseMoveableQWidget.h"
 
 class QDesktopWidget;
+class QPushButton;
 
 class BoardResizeWidget : public MouseMoveableQWidget
 {
@@ -35,14 +35,19 @@ public:
         Rejected
     };
 
-    struct ResizeWidgetResult {
+    struct GameBoardSize {
+        float mineRatio;
         int columns;
         int rows;
+    };
+
+    struct ResizeWidgetResult {
+        GameBoardSize boardSize;
         ResizeWidgetExitCode userAction;
     };
 
-    BoardResizeWidget(QWidget *parent = nullptr);
-    ~BoardResizeWidget();
+    explicit BoardResizeWidget(QWidget *parent = nullptr);
+    ~BoardResizeWidget() override;
     void show(int columns, int rows);
     void closeEvent(QCloseEvent *event) override;
     void showEvent(QShowEvent *event) override;
@@ -50,22 +55,34 @@ public:
 signals:
     void aboutToClose(ResizeWidgetResult result);
     void keyPressEvent(QKeyEvent *event);
-
 private slots:
     void onOkayButtonClicked(bool checked);
     void onCancelButtonClicked(bool checked);
-    void onPresetBoardSizeActionTriggered(bool checked);
-    void onBoardResizeActionClicked();
+    void onBtnBeginnerPresetClicked(bool down);
+    void onBtnIntermediatePresetClicked(bool down);
+    void onBtnAdvancedPresetClicked(bool down);
+    void onBtnExtremePresetClicked(bool down);
+
+
 
 private:
-    std::unique_ptr<Ui::BoardResizeWidget> m_ui;
+    Ui::BoardResizeWidget *m_ui;
     int m_numberOfColumns;
     int m_numberOfRows;
-    int m_xPlacement;
-    int m_yPlacement;
     ResizeWidgetResult m_resultToEmit;
 
-    void calculateXYPlacement(QDesktopWidget *desktopWidget);
+    void onPresetBoardSizeActionTriggered(QPushButton *pressedButton);
+
+    void onBtnIncrementRowsClicked(bool down);
+    void onBtnDecrementRowsClicked(bool down);
+    void onBtnIncrementColumnsClicked(bool down);
+    void onBtnDecrementColumnsClicked(bool down);
+
+    static const std::pair<int, int> BEGINNER_GAME_DIMENSIONS;
+    static const std::pair<int, int> INTERMEDIATE_GAME_DIMENSIONS;
+    static const std::pair<int, int> ADVANCED_GAME_DIMENSIONS;
+    static const std::pair<int, int> EXTREME_GAME_DIMENSIONS;
+
 };
 
 #endif //QMINESWEEPER_BOARDRESIZEWIDGET_H
