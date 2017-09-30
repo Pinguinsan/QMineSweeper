@@ -153,6 +153,8 @@ private slots:
     void updateUserIdleTimer();
     void startGameTimer();
     void onChangeBoardSizeActionTriggered();
+    void onCustomMineRatioSet(float mineRatio);
+
 
     void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
     void updateNumberOfMinesLCD(int numberOfMines);
@@ -162,8 +164,8 @@ private slots:
     void onSaveActionTriggered();
     void onSaveAsActionTriggered();
     void onOpenActionTriggered();
-
     void updateGeometry();
+
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H

@@ -94,7 +94,9 @@ void GameController::setCustomMineRatio(float mineRatio)
     }
     this->m_qmsGameState->m_customMineRatio.reset(new float{mineRatio});
     this->m_qmsGameState->m_numberOfMines = roundIntuitively(this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows * (*this->m_qmsGameState->m_customMineRatio));
+    this->m_qmsGameState->m_userDisplayNumberOfMines = this->m_qmsGameState->m_numberOfMines;
 
+    emit(customMineRatioSet(mineRatio));
 }
 
 void GameController::onBoardResizeTriggered(int columns, int rows)

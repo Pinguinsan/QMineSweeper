@@ -219,3 +219,11 @@ QmsGameState::~QmsGameState()
 {
 
 }
+
+void QmsGameState::writeQmsButtonToXmlStream(QXmlStreamWriter *writeToFile, const MineCoordinates &coordinates,
+                                             std::shared_ptr<QmsButton> targetButton)
+{
+    Q_UNUSED(writeToFile);
+    Q_UNUSED(coordinates);
+    Q_UNUSED(targetButton);
+}

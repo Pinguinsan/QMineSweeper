@@ -126,6 +126,7 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->connect(gameController, &GameController::readyToBeginNewGame, this, &MainWindow::setupNewGame);
     this->connect(gameController, &GameController::userIsNoLongerIdle, this, &MainWindow::startUserIdleTimer);
     this->connect(gameController, &GameController::gameStarted, this, &MainWindow::onGameStarted);
+    this->connect(gameController, &GameController::customMineRatioSet, this, &MainWindow::onCustomMineRatioSet);
 
     this->connect(this->m_eventTimer.get(), &QTimer::timeout, this, &MainWindow::eventLoop);
 
@@ -189,6 +190,12 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->updateNumberOfMovesMadeLCD(gameController->numberOfMovesMade());
     this->updateNumberOfMinesLCD(gameController->userDisplayNumberOfMines());
 
+}
+
+void MainWindow::onCustomMineRatioSet(float mineRatio)
+{
+    LOG_DEBUG() << QString{R"(Custom mine ratio %1 has been set)"}.arg(QS_NUMBER(mineRatio));
+    this->updateNumberOfMinesLCD(gameController->numberOfMines());
 }
 
 void MainWindow::onSaveActionTriggered()
@@ -494,6 +501,7 @@ void MainWindow::setupNewGame()
         delete wItem;
     }
     this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
+    this->updateNumberOfMinesLCD(gameController->numberOfMines());
     this->populateMineField();
     this->centerAndFitWindow(true, true);
 }

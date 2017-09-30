@@ -141,6 +141,7 @@ signals:
     void userIsNoLongerIdle();
     void numberOfMinesRemainingChanged(int newNumber);
     void numberOfMovesMadeChanged(int newNumber);
+    void customMineRatioSet(float mineRatio);
 
 private:
     std::shared_ptr<QmsGameState> m_qmsGameState;
