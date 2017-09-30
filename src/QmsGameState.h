@@ -89,6 +89,7 @@ private:
     bool m_gameOver;
     int m_totalButtonCount;
     int m_unopenedMineCount;
+    std::unique_ptr<float> m_customMineRatio;
 
     static const std::pair<double, double> s_CELL_TO_MINE_RATIOS;
     static const int s_CELL_TO_MINE_THRESHOLD;

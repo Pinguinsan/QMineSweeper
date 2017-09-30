@@ -33,12 +33,15 @@
 #include <random>
 #include <QCryptographicHash>
 #include <QString>
+#include <sstream>
 
 class QFile;
 class QByteArray;
 
 namespace QmsUtilities
 {
+
+    template <typename T> inline std::string toStdString(const T &t) { return dynamic_cast<std::stringstream &>(std::stringstream{} << t).str(); }
     QString getUserConfigurationFilePath();
     QString getConfigurationFilePath();
     void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath);
@@ -69,7 +72,7 @@ namespace QmsUtilities
         std::mt19937 m_randomEngine{std::random_device{}()};
     };
 
-    int randomBetween(int lowLimit, int highLimit, bool lowInclusive = false, bool highInclusive = false);
+    int randomBetween(int lowLimit, int highLimit, bool lowInclusive = true, bool highInclusive = true);
 
     void logString(const std::string &str);
 
@@ -137,14 +140,6 @@ namespace QmsUtilities
         return isEqualsSwitch(static_cast<std::string>(switchToCheck), switches);
     }
 
-
-    template <typename T>
-    std::string toStdString(const T &rhs)
-    {
-        std::stringstream stringStream{};
-        stringStream << rhs;
-        return stringStream.str();
-    }
 
     /*snprintf style*/
     template<typename ... Args>

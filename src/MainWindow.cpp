@@ -95,6 +95,7 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
     this->m_ui->centralwidget->setMouseTracking(true);
+    this->setStyleSheet("");
 
     QFont tempFont{this->m_statusBarLabel->font()};
     tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);

@@ -26,50 +26,50 @@ CONFIG += c++14
 TARGET   = QMineSweeper
 TEMPLATE = app
 
-HEADERS += src/mainwindow.h \
-           src/gamecontroller.h \
-           src/minecoordinates.h \
-           src/minecoordinatehash.h \
-           src/eventtimer.h \
-    src/globaldefinitions.h \
-    src/qmsapplicationsettings.h \
-    src/qmsbutton.h \
-    src/qmsicons.h \
-    src/qmssettingsloader.h \
-    src/qmssoundeffects.h \
-    src/qmsstrings.h \
-    src/qmsutilities.h \
-    src/qmsgamestate.h \
-    src/mousemoveableqmainwindow.h \
-    src/aboutqmswidget.h \
-    src/boardresizewidget.h \
-    src/mousemoveableqwidget.h
+HEADERS += src/MainWindow.h \
+           src/GameController.h \
+           src/MineCoordinates.h \
+           src/MineCoordinateHash.h \
+           src/EventTimer.h \
+    src/GlobalDefinitions.h \
+    src/QmsApplicationSettings.h \
+    src/QmsButton.h \
+    src/QmsIcons.h \
+    src/QmsSettingsLoader.h \
+    src/QmsSoundEffects.h \
+    src/QmsStrings.h \
+    src/QmsUtilities.h \
+    src/QmsGameState.h \
+    src/MouseMoveableQMainWindow.h \
+    src/AboutQmsWidget.h \
+    src/BoardResizeWidget.h \
+    src/MouseMoveableQWidget.h
 
-SOURCES += src/main.cpp \
-           src/mainwindow.cpp \
-           src/gamecontroller.cpp \
-           src/minecoordinates.cpp \
-    src/qmsapplicationsettings.cpp \
-    src/qmsbutton.cpp \
-    src/qmsicons.cpp \
-    src/qmssettingsloader.cpp \
-    src/qmssoundeffects.cpp \
-    src/qmsstrings.cpp \
-    src/qmsutilities.cpp \
-    src/qmsgamestate.cpp \
-    src/mousemoveableqmainwindow.cpp \
-    src/aboutqmswidget.cpp \
-    src/boardresizewidget.cpp \
-    src/mousemoveableqwidget.cpp
+SOURCES += src/Main.cpp \
+           src/MainWindow.cpp \
+           src/GameController.cpp \
+           src/MineCoordinates.cpp \
+    src/QmsApplicationSettings.cpp \
+    src/QmsButton.cpp \
+    src/QmsIcons.cpp \
+    src/QmsSettingsLoader.cpp \
+    src/QmsSoundEffects.cpp \
+    src/QmsStrings.cpp \
+    src/QmsUtilities.cpp \
+    src/QmsGameState.cpp \
+    src/MouseMoveableQMainWindow.cpp \
+    src/AboutQmsWidget.cpp \
+    src/BoardResizeWidget.cpp \
+    src/MouseMoveableQWidget.cpp
 
 RESOURCES += resources/icons.qrc \
              resources/sounds.qrc \
              resources/translations.qrc \
     resources/licenses.qrc
 
-FORMS += forms/mainwindow.ui \
-    forms/aboutqmswidget.ui \
-    forms/boardresizewidget.ui
+FORMS += forms/MainWindow.ui \
+    forms/AboutQmsWidget.ui \
+    forms/BoardResizeWidget.ui
 
 win32 {
     RC_FILE += resources/qminesweeper.rc

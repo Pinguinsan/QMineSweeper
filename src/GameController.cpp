@@ -24,6 +24,7 @@
 #include <QMessageBox>
 
 #include <sstream>
+#include <QtCore/QCoreApplication>
 
 #include "QmsButton.h"
 #include "MineCoordinates.h"
@@ -82,14 +83,33 @@ int GameController::unopenedMineCount() const
     return this->m_qmsGameState->m_unopenedMineCount;
 }
 
+void GameController::setCustomMineRatio(float mineRatio)
+{
+    using namespace QmsUtilities;
+    if (mineRatio <= 0) {
+        throw std::runtime_error("setCustomMineRatio: mineRatio cannot be less than or equal to 0 (" + toStdString(mineRatio) + " <= 0)");
+    }
+    if (mineRatio >= 1) {
+        throw std::runtime_error("setCustomMineRatio: mine ratio cannot be greater than or equal to 1 (" + toStdString(mineRatio) + " >= 1)");
+    }
+    this->m_qmsGameState->m_customMineRatio.reset(new float{mineRatio});
+    this->m_qmsGameState->m_numberOfMines = roundIntuitively(this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows * (*this->m_qmsGameState->m_customMineRatio));
+
+}
+
 void GameController::onBoardResizeTriggered(int columns, int rows)
 {
     using namespace QmsUtilities;
     this->m_qmsGameState->m_numberOfColumns = columns;
     this->m_qmsGameState->m_numberOfRows = rows;
-    this->m_qmsGameState->m_numberOfMines = ((this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows) < QmsGameState::s_CELL_TO_MINE_THRESHOLD) ?
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_qmsGameState->m_numberOfColumns) * static_cast<double>(this->m_qmsGameState->m_numberOfRows) * QmsGameState::s_CELL_TO_MINE_RATIOS.first)) :
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_qmsGameState->m_numberOfColumns) * static_cast<double>(this->m_qmsGameState->m_numberOfRows) * QmsGameState::s_CELL_TO_MINE_RATIOS.second));
+    if (this->m_qmsGameState->m_customMineRatio == nullptr) {
+        this->m_qmsGameState->m_numberOfMines = ((this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows) < QmsGameState::s_CELL_TO_MINE_THRESHOLD) ?
+                                                roundIntuitively(this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows * QmsGameState::s_CELL_TO_MINE_RATIOS.first) :
+                                                roundIntuitively(this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows * QmsGameState::s_CELL_TO_MINE_RATIOS.second);
+
+    } else {
+        this->m_qmsGameState->m_numberOfMines = roundIntuitively(this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows * (*this->m_qmsGameState->m_customMineRatio));
+    }
     this->m_qmsGameState->m_userDisplayNumberOfMines = this->m_qmsGameState->m_numberOfMines;
     this->m_qmsGameState->m_gameState = GameState::GameInactive;
     this->m_qmsGameState->m_mineCoordinates.clear();
@@ -262,7 +282,7 @@ void GameController::generateRandomMinePlacement(QmsButton *msbp)
     using namespace QmsUtilities;
     MineCoordinates potentialMineCoordinates{0,0};
     while (this->m_qmsGameState->m_mineCoordinates.size() < static_cast<unsigned int>(this->m_qmsGameState->m_numberOfMines)) {
-        potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_qmsGameState->m_numberOfColumns), randomBetween(0, this->m_qmsGameState->m_numberOfRows)};
+        potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_qmsGameState->m_numberOfColumns - 1), randomBetween(0, this->m_qmsGameState->m_numberOfRows - 1)};
         if (potentialMineCoordinates == *(msbp->mineCoordinates().get())) {
             continue;
         } else {
@@ -432,6 +452,8 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp)
             errorBox->setText(GENERIC_ERROR_MESSAGE);
             std::cout << e.what() << std::endl;
             errorBox->exec();
+            QCoreApplication::exit(EXIT_FAILURE);
+            _Exit(EXIT_FAILURE);
         }
         this->m_qmsGameState->m_gameState = GameState::GameActive;
         emit(gameStarted());

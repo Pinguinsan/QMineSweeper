@@ -36,6 +36,7 @@
 #include <QString>
 #include <QRect>
 #include <QDateTime>
+#include <forward_list>
 
 #include "MainWindow.h"
 #include "QmsButton.h"
@@ -62,10 +63,11 @@
  *     QMineSweeperSettingsLoader - Single instance class that holds all settings from a configuration file
  */
 
-const std::list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
-const std::list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
-const std::list<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
-const std::list<const char *> VERBOSE_LOGGING_SWITCHES{"-o", "--o", "-verbose", "--verbose"};
+const std::forward_list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
+const std::forward_list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
+const std::forward_list<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
+const std::forward_list<const char *> MINE_RATIO_SWITCHES{"-r", "--r", "-ratio", "--ratio", "-mine-ratio", "--mine-ratio"};
+const std::forward_list<const char *> VERBOSE_LOGGING_SWITCHES{"-o", "--o", "-verbose", "--verbose"};
 
 void displayHelp();
 void displayVersion();
@@ -104,20 +106,57 @@ int main(int argc, char *argv[])
      int columnCount{-1};
      int rowCount{-1};
      bool columnsSetByCommandLine{false};
+    float mineRatio{0};
+    bool mineRatioSetByCommandLine{false};
 
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
          if (isSwitch(*iter, VERBOSE_LOGGING_SWITCHES)) {
              verboseLogging = true;
+         } else if (isSwitch(*iter, MINE_RATIO_SWITCHES)) {
+             if (iter + 1) {
+                 if (mineRatioSetByCommandLine) {
+                     LOG_WARNING() << QString{R"(Switch "%1" accepted, but mine ratio was already specified by command line option, skipping option)"}.arg(*iter);
+                     continue;
+                 }
+                 try {
+                     mineRatio = std::stof(*(iter + 1));
+                     mineRatioSetByCommandLine = true;
+                 } catch (std::exception &e) {
+                     LOG_WARNING() << QString{R"(Switch "%1" accepted, but value "%2" is not a valid mine ratio specification, skipping option)"}.arg(*iter, *(iter+1));
+                 }
+                 iter++;
+             } else {
+                 LOG_WARNING() << QString{R"(Switch %1 accepted, but no mine ratio was specified after, skipping option)"}.arg(*iter);
+             }
+         } else if (isEqualsSwitch(*iter, MINE_RATIO_SWITCHES)) {
+             if (mineRatioSetByCommandLine) {
+                 LOG_WARNING() << QString{R"(Switch "%1" accepted, but mine ratio was already specified by command line option, skipping option)"}.arg(*iter);
+                 continue;
+             }
+             std::string copyString{*iter};
+             size_t foundPosition{copyString.find('=')};
+             size_t foundEnd{copyString.substr(foundPosition).find(' ')};
+             if (copyString.substr(foundPosition+1, (foundEnd - foundPosition)) == "") {
+                 LOG_WARNING() << QString{R"(Switch %1 accepted, but no mine ratio was specified after, skipping option)"}.arg(*iter);
+             } else {
+                 std::string maybeMineRatio{stripAllFromString(copyString.substr(foundPosition+1, (foundEnd - foundPosition)), "\"")};
+                 try {
+                     mineRatio = std::stof(maybeMineRatio.c_str());
+                     mineRatioSetByCommandLine = true;
+                 } catch (std::exception &e) {
+                     LOG_WARNING() << QString{R"(Switch "%1" accepted, but value "%2" is not a valid mine ratio specification, skipping option)"}.arg(*iter, maybeMineRatio.c_str());
+                 }
+             }
          } else if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
             if (iter + 1) {
                 if (rowCount != -1) {
-                    std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
+                    LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
                     continue;
                 }
                 std::pair<int, int> dimensions{tryParseDimensions(*(iter + 1))};
 
                 if (dimensions.second == -1) {
-                    std::cout << "Switch \"" << *iter << "\" accepted, but value \"" << *(iter + 1) << " is not a valid dimension specification, skipping option" << std::endl;
+                    LOG_WARNING() << QString{R"(Switch "%1" accepted, but value "%2" is not a valid dimension specification, skipping option)"}.arg(*iter, *(iter+1));
                     continue;
                 } else {
                     columnCount = dimensions.first;
@@ -125,22 +164,23 @@ int main(int argc, char *argv[])
                 }
                 iter++;
             } else {
-                std::cout << "Switch \"" << *iter << "\" accepted, but no dimensions were specified after, skipping option" << std::endl;
+                LOG_WARNING() << QString{R"(Switch %1 accepted, but no dimensions were specified after, skipping option)"}.arg(*iter);
             }
          } else if (isEqualsSwitch(*iter, DIMENSIONS_SWITCHES)) {
              if (rowCount != -1) {
-                 std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
+                 LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
                  continue;
              }
              std::string copyString{*iter};
              size_t foundPosition{copyString.find('=')};
              size_t foundEnd{copyString.substr(foundPosition).find(' ')};
              if (copyString.substr(foundPosition+1, (foundEnd - foundPosition)) == "") {
-                 std::cout << "WARNING: Switch \"" << *iter << "\" accepted, but no dimensions we specified after, skipping option" << std::endl;
+                 LOG_WARNING() << QString{R"(Switch %1 accepted, but no dimensions were specified after, skipping option)"}.arg(*iter);
              } else {
                  std::pair<int, int> dimensions{tryParseDimensions(stripAllFromString(copyString.substr(foundPosition+1, (foundEnd - foundPosition)), "\""))};
                  if (dimensions.second == -1) {
-                     std::cout << "Switch \"" << *iter << "\" accepted, but value \"" << stripAllFromString(copyString.substr(foundPosition+1, (foundEnd - foundPosition)), "\"") << "\" is not a valid dimension specification, skipping option" << std::endl;
+                     LOG_WARNING() << QString{
+                             R"(Switch "%1" accepted, but value "%2" is not a valid dimension specification, skipping option)"}.arg(*iter, stripAllFromString(copyString.substr(foundPosition+1, (foundEnd - foundPosition)), "\"").c_str());
                  } else {
                      columnCount = dimensions.first;
                      rowCount = dimensions.second;
@@ -148,14 +188,14 @@ int main(int argc, char *argv[])
              }
          } else if (containsSeparator(*iter)) {
              if (rowCount != -1) {
-                 std::cout << "Switch \"" << *iter << "\" accepted, but dimensions were already specified by command line option, skipping option" << std::endl;
+                 LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
                  continue;
              }
              std::pair<int, int> dimensions{tryParseDimensions(*iter)};
              columnCount = dimensions.first;
              rowCount = dimensions.second;
          } else {
-            std::cout << "Invalid switch : " << *iter << ", skipping" << std::endl;
+             LOG_WARNING() << QString{"Invalid switch: \"%1\", skipping"}.arg(*iter);
          }
      }
      if (rowCount == -1) {
@@ -193,6 +233,10 @@ int main(int argc, char *argv[])
 #endif
     std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(QmsSettingsLoader::DEFAULT_LANGUAGE())};
     gameController->bindMainWindow(mainWindow);
+    if (mineRatioSetByCommandLine) {
+        LOG_INFO() << QString{R"(Using custom mine ratio %1)"}.arg(QS_NUMBER(mineRatio));
+        gameController->setCustomMineRatio(mineRatio);
+    }
     mainWindow->setupNewGame();
 
     QMainWindow::connect(&qApplication, SIGNAL(aboutToQuit()), mainWindow.get(), SLOT(onApplicationExit()));

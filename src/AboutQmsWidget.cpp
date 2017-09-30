@@ -22,10 +22,7 @@
 #include "QmsApplicationSettings.h"
 #include "QmsStrings.h"
 
-#include <QDesktopWidget>
-#include <QRect>
 #include <QDateTime>
-#include <QPushButton>
 #include <QFile>
 
 #include <memory>

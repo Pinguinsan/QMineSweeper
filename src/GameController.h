@@ -91,6 +91,9 @@ public:
     bool isEdgeButton(QmsButton *msb) const;
     GameState gameState() const;
 
+    void setCustomMineRatio(float mineRatio);
+
+
     static void initializeInstance(int columnCount, int rowCount);
 
     SaveGameStateResult saveGame(const QString &filePath);
@@ -107,6 +110,7 @@ public:
     static int DEFAULT_SLEEPY_FACE_TIMEOUT();
     static int LONG_CLICK_THRESHOLD();
     static int MILLISECOND_DELAY_DIGITS();
+
 
 
 public slots:

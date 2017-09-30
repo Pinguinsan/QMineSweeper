@@ -48,20 +48,15 @@ QmsGameState::QmsGameState(int columnCount, int rowCount) :
     m_gameState{GameState::GameInactive},
     m_gameOver{false},
     m_totalButtonCount{this->m_numberOfColumns*this->m_numberOfRows},
-    m_unopenedMineCount{this->m_numberOfColumns*this->m_numberOfRows}
+    m_unopenedMineCount{this->m_numberOfColumns*this->m_numberOfRows},
+    m_customMineRatio{nullptr}
 
 {
     using namespace QmsUtilities;
     this->m_numberOfMines = ((this->m_numberOfColumns * this->m_numberOfRows) < this->s_CELL_TO_MINE_THRESHOLD) ?
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.first)) :
-            static_cast<int>(roundIntuitively(static_cast<double>(this->m_numberOfColumns) * static_cast<double>(this->m_numberOfRows) * s_CELL_TO_MINE_RATIOS.second));
+            roundIntuitively(this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.first) :
+            roundIntuitively(this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.second);
     this->m_userDisplayNumberOfMines = this->m_numberOfMines;
-}
-
-
-QmsGameState::~QmsGameState()
-{
-
 }
 
 
@@ -217,4 +212,10 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
     hashFile.close();
     outputFile.close();
     return SaveGameStateResult::Success;
+}
+
+
+QmsGameState::~QmsGameState()
+{
+
 }
