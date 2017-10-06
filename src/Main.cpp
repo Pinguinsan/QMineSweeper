@@ -303,17 +303,18 @@ void displayVersion()
 
 void displayHelp()
 {
-    LOG_INFO() << QString{"Usage: %1 [options]=(ColumnsxRows)"}.arg(PROGRAM_NAME);
-    LOG_INFO() << "Options: ";
-    LOG_INFO() << "    -h, --h, -help, --help: Display this help text";
-    LOG_INFO() << "    -v, --v, -version, --version: Display the version";
-    LOG_INFO() << "    -d, --d, -dimensions, --dimensions: Set the number of columns";
-    LOG_INFO() << "    -o, --o, -verbose, --verbose: Log debug output";
-    LOG_INFO() << "Example: ";
-    LOG_INFO() << "    To start a 14x9 game, any of the following command line options would work:";
-    LOG_INFO() << "    QMineSweeper --dimensions 14x9";
-    LOG_INFO() << "    QMineSweeper --dimensions=14x9";
-    LOG_INFO() << "    QMineSweeper 14x9";
+    std::cout << QString{"Usage: %1 [options]=(ColumnsxRows)"}.arg(PROGRAM_NAME).toStdString() << std::endl;
+    std::cout << "Options: " << std::endl;
+    std::cout << "    -h, --h, -help, --help: Display this help text" << std::endl;
+    std::cout << "    -v, --v, -version, --version: Display the version" << std::endl;
+    std::cout << "    -d, --d, -dimensions, --dimensions: Set the number of columns" << std::endl;
+    std::cout << "    -r, --r, -ratio, --ratio: Set the dimension/mine ratio (between 0.0 and 1.0)" << std::endl;
+    std::cout << "    -o, --o, -verbose, --verbose: Log debug output" << std::endl;
+    std::cout << "Example: " << std::endl;
+    std::cout << "    To start a 14x9 game, any of the following command line options would work:" << std::endl;
+    std::cout << "    QMineSweeper --dimensions 14x9" << std::endl;
+    std::cout << "    QMineSweeper --dimensions=14x9" << std::endl;
+    std::cout << "    QMineSweeper 14x9" << std::endl;
 }
 
 template <typename StringType, typename FileStringType>
