@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
          if (isSwitch(*iter, VERBOSE_LOGGING_SWITCHES)) {
              verboseLogging = true;
          } else if (isSwitch(*iter, MINE_RATIO_SWITCHES)) {
-             if (iter + 1) {
+             if (*(iter + 1)) {
                  if (mineRatioSetByCommandLine) {
                      LOG_WARNING() << QString{R"(Switch "%1" accepted, but mine ratio was already specified by command line option, skipping option)"}.arg(*iter);
                      continue;
@@ -121,10 +121,10 @@ int main(int argc, char *argv[])
                  try {
                      mineRatio = std::stof(*(iter + 1));
                      mineRatioSetByCommandLine = true;
+                     iter++;
                  } catch (std::exception &e) {
                      LOG_WARNING() << QString{R"(Switch "%1" accepted, but value "%2" is not a valid mine ratio specification, skipping option)"}.arg(*iter, *(iter+1));
                  }
-                 iter++;
              } else {
                  LOG_WARNING() << QString{R"(Switch %1 accepted, but no mine ratio was specified after, skipping option)"}.arg(*iter);
              }
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
                  }
              }
          } else if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
-            if (iter + 1) {
+            if (*(iter + 1)) {
                 if (rowCount != -1) {
                     LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
                     continue;
@@ -161,8 +161,8 @@ int main(int argc, char *argv[])
                 } else {
                     columnCount = dimensions.first;
                     rowCount = dimensions.second;
+                    iter++;
                 }
-                iter++;
             } else {
                 LOG_WARNING() << QString{R"(Switch %1 accepted, but no dimensions were specified after, skipping option)"}.arg(*iter);
             }
