@@ -388,7 +388,7 @@ QString getLogFileName()
     int stringToInt(const std::string &str)
     {
         std::string copyString{""};
-        std::copy_if(str.begin(), str.end(), std::back_inserter(copyString), [](char c) -> bool { return std::isdigit(c); });
+        std::copy_if(str.begin(), str.end(), std::back_inserter(copyString), [](char c) -> bool { return ::isdigit(c); });
         if (std::all_of(copyString.begin(), copyString.end(), [](char c) -> bool { return c == '0'; })) {
             return 0;
         }

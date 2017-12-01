@@ -257,7 +257,7 @@ namespace QmsUtilities
     template<typename ... Args>
     QString QStringFormat(const char *format, Args ... args)
     {
-        ssize_t size{snprintf(nullptr, 0, format, args ...) + 1};
+        auto size = snprintf(nullptr, 0, format, args ...) + 1;
         std::unique_ptr<char[]> stringBuffer{new char[size]};
         snprintf(stringBuffer.get(), size, format, args ...);
         return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});

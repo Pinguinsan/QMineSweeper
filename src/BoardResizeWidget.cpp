@@ -154,7 +154,7 @@ void BoardResizeWidget::onPresetBoardSizeActionTriggered(QPushButton *pressedBut
     using namespace QmsUtilities;
     std::string rawString{pressedButton->property(QmsStrings::RESIZE_BOARD_BUTTON_GAME_DIMENSIONS_KEY).toString().toStdString()};
     std::transform(rawString.begin(), rawString.end(), rawString.begin(), ::tolower);
-    rawString.erase(std::remove_if(rawString.begin(), rawString.end(), [](auto c) { return (!std::isdigit(c) && (c != 'x') && (c != ' ')); }), rawString.end());
+    rawString.erase(std::remove_if(rawString.begin(), rawString.end(), [](auto c) { return (!::isdigit(c) && (c != 'x') && (c != ' ')); }), rawString.end());
     auto foundBeginningSpace = rawString.find_last_of(' ');
     auto maybeDimensions = rawString.substr(foundBeginningSpace + 1);
     auto dimensions = tryParseDimensions(maybeDimensions);

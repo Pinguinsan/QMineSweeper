@@ -12,123 +12,173 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
-if (CYGWIN)
-    set(Qt5Core_DIR "/cygdrive/c/Qt/5.9/mingw53_32/lib/cmake/Qt5Core")
-    set(Qt5Widgets_DIR "/cygdrive/c/Qt/5.9/mingw53_32/lib/cmake/Qt5Widgets")
-    set(Qt5Gui_DIR "/cygdrive/c/Qt/5.9/mingw53_32/lib/cmake/Qt5Gui")
-    set(Qt5Multimedia_DIR "/cygdrive/c/Qt/5.9/mingw53_32/lib/cmake/Qt5Multimedia")
-    set(Qt5SerialPort_DIR "/cygdrive/c/Qt/5.9/mingw53_32/lib/cmake/Qt5SerialPort")
-    set(Qt5_DIR "/cygdrive/c/Qt/5.9/mingw53_32/lib/cmake/Qt5")
-    set(QT_QMAKE_EXECUTABLE "/cygdrive/c/Qt/5.9/mingw53_32/bin/qmake.exe")
-    #set (CMAKE_MODULE_PATH "/c/cygdrive/Qt/5.9/mingw53_32/bin")
-elseif(WIN32)
-    set(Qt5Core_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5Core")
-    set(Qt5Widgets_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5Widgets")
-    set(Qt5Gui_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5Gui")
-    set(Qt5Multimedia_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5Multimedia")
-    set(Qt5SerialPort_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5SerialPort")
-    set(Qt5_DIR "C:/Qt/5.9/mingw53_32/lib/cmake/Qt5")
-    set(QT_QMAKE_EXECUTABLE "C:/Qt/5.9/mingw53_32/bin/qmake.exe")
-    #set (CMAKE_MODULE_PATH "C:/Qt/5.9/mingw53_32/bin")
-
+IF (NOT MSVC)
+        set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+        set(CMAKE_CXX_FLAGS_DEBUG "-g")
+        set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Multimedia REQUIRED)
+if (WIN32 OR MSYS_PLATFORM)
+    if (MSVC)
+            set (FS_ROOT "C:")
+		set (WINDOWS_COMPILER MSVC)
+                		set(COVERAGE_LINK_FLAGS  "/SUBSYSTEM:WINDOWS ")
+		set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
+        else()
+                set (FS_ROOT "/c")
+		set (WINDOWS_COMPILER MINGW)
+		set(COVERAGE_LINK_FLAGS  "-mwindows")
+		set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
+    endif()
 
-set (${PROJECT_NAME}_SOURCES
-        src/Main.cpp
-        src/MainWindow.cpp src/MainWindow.h
-        src/GameController.cpp src/GameController.h
-        src/MineCoordinates.cpp src/MineCoordinates.h
-        src/QmsIcons.cpp src/QmsIcons.h
-        src/QmsUtilities.cpp src/QmsUtilities.h
-        src/QmsSoundEffects.cpp src/QmsSoundEffects.h
-        src/QmsStrings.cpp src/QmsStrings.h
-        src/QmsButton.cpp src/QmsButton.h
-        src/QmsSettingsLoader.cpp src/QmsSettingsLoader.h
-        src/QmsApplicationSettings.cpp src/QmsApplicationSettings.h
-        src/BoardResizeWidget.cpp src/BoardResizeWidget.h
-        src/AboutQmsWidget.cpp src/AboutQmsWidget.h
-        src/MouseMoveableQMainWindow.cpp src/MouseMoveableQMainWindow.h
-        src/MouseMoveableQWidget.cpp src/MouseMoveableQWidget.h
-        src/QmsGameState.cpp src/QmsGameState.h
-        src/Version.h
-        src/EventTimer.h
-        src/GlobalDefinitions.h
-        src/MineCoordinateHash.h
-        )
 
+    #Change this variable to the current Qt root!
+    if (NOT QT_ROOT)
+        set(QT_ROOT "${FS_ROOT}/Qt/5.9.3")
+    endif()
+    #Change this variable to the mingw version used by your Qt build version (NOT THE COMPILER PATH)
+	if (MSVC)
+		if (NOT MSVC_QT_VERSION)
+			set (MSVC_QT_VERSION "msvc2017_64")
+		endif()
+	else()
+		if (NOT MINGW_VERSION)
+			set(MINGW_VERSION "53_32")
+		endif()
+	endif()
+endif()
+
+
+set(QT_PACKAGES Qt5Widgets Qt5Gui Qt5Core Qt5Multimedia Qt5SerialPort)
+set(QT_LINK_LIBRARIES)
+
+if (WIN32)
+        if (MSVC)
+                set(Qt5_DIR "${QT_ROOT}/${MSVC_QT_VERSION}/lib/cmake/Qt5")
+                set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/${MSVC_QT_VERSION}/bin/qmake.exe")
+                message(STATUS "QT_ROOT = ${QT_ROOT}")
+        else()
+                
+                set(Qt5_DIR "${QT_ROOT}/mingw${MINGW_VERSION}/lib/cmake/Qt5")
+                set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/mingw${MINGW_VERSION}/bin/qmake.exe")
+                message(STATUS "QT_ROOT = ${QT_ROOT}")
+        endif()
+endif()
+
+foreach(Qt5Package ${QT_PACKAGES})
+    set(Qt5PackageBase "")
+    string(SUBSTRING ${Qt5Package} 0 3 Qt5PackageBase)
+    string(SUBSTRING ${Qt5Package} 3 -1 Qt5PackageTail)
+    string(CONCAT Qt5PackageLib "${Qt5PackageBase}" "::" "${Qt5PackageTail}")
+    list(APPEND QT_LINK_LIBRARIES "${Qt5PackageLib}")
+    if (WIN32)
+		if (MSYS_PLATFORM)
+			set(${Qt5Package}_DIR "${QT_ROOT}/mingw${MINGW_VERSION}/lib/cmake/${Qt5Package}")
+		else()
+			set(${Qt5Package}_DIR "${QT_ROOT}/${MSVC_QT_VERSION}/lib/cmake/${Qt5Package}")
+		endif()
+	
+			message(STATUS "${Qt5Package}_DIR = ${${Qt5Package}_DIR}")
+    endif()
+    find_package(${Qt5Package})
+    if (${Qt5Package}_FOUND)
+        message(STATUS "${Qt5Package}_INCLUDE_DIRS: ${${Qt5Package}_INCLUDE_DIRS}}")
+        message(STATUS "${Qt5Package}_LIBRARIES: ${${Qt5Package}_LIBRARIES}")
+        message(STATUS "${Qt5Package}_VERSION: ${${Qt5Package}_VERSION}")
+        include_directories(${${Qt5Package}_INCLUDE_DIRS})
+    endif()
+endforeach(Qt5Package)
+
+
+set (SOURCE_ROOT src)
+
+set (${PROJECT_NAME}_SOURCE_FILES
+        ${SOURCE_ROOT}/Main.cpp
+        ${SOURCE_ROOT}/MainWindow.cpp
+        ${SOURCE_ROOT}/GameController.cpp
+        ${SOURCE_ROOT}/MineCoordinates.cpp
+        ${SOURCE_ROOT}/QmsIcons.cpp
+        ${SOURCE_ROOT}/QmsUtilities.cpp
+        ${SOURCE_ROOT}/QmsSoundEffects.cpp
+        ${SOURCE_ROOT}/QmsStrings.cpp
+        ${SOURCE_ROOT}/QmsButton.cpp
+        ${SOURCE_ROOT}/QmsSettingsLoader.cpp
+        ${SOURCE_ROOT}/QmsApplicationSettings.cpp
+        ${SOURCE_ROOT}/BoardResizeWidget.cpp
+        ${SOURCE_ROOT}/AboutQmsWidget.cpp
+        ${SOURCE_ROOT}/MouseMoveableQMainWindow.cpp
+        ${SOURCE_ROOT}/MouseMoveableQWidget.cpp
+        ${SOURCE_ROOT}/QmsGameState.cpp)
+
+set(${PROJECT_NAME}_HEADER_FILES
+        ${SOURCE_ROOT}/QmsGameState.h
+         ${SOURCE_ROOT}/MouseMoveableQWidget.h
+         ${SOURCE_ROOT}/MouseMoveableQMainWindow.h
+         ${SOURCE_ROOT}/AboutQmsWidget.h
+         ${SOURCE_ROOT}/BoardResizeWidget.h
+         ${SOURCE_ROOT}/QmsApplicationSettings.h
+         ${SOURCE_ROOT}/QmsSettingsLoader.h
+         ${SOURCE_ROOT}/QmsButton.h
+         ${SOURCE_ROOT}/QmsStrings.h
+         ${SOURCE_ROOT}/QmsSoundEffects.h
+         ${SOURCE_ROOT}/QmsUtilities.h
+         ${SOURCE_ROOT}/QmsIcons.h
+         ${SOURCE_ROOT}/MineCoordinates.h
+         ${SOURCE_ROOT}/GameController.h
+         ${SOURCE_ROOT}/MainWindow.h
+        ${SOURCE_ROOT}/Version.h
+        ${SOURCE_ROOT}/EventTimer.h
+        ${SOURCE_ROOT}/GlobalDefinitions.h
+        ${SOURCE_ROOT}/MineCoordinateHash.h)
 
 
 set (${PROJECT_NAME}_FORMS
         forms/MainWindow.ui
         forms/BoardResizeWidget.ui
-        forms/AboutQmsWidget.ui
-        )
+        forms/AboutQmsWidget.ui)
 
 set (${PROJECT_NAME}_RESOURCES
         resources/icons.qrc
         resources/sounds.qrc
-        resources/translations.qrc
-        )
+        resources/translations.qrc)
 
 qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 qt5_add_resources(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
-if (WIN32 OR CYGWIN)
+if (WIN32 OR CYGWIN OR MSYS_PLATFORM)
 add_executable(QMineSweeper
-        ${${PROJECT_NAME}_SOURCES}
-        ${${PROJECT_NAME}_HEADERS}
+        WIN32
+        ${${PROJECT_NAME}_SOURCE_FILES}
+        ${${PROJECT_NAME}_HEADER_FILES}
         ${${PROJECT_NAME}_FORMS}
         ${${PROJECT_NAME}_RESOURCES_RCC}
-        resources/QMineSweeper.rc
-        )
+        resources/QMineSweeper.rc)
 
 target_link_libraries (${PROJECT_NAME}
-        Qt5::Widgets
-        Qt5::Gui
-        Qt5::Core
-        Qt5::Multimedia
-        )
-elseif(ANDROID)
-    add_library(QMineSweeper SHARED
-        ${${PROJECT_NAME}_SOURCES}
-        ${${PROJECT_NAME}_HEADERS}
-        ${${PROJECT_NAME}_FORMS}
-        ${${PROJECT_NAME}_RESOURCES_RCC}
-        )
+        ${QT_LINK_LIBRARIES})
 
-target_link_libraries (${PROJECT_NAME}
-        Qt5::Widgets
-        Qt5::Gui
-        Qt5::Core
-        Qt5::Multimedia
-        pthread
-        )
 
-    include(qt-android-cmake/AddQtAndroidApk.cmake)
-    add_qt_android_apk(${PROJECT_NAME}Apk ${PROJECT_NAME})
+if (MSVC)
+    add_custom_command(TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND "${QT_ROOT}/${MSVC_QT_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
 else()
+    add_custom_command(TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND "${QT_ROOT}/mingw${MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+
+endif()
+
+else()
+
 add_executable(QMineSweeper
-        ${${PROJECT_NAME}_SOURCES}
-        ${${PROJECT_NAME}_HEADERS}
+        ${${PROJECT_NAME}_SOURCE_FILES}
+        ${${PROJECT_NAME}_HEADER_FILES}
         ${${PROJECT_NAME}_FORMS}
-        ${${PROJECT_NAME}_RESOURCES_RCC}
-        )
+        ${${PROJECT_NAME}_RESOURCES_RCC})
 
 target_link_libraries (${PROJECT_NAME}
-        Qt5::Widgets
-        Qt5::Gui
-        Qt5::Core
-        Qt5::Multimedia
-        pthread
-        )
+        ${QT_LINK_LIBRARIES}
+        pthread)
 endif()
 
