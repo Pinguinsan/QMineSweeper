@@ -18,7 +18,6 @@
 #include <QGridLayout>
 #include <QLCDNumber>
 #include <QDesktopWidget>
-#include <QApplication>
 #include <QWindow>
 #include <QString>
 #include <QRect>
@@ -31,12 +30,10 @@
 #include <QDateTime>
 
 #include <cctype>
-#include <algorithm>
 
 #include "QmsButton.h"
 #include "QmsIcons.h"
 #include "GameController.h"
-#include "AboutQmsWidget.h"
 #include "BoardResizeWidget.h"
 #include "QmsSoundEffects.h"
 #include "QmsUtilities.h"
@@ -48,6 +45,7 @@
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include <QMessageBox>
 
 #if defined(__ANDROID__)
     const int MainWindow::s_TASKBAR_HEIGHT{10};
@@ -472,7 +470,7 @@ void MainWindow::onGameWon()
     QString winText{QString{"%1%2%3%4"}.arg(QMessageBox::tr(WIN_DIALOG_BASE),
                                             QS_NUMBER(gameController->numberOfMovesMade()),
                                             QMessageBox::tr(WIN_DIALOG_MIDDLE),
-                                            QMessageBox::tr(this->statusBar()->currentMessage().toStdString().c_str()))};
+                                            QMessageBox::tr(gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())).c_str()))};
     LOG_INFO() << winText;
     winBox->setText(winText);
 
@@ -799,9 +797,8 @@ void MainWindow::startUserIdleTimer()
     }
 }
 
-/* updateVisibleGameTimer() : Called whenever the play timer emits it's millisecondChanged
- * (or equivalent) signal, to update the visible timer to inform the player how long they've
- * been playing the current game. Before updating, the current game state is checked from
+/* updateVisibleGameTimer() : Called in the main eventLoop() to update the visible timer to inform the player 
+ * how long they've been playing the current game. Before updating, the current game state is checked from
  * the GameController::gameState() method. If the game is paused or in progress, the timer is updated.
  * If the game is stopped, the timer is not updated, and the "start new game" dialog is shown instead */
 void MainWindow::updateVisibleGameTimer()
