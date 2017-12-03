@@ -25,6 +25,7 @@ namespace QmsGlobalSettings
 {
     const char *PROGRAM_NAME{"QMineSweeper"};
     const char *LONG_PROGRAM_NAME{"QMineSweeper"};
+	const char *PROGRAM_DESCRIPTION{ "A recreation of the popular WIN32 game MineSweeper" };
     const char *REMOTE_URL{"https://github.com/tlewiscpp/QMineSweeper"};
     const char *AUTHOR_NAME{"Tyler Lewis"};
     const int SOFTWARE_MAJOR_VERSION{1};

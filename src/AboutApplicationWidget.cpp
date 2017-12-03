@@ -2,9 +2,9 @@
 #include "ui_AboutApplicationWidget.h"
 
 #include "GlobalDefinitions.h"
-#include "ApplicationStrings.h"
-#include "ApplicationSettings.h"
-#include "ApplicationIcons.h"
+#include "QmsStrings.h"
+#include "QmsApplicationSettings.h"
+#include "QmsIcons.h"
 
 #include <QDesktopWidget>
 #include <QDateTime>
@@ -20,12 +20,12 @@ AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     m_licenseHiddenHeight{-1}
 {
 
-    using namespace ApplicationStrings;
-    using namespace GlobalSettings;
+    using namespace QmsStrings;
+    using namespace QmsGlobalSettings;
     this->m_ui->setupUi(this);
 
-    this->m_ui->lblProgramName->setText(GlobalSettings::PROGRAM_NAME);
-    this->m_ui->lblProgramDescription->setText(GlobalSettings::PROGRAM_DESCRIPTION);
+    this->m_ui->lblProgramName->setText(QmsGlobalSettings::PROGRAM_NAME);
+    this->m_ui->lblProgramDescription->setText(QmsGlobalSettings::PROGRAM_DESCRIPTION);
     QString currentText{this->m_ui->lblProgramCopyright->text()};
     QString currentYear{QS_NUMBER(QDateTime{}.currentDateTime().date().year())};
     this->m_ui->lblProgramCopyright->setText(QString{"%1 %2 %3"}.arg(currentText, currentYear, AUTHOR_NAME));
@@ -35,11 +35,11 @@ AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     this->m_ui->lblProgramWebsite->setOpenExternalLinks(true);
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
 
-    this->m_ui->lblProgramIcon->setPixmap(applicationIcons->applicationIcon.pixmap(QSize{128, 128}));
+    this->m_ui->lblProgramIcon->setPixmap(applicationIcons->MINE_ICON_72.pixmap(QSize{128, 128}));
     this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutApplicationWidget::onLicenseButtonClicked);
     this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutApplicationWidget::onCloseButtonClicked);
 
-    this->addLicenseTab(GlobalSettings::PROGRAM_NAME, ApplicationStrings::LICENSE_PATH);
+    this->addLicenseTab(QmsGlobalSettings::PROGRAM_NAME, QmsStrings::QMINESWEEPER_LICENSE_PATH);
     this->m_ui->twLicenses->setVisible(false);
 }
 
@@ -73,7 +73,7 @@ int AboutApplicationWidget::addLicenseTab(const QString &licenseName, const QStr
     newLayout->setSpacing(0);
     newLayout->setContentsMargins(0, 0, 0, 0);
     QTextEdit *newTextEdit{new QTextEdit{newTab}};
-    newTextEdit->setProperty(ApplicationStrings::LICENSE_PATH_KEY, QVariant{licensePath});
+    newTextEdit->setProperty(QmsStrings::LICENSE_PATH_KEY, QVariant{licensePath});
     newTextEdit->setReadOnly(true);
     newLayout->addWidget(newTextEdit);
     newTab->setLayout(newLayout);
@@ -86,9 +86,9 @@ int AboutApplicationWidget::addLicenseTab(const QString &licenseName, const QStr
 void AboutApplicationWidget::populateLicenseText()
 {
     for (auto &it : this->m_licenseTabs) {
-        QFile licenseFile{it.second->property(ApplicationStrings::LICENSE_PATH_KEY).toString()};
+        QFile licenseFile{it.second->property(QmsStrings::LICENSE_PATH_KEY).toString()};
         if (!licenseFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
-            LOG_WARN() << QString{"Could not open license file %1"}.arg(it.second->property(ApplicationStrings::LICENSE_PATH_KEY).toString());
+            LOG_WARNING() << QString{"Could not open license file %1"}.arg(it.second->property(QmsStrings::LICENSE_PATH_KEY).toString());
             continue;
         }
         it.second->append(licenseFile.readAll());

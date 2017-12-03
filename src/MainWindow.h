@@ -51,6 +51,7 @@ class QLabel;
 class QDialog;
 class QPoint;
 class QMoveEvent;
+class AboutApplicationWidget;
 
 class MainWindow : public MouseMoveableQMainWindow
 {
@@ -58,7 +59,7 @@ class MainWindow : public MouseMoveableQMainWindow
 public:
     explicit MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
                            QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
     void populateMineField();
     void displayAllMines();
@@ -76,7 +77,7 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
     std::unique_ptr<Ui::MainWindow> m_ui;
-    std::unique_ptr<AboutQmsWidget> m_aboutQmsDialog;
+    std::unique_ptr<AboutApplicationWidget> m_aboutQmsDialog;
     std::unique_ptr<BoardResizeWidget>  m_boardResizeDialog;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;

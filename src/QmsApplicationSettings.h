@@ -24,6 +24,7 @@
 namespace QmsGlobalSettings
 {
     extern const char *PROGRAM_NAME;
+	extern const char *PROGRAM_DESCRIPTION;
     extern const char *LONG_PROGRAM_NAME;
     extern const char *REMOTE_URL;
     extern const char *AUTHOR_NAME;

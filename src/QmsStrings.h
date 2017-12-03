@@ -40,14 +40,7 @@ namespace QmsStrings
     const char * const UNCOVERED_MINE_STYLESHEET{"color: rgb(255, 0, 0); background-color: rgb(255, 0, 0);"};
     const char * const LONG_CLICKED_MINE_STYLESHEET{"color: rgb(0, 255, 0); background-color: rgb(0, 255, 0);"};
     const char * const CONFIGURATION_FILE_NAME{"qms.config"};
-    #if (defined(_WIN32) || defined(__CYGWIN__))
-    const char * const DEFAULT_CONFIGUATION_FILE{""};
-    #else
-    const char * const DEFAULT_CONFIGURATION_FILE{"~/.local/qminesweeper/qminesweeper.config"};
-    #endif
-    const char * const BACKUP_CONFIGURATION_FILE{"/usr/share/qminesweeper/qminesweeper.config"};
-    const char * const LAST_CHANCE_CONFIGURATION_FILE{"/opt/GitHub/QMineSweeper/config/qminesweeper.config"};
-    const char * const DEFAULT_PARAMETER_FILE_PATH{"config/defaults.config"};
+	const char * const LICENSE_PATH_KEY{ "LicensePath" };
 
     const char * const LCD_OVERFLOW_STRING{"999"};
     const char * const ENGLISH_STRING{"English"};

@@ -41,7 +41,7 @@ HEADERS += src/MainWindow.h \
     src/QmsUtilities.h \
     src/QmsGameState.h \
     src/MouseMoveableQMainWindow.h \
-    src/AboutQmsWidget.h \
+    src/AboutApplicationWidget.h \
     src/BoardResizeWidget.h \
     src/MouseMoveableQWidget.h
 
@@ -58,7 +58,7 @@ SOURCES += src/Main.cpp \
     src/QmsUtilities.cpp \
     src/QmsGameState.cpp \
     src/MouseMoveableQMainWindow.cpp \
-    src/AboutQmsWidget.cpp \
+    src/AboutApplicationWidget.cpp \
     src/BoardResizeWidget.cpp \
     src/MouseMoveableQWidget.cpp
 
@@ -68,7 +68,7 @@ RESOURCES += resources/icons.qrc \
     resources/licenses.qrc
 
 FORMS += forms/MainWindow.ui \
-    forms/AboutQmsWidget.ui \
+    forms/AboutApplicationWidget.ui \
     forms/BoardResizeWidget.ui
 
 win32 {

@@ -44,6 +44,7 @@
 #include "QmsSettingsLoader.h"
 #include "GlobalDefinitions.h"
 #include "QmsApplicationSettings.h"
+#include "AboutApplicationWidget.h"
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
@@ -80,7 +81,7 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     m_eventTimer{new QTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
     m_ui{new Ui::MainWindow{}},
-    m_aboutQmsDialog{new AboutQmsWidget{}},
+    m_aboutQmsDialog{new AboutApplicationWidget{}},
     m_boardResizeDialog{new BoardResizeWidget{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
     m_translator{new QTranslator{}},
@@ -162,6 +163,8 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->connect(this->m_ui->actionSpanish, &QAction::triggered, this, &MainWindow::onLanguageSelected);
     this->connect(this->m_ui->actionFrench, &QAction::triggered, this, &MainWindow::onLanguageSelected);
     this->connect(this->m_ui->actionJapanese, &QAction::triggered, this, &MainWindow::onLanguageSelected);
+	
+	this->m_aboutQmsDialog->addLicenseTab(QmsGlobalSettings::PROGRAM_NAME, QmsStrings::QMINESWEEPER_LICENSE_PATH);
 
     std::unique_ptr<QRect> avail{new QRect{QDesktopWidget{}.availableGeometry()}};
 
@@ -184,7 +187,7 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->connect(this->m_boardResizeDialog.get(), &BoardResizeWidget::aboutToClose, this, &MainWindow::onBoardResizeDialogClosed);
 
     this->connect(this->m_ui->actionAboutQMineSweeper, &QAction::triggered, this, &MainWindow::onAboutQMineSweeperActionTriggered);
-    this->connect(this->m_aboutQmsDialog.get(), &AboutQmsWidget::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
+    this->connect(this->m_aboutQmsDialog.get(), &AboutApplicationWidget::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
 
     this->m_eventTimer->start();
     this->updateNumberOfMovesMadeLCD(gameController->numberOfMovesMade());
@@ -963,7 +966,6 @@ void MainWindow::onAboutQMineSweeperActionTriggered()
     this->setEnabled(false);
     emit(gamePaused());
     this->m_aboutQmsDialog->show();
-    this->m_aboutQmsDialog->centerAndFitWindow();
 }
 
 

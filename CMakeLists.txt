@@ -91,6 +91,8 @@ endforeach(Qt5Package)
 
 
 set (SOURCE_ROOT src)
+set (RESOURCES_ROOT resources)
+set (FORMS_ROOT forms)
 
 set (${PROJECT_NAME}_SOURCE_FILES
         ${SOURCE_ROOT}/Main.cpp
@@ -105,16 +107,15 @@ set (${PROJECT_NAME}_SOURCE_FILES
         ${SOURCE_ROOT}/QmsSettingsLoader.cpp
         ${SOURCE_ROOT}/QmsApplicationSettings.cpp
         ${SOURCE_ROOT}/BoardResizeWidget.cpp
-        ${SOURCE_ROOT}/AboutQmsWidget.cpp
         ${SOURCE_ROOT}/MouseMoveableQMainWindow.cpp
         ${SOURCE_ROOT}/MouseMoveableQWidget.cpp
+		${SOURCE_ROOT}/AboutApplicationWidget.cpp
         ${SOURCE_ROOT}/QmsGameState.cpp)
 
 set(${PROJECT_NAME}_HEADER_FILES
         ${SOURCE_ROOT}/QmsGameState.h
          ${SOURCE_ROOT}/MouseMoveableQWidget.h
          ${SOURCE_ROOT}/MouseMoveableQMainWindow.h
-         ${SOURCE_ROOT}/AboutQmsWidget.h
          ${SOURCE_ROOT}/BoardResizeWidget.h
          ${SOURCE_ROOT}/QmsApplicationSettings.h
          ${SOURCE_ROOT}/QmsSettingsLoader.h
@@ -126,6 +127,7 @@ set(${PROJECT_NAME}_HEADER_FILES
          ${SOURCE_ROOT}/MineCoordinates.h
          ${SOURCE_ROOT}/GameController.h
          ${SOURCE_ROOT}/MainWindow.h
+		 ${SOURCE_ROOT}/AboutApplicationWidget.h
         ${SOURCE_ROOT}/Version.h
         ${SOURCE_ROOT}/EventTimer.h
         ${SOURCE_ROOT}/GlobalDefinitions.h
@@ -133,14 +135,14 @@ set(${PROJECT_NAME}_HEADER_FILES
 
 
 set (${PROJECT_NAME}_FORMS
-        forms/MainWindow.ui
-        forms/BoardResizeWidget.ui
-        forms/AboutQmsWidget.ui)
+        ${FORMS_ROOT}/MainWindow.ui
+        ${FORMS_ROOT}/BoardResizeWidget.ui
+		${FORMS_ROOT}/AboutApplicationWidget.ui)
 
 set (${PROJECT_NAME}_RESOURCES
-        resources/icons.qrc
-        resources/sounds.qrc
-        resources/translations.qrc)
+        ${RESOURCES_ROOT}/icons.qrc
+        ${RESOURCES_ROOT}/sounds.qrc
+        ${RESOURCES_ROOT}/translations.qrc)
 
 qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 qt5_add_resources(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
