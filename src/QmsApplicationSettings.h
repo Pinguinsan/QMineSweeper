@@ -54,7 +54,6 @@ namespace QmsGlobalSettings
 class QmsApplicationSettings
 {
 public:
-    QmsApplicationSettings();
     int numberOfColumns() const;
     int numberOfRows() const;
     int audioVolume() const;

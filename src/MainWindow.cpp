@@ -219,7 +219,7 @@ void MainWindow::onSaveAsActionTriggered()
     fileDialog.setConfirmOverwrite(true);
     fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
-    fileDialog.setNameFilter(QString{"*."} + QmsStrings::SAVED_GAME_FILE_EXTENSION);
+	fileDialog.setNameFilter(QString{ MainWindow::tr("QMineSweeper files : (*.%1)")}.arg(QmsStrings::SAVED_GAME_FILE_EXTENSION));
     this->m_saveFilePath = fileDialog.getSaveFileName(this, QFileDialog::tr(QmsStrings::SAVE_FILE_CAPTION));
 
     if (this->m_saveFilePath == "") {
@@ -259,19 +259,21 @@ void MainWindow::onOpenActionTriggered()
     fileDialog.setConfirmOverwrite(false);
     fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
-    fileDialog.setNameFilter(QString{"*."} + QmsStrings::SAVED_GAME_FILE_EXTENSION);
-    QString maybeNewGamePath{fileDialog.getOpenFileName(this, QFileDialog::tr(QmsStrings::OPEN_FILE_CAPTION))};
+    fileDialog.setNameFilter(QString{ MainWindow::tr("QMineSweeper files : (*.%1)") }.arg(QmsStrings::SAVED_GAME_FILE_EXTENSION));
+    QString maybeNewGamePath{fileDialog.getOpenFileName(this, MainWindow::tr(QmsStrings::OPEN_FILE_CAPTION))};
 
     if (maybeNewGamePath == "") {
         return;
-    } else {
-        if (!maybeNewGamePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
-            maybeNewGamePath = maybeNewGamePath + QmsStrings::SAVED_GAME_FILE_EXTENSION;
-        }
+    }
+    if (!maybeNewGamePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
+        maybeNewGamePath = maybeNewGamePath + QmsStrings::SAVED_GAME_FILE_EXTENSION;
     }
     LoadGameStateResult loadResult{gameController->loadGame(maybeNewGamePath)};
     if (loadResult == LoadGameStateResult::Success) {
-
+		this->setupNewGame();
+		for (auto & it: gameController->mineSweeperButtons()) {
+			//TODO: Do something
+		}
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
 
     } else if (loadResult == LoadGameStateResult::HashFileDoesNotExist) {

@@ -37,8 +37,6 @@ class MineCoordinates;
 class QXmlStreamWriter;
 
 using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
-//using ButtonContainer = std::map<MineCoordinates, std::shared_ptr<QmsButton>>;
-
 enum class GameState {
     GameActive,
     GameInactive,
@@ -68,15 +66,17 @@ class QmsGameState
 public:
     QmsGameState();
     QmsGameState(int columnCount, int rowCount);
-    QmsGameState(const QmsGameState &) = delete;
-    QmsGameState(QmsGameState &&) = delete;
-    virtual ~QmsGameState();
+    QmsGameState(const QmsGameState &);
+	QmsGameState(QmsGameState &&rhs);
+	QmsGameState& operator=(const QmsGameState &);
+	QmsGameState& operator=(QmsGameState &&rhs);
+	~QmsGameState() = default;
 
     LoadGameStateResult loadGameInPlace(const QString &filePath);
     SaveGameStateResult saveToFile(const QString &filePath);
 
 private:
-    std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_playTimer;
+    std::unique_ptr<SteadyEventTimer> m_playTimer;
     std::set<std::pair<int, int>> m_mineCoordinates;
     ButtonContainer m_mineSweeperButtons;
     int m_numberOfMines;
@@ -95,7 +95,7 @@ private:
     static const int s_CELL_TO_MINE_THRESHOLD;
 
     static LoadGameStateResult loadFromFile(const QString &filePath, QmsGameState &targetState);
-    void writeQmsButtonToXmlStream(QXmlStreamWriter *writeToFile, const MineCoordinates &coordinates, std::shared_ptr<QmsButton> targetButton);
+    void writeQmsButtonToXmlStream(QXmlStreamWriter &writeToFile, const MineCoordinates &coordinates, std::shared_ptr<QmsButton> targetButton);
 
 };
 

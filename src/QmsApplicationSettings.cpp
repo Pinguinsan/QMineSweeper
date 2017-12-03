@@ -51,11 +51,6 @@ namespace QmsGlobalSettings
 
 }
 
-QmsApplicationSettings::QmsApplicationSettings()
-{
-
-}
-
 void QmsApplicationSettings::setNumberOfColumns(int columns)
 {
     this->m_numberOfColumns = columns;
