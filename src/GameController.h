@@ -103,7 +103,7 @@ public:
     static void initializeInstance(int columnCount, int rowCount);
 
     SaveGameStateResult saveGame(const QString &filePath);
-    LoadGameStateResult loadGame(const QString &filePath);
+    void loadGame(const QString &filePath);
 
     static double DEFAULT_NUMBER_OF_MINES();
     static int GAME_TIMER_INTERVAL();
@@ -148,6 +148,7 @@ signals:
     void numberOfMinesRemainingChanged(int newNumber);
     void numberOfMovesMadeChanged(int newNumber);
     void customMineRatioSet(float mineRatio);
+    void loadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState);
 
 private:
     std::shared_ptr<QmsGameState> m_qmsGameState;

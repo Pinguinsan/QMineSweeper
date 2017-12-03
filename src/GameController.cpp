@@ -298,13 +298,14 @@ SaveGameStateResult GameController::saveGame(const QString &filePath)
     return this->m_qmsGameState->saveToFile(filePath);
 }
 
-LoadGameStateResult GameController::loadGame(const QString &filePath)
+void GameController::loadGame(const QString &filePath)
 {
-    auto result = this->m_qmsGameState->loadGameInPlace(filePath);
+    QmsGameState loadedState;
+    const auto result = QmsGameState::loadFromFile(filePath, loadedState);
     if (result == LoadGameStateResult::Success) {
-        //Do stuff
+        //Maybe do stuff
     }
-    return result;
+    emit(loadGameCompleted(result, loadedState));
 }
 
 void GameController::clearRandomMinePlacement()

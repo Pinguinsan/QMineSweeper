@@ -164,6 +164,7 @@ private slots:
     void onOpenActionTriggered();
     void updateGeometry();
 
+    void onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState);
 };
 
 #endif // QMINESWEEPER_MAINWINDOW_H

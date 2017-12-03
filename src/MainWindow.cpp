@@ -96,12 +96,10 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->m_ui->centralwidget->setMouseTracking(true);
     this->setStyleSheet("");
 
-    auto movesLCD = dynamic_cast<AutoUpdateLCD *>(this->m_ui->numberOfMoves);
-    auto minesLCD = dynamic_cast<AutoUpdateLCD *>(this->m_ui->minesRemaining);
 
 
-    movesLCD->setDataSource(gameController->numbersOfMovesMadeDataSource());
-    minesLCD->setDataSource(gameController->userDisplayNumbersOfMinesDataSource());
+    this->m_ui->numberOfMoves->setDataSource(gameController->numbersOfMovesMadeDataSource());
+    this->m_ui->minesRemaining->setDataSource(gameController->userDisplayNumbersOfMinesDataSource());
 
     QFont tempFont{this->m_statusBarLabel->font()};
     tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);
@@ -133,13 +131,9 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->connect(gameController, &GameController::userIsNoLongerIdle, this, &MainWindow::startUserIdleTimer);
     this->connect(gameController, &GameController::gameStarted, this, &MainWindow::onGameStarted);
     this->connect(gameController, &GameController::customMineRatioSet, this, &MainWindow::onCustomMineRatioSet);
+    this->connect(gameController, &GameController::loadGameCompleted, this, &MainWindow::onLoadGameCompleted);
 
     this->connect(this->m_eventTimer.get(), &QTimer::timeout, this, &MainWindow::eventLoop);
-
-    /*
-    this->connect(gameController, &GameController::numberOfMinesRemainingChanged, this, &MainWindow::updateNumberOfMinesLCD);
-    this->connect(gameController, &GameController::numberOfMovesMadeChanged, this, &MainWindow::updateNumberOfMovesMadeLCD);
-    */
 
     this->connect(gameController, &GameController::gameResumed, this, &MainWindow::onGameResumed);
     this->connect(gameController, &GameController::mineExplosionEvent, this, &MainWindow::onMineExplosionEventTriggered);
@@ -274,13 +268,13 @@ void MainWindow::onOpenActionTriggered()
     if (!maybeNewGamePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
         maybeNewGamePath = maybeNewGamePath + QmsStrings::SAVED_GAME_FILE_EXTENSION;
     }
-    LoadGameStateResult loadResult{gameController->loadGame(maybeNewGamePath)};
+    gameController->loadGame(maybeNewGamePath);
+}
+
+void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState)
+{
     if (loadResult == LoadGameStateResult::Success) {
-		this->setupNewGame();
-		for (auto & it: gameController->mineSweeperButtons()) {
-            (void)it;
-			//TODO: Do something
-		}
+        this->setupNewGame();
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
 
     } else if (loadResult == LoadGameStateResult::HashFileDoesNotExist) {
@@ -307,15 +301,11 @@ void MainWindow::displayStatusMessage(QString statusMessage)
  * passing them to QMineSweeperSettingsLoader to write them to peristant storage. */
 QmsApplicationSettings MainWindow::collectApplicationSettings() const
 {
-#if defined(__ANDROID__)
-    return QmsApplicationSettings{};
-#else
-    QmsApplicationSettings returnSettings;
+    QmsApplicationSettings returnSettings{};
     returnSettings.setNumberOfColumns(gameController->numberOfColumns());
     returnSettings.setNumberOfRows(gameController->numberOfRows());
     returnSettings.setAudioVolume(applicationSoundEffects->audioVolume());
     return returnSettings;
-#endif //defined(__ANDROID__)
 }
 
 /* setLanguage() : Called when the UI must have it's language set (from
@@ -568,11 +558,7 @@ void MainWindow::populateMineField()
             this->m_ui->mineFrameGridLayout->addWidget(tempPtr.get(), rowIndex, columnIndex, 1, 1);
             tempPtr->setFixedSize(getMaxMineSize());
             emit(mineSweeperButtonCreated(tempPtr));
-#if defined(__ANDROID__)
-            tempPtr->setIconSize(tempPtr->size());
-#else
             tempPtr->setIconSize(tempPtr->size() * MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR);
-#endif
             this->m_saveStyleSheet = tempPtr->styleSheet();
             tempPtr->setCheckable(true);
         }
