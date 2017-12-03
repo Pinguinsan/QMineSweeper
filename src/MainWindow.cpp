@@ -296,6 +296,7 @@ void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGa
             it.second->setIconSize(it.second->size() * MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR);
             this->m_saveStyleSheet = it.second->styleSheet();
         }
+        emit(gameResumed());
         return;
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
         errorString = "File does not exist";
