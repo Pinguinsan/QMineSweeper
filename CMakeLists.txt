@@ -102,7 +102,6 @@ set (${PROJECT_NAME}_SOURCE_FILES
         ${SOURCE_ROOT}/QmsIcons.cpp
         ${SOURCE_ROOT}/QmsUtilities.cpp
         ${SOURCE_ROOT}/QmsSoundEffects.cpp
-        ${SOURCE_ROOT}/QmsStrings.cpp
         ${SOURCE_ROOT}/QmsButton.cpp
         ${SOURCE_ROOT}/QmsSettingsLoader.cpp
         ${SOURCE_ROOT}/QmsApplicationSettings.cpp
@@ -121,10 +120,10 @@ set(${PROJECT_NAME}_HEADER_FILES
          ${SOURCE_ROOT}/QmsApplicationSettings.h
          ${SOURCE_ROOT}/QmsSettingsLoader.h
          ${SOURCE_ROOT}/QmsButton.h
-         ${SOURCE_ROOT}/QmsStrings.h
          ${SOURCE_ROOT}/QmsSoundEffects.h
          ${SOURCE_ROOT}/QmsUtilities.h
          ${SOURCE_ROOT}/QmsIcons.h
+        ${SOURCE_ROOT}/QmsStrings.h
          ${SOURCE_ROOT}/MineCoordinates.h
          ${SOURCE_ROOT}/GameController.h
          ${SOURCE_ROOT}/MainWindow.h

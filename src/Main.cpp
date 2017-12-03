@@ -63,11 +63,11 @@
  *     QMineSweeperSettingsLoader - Single instance class that holds all settings from a configuration file
  */
 
-const std::forward_list<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
-const std::forward_list<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
-const std::forward_list<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
-const std::forward_list<const char *> MINE_RATIO_SWITCHES{"-r", "--r", "-ratio", "--ratio", "-mine-ratio", "--mine-ratio"};
-const std::forward_list<const char *> VERBOSE_LOGGING_SWITCHES{"-o", "--o", "-verbose", "--verbose"};
+const std::unordered_set<const char *> HELP_SWITCHES{"-h", "--h", "-help", "--help"};
+const std::unordered_set<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-version", "--version"};
+const std::unordered_set<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
+const std::unordered_set<const char *> MINE_RATIO_SWITCHES{"-r", "--r", "-ratio", "--ratio", "-mine-ratio", "--mine-ratio"};
+const std::unordered_set<const char *> VERBOSE_LOGGING_SWITCHES{"-o", "--o", "-verbose", "--verbose"};
 
 void displayHelp();
 void displayVersion();
@@ -92,7 +92,6 @@ int main(int argc, char *argv[])
     QmsUtilities::checkOrCreateProgramLogDirectory();
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
 
-     std::cout << std::endl;
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
          if (isSwitch(*iter, HELP_SWITCHES)) {
              displayHelp();
@@ -114,10 +113,6 @@ int main(int argc, char *argv[])
              verboseLogging = true;
          } else if (isSwitch(*iter, MINE_RATIO_SWITCHES)) {
              if (*(iter + 1)) {
-                 if (mineRatioSetByCommandLine) {
-                     LOG_WARNING() << QString{R"(Switch "%1" accepted, but mine ratio was already specified by command line option, skipping option)"}.arg(*iter);
-                     continue;
-                 }
                  try {
                      mineRatio = std::stof(*(iter + 1));
                      mineRatioSetByCommandLine = true;
@@ -129,10 +124,6 @@ int main(int argc, char *argv[])
                  LOG_WARNING() << QString{R"(Switch %1 accepted, but no mine ratio was specified after, skipping option)"}.arg(*iter);
              }
          } else if (isEqualsSwitch(*iter, MINE_RATIO_SWITCHES)) {
-             if (mineRatioSetByCommandLine) {
-                 LOG_WARNING() << QString{R"(Switch "%1" accepted, but mine ratio was already specified by command line option, skipping option)"}.arg(*iter);
-                 continue;
-             }
              std::string copyString{*iter};
              size_t foundPosition{copyString.find('=')};
              size_t foundEnd{copyString.substr(foundPosition).find(' ')};
@@ -149,12 +140,7 @@ int main(int argc, char *argv[])
              }
          } else if (isSwitch(*iter, DIMENSIONS_SWITCHES)) {
             if (*(iter + 1)) {
-                if (rowCount != -1) {
-                    LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
-                    continue;
-                }
                 std::pair<int, int> dimensions{tryParseDimensions(*(iter + 1))};
-
                 if (dimensions.second == -1) {
                     LOG_WARNING() << QString{R"(Switch "%1" accepted, but value "%2" is not a valid dimension specification, skipping option)"}.arg(*iter, *(iter+1));
                     continue;
@@ -167,10 +153,6 @@ int main(int argc, char *argv[])
                 LOG_WARNING() << QString{R"(Switch %1 accepted, but no dimensions were specified after, skipping option)"}.arg(*iter);
             }
          } else if (isEqualsSwitch(*iter, DIMENSIONS_SWITCHES)) {
-             if (rowCount != -1) {
-                 LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
-                 continue;
-             }
              std::string copyString{*iter};
              size_t foundPosition{copyString.find('=')};
              size_t foundEnd{copyString.substr(foundPosition).find(' ')};
@@ -187,10 +169,6 @@ int main(int argc, char *argv[])
                  }
              }
          } else if (containsSeparator(*iter)) {
-             if (rowCount != -1) {
-                 LOG_WARNING() << QString{R"(Switch "%1" accepted, but dimensions were already specified by command line option, skipping option)"}.arg(*iter);
-                 continue;
-             }
              std::pair<int, int> dimensions{tryParseDimensions(*iter)};
              columnCount = dimensions.first;
              rowCount = dimensions.second;
@@ -204,9 +182,7 @@ int main(int argc, char *argv[])
      } else {
         columnsSetByCommandLine = true;
     }
-#if defined(__ANDROID__)
-    (void)columnsSetByCommandLine;
-#else
+
     QmsApplicationSettings settings{QmsSettingsLoader::loadApplicationSettings()};
     if (!columnsSetByCommandLine) {
         if ((columnCount <= 0) || (rowCount <= 0)) {
@@ -217,7 +193,6 @@ int main(int argc, char *argv[])
             rowCount = settings.numberOfRows();
         }
     }
-#endif
     LOG_INFO() << QString{"Using log file %1"}.arg(QmsUtilities::getLogFilePath());
     //LOG_DEBUG() << QString{"Beginning game with dimensions (%1x%2)"}.arg(QS_NUMBER(columnCount), QS_NUMBER(rowCount));
     //TODO: Load language from config file

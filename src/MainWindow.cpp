@@ -235,19 +235,28 @@ void MainWindow::onSaveAsActionTriggered()
 
 void MainWindow::doSaveGame(const QString &filePath)
 {
+    QString errorString{""};
     auto saveGameResult = gameController->saveGame(filePath);
     if (saveGameResult == SaveGameStateResult::Success) {
         LOG_INFO() << QString{"Successfully saved game to %1"}.arg(filePath);
+        return;
     } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingFile) {
-
+        errorString = "Unable to remove existing file (check permissions on target file)";
     } else if (saveGameResult == SaveGameStateResult::UnableToOpenFile) {
-
+        errorString = "Unable to open file (check permissions on target file)";
     } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingHashFile) {
-
+        errorString = "Unable to remove existing hash file (check permissions on hash file)";
     } else if (saveGameResult == SaveGameStateResult::UnableToOpenFileToWriteHash) {
-
+        errorString = "Unable to open hash file (check permissions on hash file)";
     }
-    //TODO: Error checking
+    std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
+    errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_SAVING_FILE_TITLE));
+    QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, errorString)};
+    LOG_WARNING() << errorText;
+    errorBox->setText(errorText);
+
+    errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
+    errorBox->exec();
 }
 
 void MainWindow::onOpenActionTriggered()
@@ -273,18 +282,39 @@ void MainWindow::onOpenActionTriggered()
 
 void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState)
 {
+    QString errorString{""};
     if (loadResult == LoadGameStateResult::Success) {
+        this->resetGame();
+        this->boardResize(gameController->numberOfColumns(), gameController->numberOfRows());
         this->setupNewGame();
+        gameController->applyGameState(gameState);
+        for (auto &it : gameController->mineSweeperButtons()) {
+            (void)it;
+            this->m_ui->mineFrameGridLayout->addWidget(it.second.get(), it.first.Y(), it.first.X(), 1, 1);
+            it.second->setFixedSize(getMaxMineSize());
+            emit(mineSweeperButtonCreated(it.second));
+            it.second->setIconSize(it.second->size() * MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR);
+            this->m_saveStyleSheet = it.second->styleSheet();
+        }
+        return;
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
-
+        errorString = "File does not exist";
     } else if (loadResult == LoadGameStateResult::HashFileDoesNotExist) {
-
+        errorString = "Associated hash file does not exist (was it deleted?)";
     } else if (loadResult == LoadGameStateResult::HashVerificationFailed) {
-
+        errorString = "Hash verification failed (was the save file altered?)";
     } else if (loadResult == LoadGameStateResult::UnableToOpenFile) {
-
+        errorString = "Could not open file";
     }
-    //TODO: Error handling
+
+    std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
+    errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_LOADING_FILE_TITLE));
+    QString errorText{QString{QmsStrings::ERROR_LOADING_FILE_MESSAGE}.arg(gameState.filePath(), errorString)};
+    LOG_WARNING() << errorText;
+    errorBox->setText(errorText);
+
+    errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
+    errorBox->exec();
 }
 
 /* displayStatusMessage() : Called to include a space in the beginning
@@ -321,10 +351,6 @@ void MainWindow::setLanguage(QmsSettingsLoader::SupportedLanguage language)
         const char *targetTranslationFile{};
         if (language == QmsSettingsLoader::SupportedLanguage::English) {
             targetTranslationFile = QmsStrings::ENGLISH_TRANSLATION_PATH;
-        } else if (language == QmsSettingsLoader::SupportedLanguage::French) {
-            targetTranslationFile = QmsStrings::FRENCH_TRANSLATION_PATH;
-        } else if (language == QmsSettingsLoader::SupportedLanguage::Spanish) {
-            targetTranslationFile = QmsStrings::SPANISH_TRANSLATION_PATH;
         } else if (language == QmsSettingsLoader::SupportedLanguage::Japanese) {
             targetTranslationFile = QmsStrings::JAPANESE_TRANSLATION_PATH;
         } else {
@@ -349,10 +375,6 @@ void MainWindow::onLanguageSelected(bool checked)
     checkedAction->dumpObjectInfo();
     if (checkedAction == this->m_ui->actionEnglish) {
         this->setLanguage(QmsSettingsLoader::SupportedLanguage::English);
-    } else if (checkedAction == this->m_ui->actionFrench) {
-        this->setLanguage(QmsSettingsLoader::SupportedLanguage::French);
-    } else if (checkedAction == this->m_ui->actionSpanish) {
-        this->setLanguage(QmsSettingsLoader::SupportedLanguage::Spanish);
     } else if (checkedAction == this->m_ui->actionJapanese) {
         this->setLanguage(QmsSettingsLoader::SupportedLanguage::Japanese);
     } else {
@@ -394,10 +416,8 @@ void MainWindow::hideEvent(QHideEvent *event)
  * so the user can be prompted if they'd like to close the game */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-#if !defined(__ANDROID__)
     QmsApplicationSettings settings{this->collectApplicationSettings()};
     QmsSettingsLoader::saveApplicationSettings(settings);
-#endif
     return QMainWindow::closeEvent(event);
     /*
     emit(gamePaused());
@@ -466,13 +486,10 @@ void MainWindow::onGameWon()
     }
     std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    QString winText{QString{"%1%2%3%4"}.arg(QMessageBox::tr(WIN_DIALOG_BASE),
-                                            QS_NUMBER(gameController->numberOfMovesMade()),
-                                            QMessageBox::tr(WIN_DIALOG_MIDDLE),
-                                            QMessageBox::tr(gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())).c_str()))};
+    QString winText{QString{QmsStrings::WIN_DIALOG}.arg(QS_NUMBER(gameController->numberOfMovesMade()),
+                                            gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())).c_str())};
     LOG_INFO() << winText;
     winBox->setText(winText);
-
     winBox->setWindowIcon(applicationIcons->MINE_ICON_48);
     winBox->exec();
 }

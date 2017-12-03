@@ -43,10 +43,6 @@ const char *QmsSettingsLoader::languageToString(QmsSettingsLoader::SupportedLang
 {
     if (language == QmsSettingsLoader::SupportedLanguage::English) {
         return QmsStrings::ENGLISH_STRING;
-    } else if (language == QmsSettingsLoader::SupportedLanguage::French) {
-        return QmsStrings::FRENCH_STRING;
-    } else if (language == QmsSettingsLoader::SupportedLanguage::Spanish) {
-        return QmsStrings::SPANISH_STRING;
     } else if (language == QmsSettingsLoader::SupportedLanguage::Japanese) {
         return QmsStrings::JAPANESE_STRING;
     } else {
@@ -70,7 +66,7 @@ QmsApplicationSettings QmsSettingsLoader::loadApplicationSettings()
     int columns{settingsLoader.value(QmsSettingsLoader::s_NUMBER_OF_COLUMNS_KEY).toInt()};
     int rows{settingsLoader.value(QmsSettingsLoader::s_NUMBER_OF_ROWS_KEY).toInt()};
     int volume{settingsLoader.value(QmsSettingsLoader::s_AUDIO_VOLUME_KEY).toInt()};
-    QmsApplicationSettings settings;
+    QmsApplicationSettings settings{};
     if (columns <= 0) {
         columns = QmsSettingsLoader::s_DEFAULT_NUMBER_OF_COLUMNS;
     }

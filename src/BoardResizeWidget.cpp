@@ -170,18 +170,18 @@ void BoardResizeWidget::onOkayButtonClicked(bool checked)
     Q_UNUSED(checked);
     using namespace QmsUtilities;
     using namespace QmsStrings;
-    int maybeNewColumns{STRING_TO_INT(this->m_ui->lblColumns->text().toStdString())};
-    int maybeNewRows{STRING_TO_INT(this->m_ui->lblRows->text().toStdString())};
+    int maybeNewColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
+    int maybeNewRows{stringToInt(this->m_ui->lblRows->text().toStdString())};
     if ((maybeNewColumns == this->m_numberOfColumns) && (maybeNewRows == this->m_numberOfRows)) {
         this->onCancelButtonClicked(false);
         return;
     }
     QMessageBox::StandardButton userReply{};
-    QString questionBoxMessage{QString{"%1%2%3%4%5"}.arg(RESIZE_BOARD_WINDOW_CONFIRMATION_BASE,
-                                                         QS_NUMBER(maybeNewColumns),
-                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE,
-                                                         QS_NUMBER(maybeNewRows),
-                                                         RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL)};
+    QString questionBoxMessage{QString{QmsStrings::RESIZE_BOARD_WINDOW_CONFIRMATION}.arg(
+                               QS_NUMBER(this->m_numberOfColumns),
+                               QS_NUMBER(this->m_numberOfRows),
+                                     QS_NUMBER(maybeNewColumns),
+                                     QS_NUMBER(maybeNewRows))};
     userReply = static_cast<QMessageBox::StandardButton>(QMessageBox::question(this, START_NEW_GAME_WINDOW_TITLE, questionBoxMessage, QMessageBox::Yes|QMessageBox::No));
     if (userReply == QMessageBox::Yes) {
         this->m_resultToEmit.boardSize.columns = this->m_ui->lblColumns->text().toInt();
@@ -195,14 +195,16 @@ void BoardResizeWidget::onOkayButtonClicked(bool checked)
 
 void BoardResizeWidget::onBtnIncrementRowsClicked(bool down)
 {
+    using QmsUtilities::stringToInt;
     Q_UNUSED(down);
-    int currentRows{STRING_TO_INT(this->m_ui->lblRows->text().toStdString())};
+    int currentRows{stringToInt(this->m_ui->lblRows->text().toStdString())};
     this->m_ui->lblRows->setText(QS_NUMBER(currentRows + 1));
 }
 
 void BoardResizeWidget::onBtnDecrementRowsClicked(bool down) {
+    using QmsUtilities::stringToInt;
     Q_UNUSED(down);
-    int currentRows{STRING_TO_INT(this->m_ui->lblRows->text().toStdString())};
+    int currentRows{stringToInt(this->m_ui->lblRows->text().toStdString())};
     if (currentRows != 0) {
         this->m_ui->lblRows->setText(QS_NUMBER(currentRows - 1));
     }
@@ -211,15 +213,17 @@ void BoardResizeWidget::onBtnDecrementRowsClicked(bool down) {
 
 void BoardResizeWidget::onBtnIncrementColumnsClicked(bool down)
 {
+    using QmsUtilities::stringToInt;
     Q_UNUSED(down);
-    int currentColumns{STRING_TO_INT(this->m_ui->lblColumns->text().toStdString())};
+    int currentColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
     this->m_ui->lblColumns->setText(QS_NUMBER(currentColumns + 1));
 }
 
 void BoardResizeWidget::onBtnDecrementColumnsClicked(bool down)
 {
+    using QmsUtilities::stringToInt;
     Q_UNUSED(down);
-    int currentColumns{STRING_TO_INT(this->m_ui->lblColumns->text().toStdString())};
+    int currentColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
     if (currentColumns != 0) {
         this->m_ui->lblColumns->setText(QS_NUMBER(currentColumns - 1));
     }
@@ -234,11 +238,3 @@ void BoardResizeWidget::onCancelButtonClicked(bool checked)
     this->m_resultToEmit.userAction = BoardResizeWidget::ResizeWidgetExitCode::Rejected;
     this->close();
 }
-
-
-
-BoardResizeWidget::~BoardResizeWidget()
-{
-
-}
-

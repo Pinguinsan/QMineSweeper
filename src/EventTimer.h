@@ -135,12 +135,12 @@ public:
     TimePoint timePoint()
     {
         this->update();
-        TimePoint returnPoint;
-        returnPoint.hours = this->m_hours;
-        returnPoint.minutes = this->m_minutes;
-        returnPoint.seconds = this->m_seconds;
-        returnPoint.milliseconds = this->m_milliseconds;
-        return returnPoint;
+        return TimePoint {
+                static_cast<unsigned long>(this->m_hours),
+            static_cast<unsigned long>(this->m_minutes),
+            static_cast<unsigned long>(this->m_seconds),
+            static_cast<unsigned long>(this->m_milliseconds)
+        };
     }
 
     long long int totalMilliseconds()
@@ -266,6 +266,12 @@ private:
     static const long long int constexpr MINUTES_PER_DAY{1440};
 
     static const long long int constexpr HOURS_PER_DAY{24};
+
+    void setTotalTime(long long int totalTime) {
+        auto currentTime = platform_clock_t::now();
+        this->m_startTime = currentTime - std::chrono::milliseconds(totalTime);
+        this->update();
+    }
 
 };
 

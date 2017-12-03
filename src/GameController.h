@@ -64,7 +64,7 @@ public:
 
     ChangeAwareInt *userDisplayNumbersOfMinesDataSource();
     ChangeAwareInt *numbersOfMovesMadeDataSource();
-    std::set<std::pair<int, int>> &mineCoordinates();
+    const std::set<MineCoordinates> &mineCoordinates();
     ButtonContainer &mineSweeperButtons();
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(int columnIndex, int rowIndex) const;
@@ -96,6 +96,8 @@ public:
     bool isCornerButton(QmsButton *msb) const;
     bool isEdgeButton(QmsButton *msb) const;
     GameState gameState() const;
+
+    void applyGameState(const QmsGameState &state);
 
     void setCustomMineRatio(float mineRatio);
 

@@ -42,13 +42,13 @@ class QmsButton : public QPushButton
 {
     Q_OBJECT
 public:
-    QmsButton() = delete;
-    QmsButton(int columnIndex, int rowIndex, QWidget *parent);
-    QmsButton(const QmsButton &other);
-    QmsButton(QmsButton *other);
-    QmsButton(QmsButton &&other);
-    QmsButton(std::shared_ptr<QmsButton> &other);
-    virtual ~QmsButton();
+    explicit QmsButton(QWidget *parent = nullptr) = delete;
+    explicit QmsButton(int columnIndex, int rowIndex, QWidget *parent = nullptr);
+    QmsButton(const QmsButton &rhs);
+    QmsButton(QmsButton &&other) noexcept;
+    QmsButton &operator=(const QmsButton &rhs);
+    QmsButton &operator=(QmsButton &&rhs) noexcept;
+    ~QmsButton() override = default;
 
     bool operator==(const QmsButton &other) const;
 
@@ -61,6 +61,9 @@ public:
     bool isRevealed() const;
     std::shared_ptr<MineCoordinates> mineCoordinates() const;
 
+    void setRowIndex(int rowIndex);
+    void setColumnIndex(int columnIndex);
+    void setCoordinates(const MineCoordinates &coordinates);
     void setHasMine(bool hasMine);
     void setHasFlag(bool hasFlag);
     void setHasQuestionMark(bool hasQuestionMark);
@@ -70,6 +73,8 @@ public:
     bool isBlockingClicks() const;
     std::string toString() const;
     QString toQString() const;
+
+    void reveal();
 
     static const int MAXIMUM_NUMBER_OF_SURROUNDING_MINES;
 
@@ -96,8 +101,9 @@ private:
     int m_rowIndex;
     bool m_isBeingLongClicked;
     bool m_blockClicks;
-    std::unique_ptr<SteadyEventTimer> m_longClickTimer;
+    SteadyEventTimer m_longClickTimer;
     void initialize();
+
 };
 
 #endif //QMINESWEEPER_QMSBUTTON_H

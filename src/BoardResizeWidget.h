@@ -47,7 +47,7 @@ public:
     };
 
     explicit BoardResizeWidget(QWidget *parent = nullptr);
-    ~BoardResizeWidget() override;
+    ~BoardResizeWidget() override = default;
     void show(int columns, int rows);
     void closeEvent(QCloseEvent *event) override;
     void showEvent(QShowEvent *event) override;

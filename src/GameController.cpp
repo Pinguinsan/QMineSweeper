@@ -197,7 +197,7 @@ void GameController::addMineSweeperButton(int columnIndex, int rowIndex)
     using namespace QmsUtilities;
     using namespace QmsStrings;
     try {
-        this->m_qmsGameState->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton> (new QmsButton{columnIndex, rowIndex, nullptr})));
+        this->m_qmsGameState->m_mineSweeperButtons.emplace(std::make_pair(MineCoordinates(columnIndex, rowIndex), std::make_shared<QmsButton>(columnIndex, rowIndex, nullptr)));
         LOG_DEBUG() << QString{"Added minesweeper button at (%1, %2)"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex));
     } catch (std::exception &e) {
         LOG_WARNING() << QString{"std::exception caught in GameController::addMineSweeperButton(int, int), with first argument = %1, second argument = %2, and std::exception::what() = %3"}.arg(QS_NUMBER(columnIndex), QS_NUMBER(rowIndex), e.what());
@@ -209,35 +209,35 @@ ButtonContainer &GameController::mineSweeperButtons()
     return this->m_qmsGameState->m_mineSweeperButtons;
 }
 
-std::set<std::pair<int, int>> &GameController::mineCoordinates()
+const std::set<MineCoordinates> &GameController::mineCoordinates()
 {
     return this->m_qmsGameState->m_mineCoordinates;
 }
 
 const SteadyEventTimer &GameController::playTimer() const
 {
-    this->m_qmsGameState->m_playTimer->update();
-    return *this->m_qmsGameState->m_playTimer;
+    this->m_qmsGameState->m_playTimer.update();
+    return this->m_qmsGameState->m_playTimer;
 }
 
 void GameController::startPlayTimer()
 {
-    this->m_qmsGameState->m_playTimer->start();
+    this->m_qmsGameState->m_playTimer.start();
 }
 
 void GameController::stopPlayTimer()
 {
-    this->m_qmsGameState->m_playTimer->stop();
+    this->m_qmsGameState->m_playTimer.stop();
 }
 
 void GameController::resumePlayTimer()
 {
-    this->m_qmsGameState->m_playTimer->resume();
+    this->m_qmsGameState->m_playTimer.resume();
 }
 
 void GameController::pausePlayTimer()
 {
-    this->m_qmsGameState->m_playTimer->pause();
+    this->m_qmsGameState->m_playTimer.pause();
 }
 
 std::shared_ptr<QmsButton> GameController::mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const
@@ -285,10 +285,10 @@ void GameController::generateRandomMinePlacement(QmsButton *msbp)
     MineCoordinates potentialMineCoordinates{0,0};
     while (this->m_qmsGameState->m_mineCoordinates.size() < static_cast<unsigned int>(this->m_qmsGameState->m_numberOfMines)) {
         potentialMineCoordinates = MineCoordinates{randomBetween(0, this->m_qmsGameState->m_numberOfColumns - 1), randomBetween(0, this->m_qmsGameState->m_numberOfRows - 1)};
-        if (potentialMineCoordinates == *(msbp->mineCoordinates().get())) {
+        if (potentialMineCoordinates == *(msbp->mineCoordinates())) {
             continue;
         } else {
-            this->m_qmsGameState->m_mineCoordinates.emplace(potentialMineCoordinates.toStdPair());
+            this->m_qmsGameState->m_mineCoordinates.emplace(potentialMineCoordinates);
         }
     }
 }
@@ -596,6 +596,11 @@ void GameController::decrementUserMineCount()
     this->m_qmsGameState->m_userDisplayNumberOfMines--;
 }
 
+void GameController::applyGameState(const QmsGameState &state)
+{
+    *this->m_qmsGameState = state;
+}
+
 ChangeAwareInt *GameController::userDisplayNumbersOfMinesDataSource() {
     return &this->m_qmsGameState->m_userDisplayNumberOfMines;
 }
@@ -658,5 +663,7 @@ int GameController::MILLISECOND_DELAY_DIGITS()
 {
     return GameController::s_MILLISECOND_DISPLAY_DIGITS;
 }
+
+
 
 

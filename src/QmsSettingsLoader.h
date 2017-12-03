@@ -30,8 +30,6 @@ public:
 
     enum class SupportedLanguage {
         English,
-        French,
-        Spanish,
         Japanese
     };
 
@@ -55,9 +53,9 @@ private:
 
 
     explicit QmsSettingsLoader(QObject *parent = nullptr);
-    QmsSettingsLoader(const QmsSettingsLoader &)  = delete;
+    QmsSettingsLoader(const QmsSettingsLoader &) = delete;
     QmsSettingsLoader &operator=(const QmsSettingsLoader &) = delete;
-    ~QmsSettingsLoader();
+    ~QmsSettingsLoader() override;
 };
 
 extern QmsSettingsLoader *settingsLoader;

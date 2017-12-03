@@ -26,6 +26,7 @@
 #include "QmsSettingsLoader.h"
 #include "MouseMoveableQMainWindow.h"
 #include "BoardResizeWidget.h"
+#include "QmsGameState.h"
 
 
 namespace Ui

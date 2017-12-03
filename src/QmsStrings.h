@@ -30,19 +30,22 @@ namespace QmsStrings
     const char * const START_NEW_GAME_INSTRUCTION{"Click on a minesweeper button to begin"};
     const char * const CLOSE_APPLICATION_WINDOW_TITLE{"Quit QMineSweeper?"};
     const char * const CLOSE_APPLICATION_WINDOW_PROMPT{"Are you sure you'd like to quit?"};
-    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION_BASE{"Are you sure you'd like to end the current game and start a new "};
+
+    const char * const ERROR_LOADING_FILE_TITLE{"Error Loading File"};
+    const char * const ERROR_LOADING_FILE_MESSAGE{"An error occurred while loading file %1 (%2)"};
+
+const char * const ERROR_SAVING_FILE_TITLE{"Error Saving File"};
+const char * const ERROR_SAVING_FILE_MESSAGE{"An error occurred while saving file %1 (%2)"};
+
     const char * const RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING{"Current (columns x rows): "};
-    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION_TAIL{" game?"};
-    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION_MIDDLE{"x"};
-    const char * const WIN_DIALOG_BASE{"You win! It took "};
-    const char * const WIN_DIALOG_MIDDLE{" moves and your total play time was "};
+    const char * const RESIZE_BOARD_WINDOW_CONFIRMATION{"Are you sure you'd like to end the current %1x%2 game and start a new %3x%4 game?"};
+
+    const char * const WIN_DIALOG {"You win! It took %1 moves and your total play time was %2"};
     const char * const UNCOVERED_NON_MINE_STYLESHEET{"color: rgb(200, 170, 255); background-color: rgb(200, 170, 255);"};
     const char * const UNCOVERED_MINE_STYLESHEET{"color: rgb(255, 0, 0); background-color: rgb(255, 0, 0);"};
     const char * const LONG_CLICKED_MINE_STYLESHEET{"color: rgb(0, 255, 0); background-color: rgb(0, 255, 0);"};
-    const char * const CONFIGURATION_FILE_NAME{"qms.config"};
 	const char * const LICENSE_PATH_KEY{ "LicensePath" };
 
-    const char * const LCD_OVERFLOW_STRING{"999"};
     const char * const ENGLISH_STRING{"English"};
     const char * const FRENCH_STRING{"French"};
     const char * const SPANISH_STRING{"Spanish"};
@@ -55,8 +58,6 @@ namespace QmsStrings
     const char * const ABOUT_QT_WINDOW_TITLE{"About Qt"};
 
     const char * const ENGLISH_TRANSLATION_PATH{":/translations/english.qm"};
-    const char * const FRENCH_TRANSLATION_PATH{":/translations/french.qm"};
-    const char * const SPANISH_TRANSLATION_PATH{":/translations/spanish.qm"};
     const char * const JAPANESE_TRANSLATION_PATH{":/translations/japanese.qm"};
 
     const char * const MINE_ICON_16_PATH{":/mine-icons/png/mine-icons/16-qminesweeper.png"};

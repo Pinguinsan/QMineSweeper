@@ -43,58 +43,75 @@ QmsButton::QmsButton(int columnIndex, int rowIndex, QWidget *parent) :
     m_rowIndex{rowIndex},
     m_isBeingLongClicked{false},
     m_blockClicks{false},
-    m_longClickTimer{new SteadyEventTimer{}}
+    m_longClickTimer{}
 {
     this->initialize();
 }
 
-QmsButton::QmsButton(QmsButton *other) :
-    QPushButton{static_cast<QWidget*>(other->parent())},
-    m_hasMine{other->hasMine()},
-    m_hasFlag{other->hasFlag()},
-    m_hasQuestionMark{other->hasQuestionMark()},
-    m_isRevealed{other->isRevealed()},
-    m_numberOfSurroundingMines{other->numberOfSurroundingMines()},
-    m_columnIndex{other->columnIndex()},
-    m_rowIndex{other->rowIndex()},
+QmsButton::QmsButton(const QmsButton &rhs) :
+    QPushButton{rhs.parentWidget()},
+    m_hasMine{rhs.m_hasMine},
+    m_hasFlag{rhs.m_hasFlag},
+    m_hasQuestionMark{rhs.m_hasQuestionMark},
+    m_isRevealed{rhs.m_isRevealed},
+    m_numberOfSurroundingMines{rhs.m_numberOfSurroundingMines},
+    m_columnIndex{rhs.m_columnIndex},
+    m_rowIndex{rhs.m_rowIndex},
     m_isBeingLongClicked{false},
     m_blockClicks{false},
-    m_longClickTimer{new SteadyEventTimer{}}
+    m_longClickTimer{rhs.m_longClickTimer}
 {
     this->initialize();
 }
 
-QmsButton::QmsButton(QmsButton &&other) :
-    QPushButton{static_cast<QWidget*>(std::move(other.parent()))},
-    m_hasMine{std::move(other.hasMine())},
-    m_hasFlag{std::move(other.hasFlag())},
-    m_hasQuestionMark{std::move(other.hasQuestionMark())},
-    m_isRevealed{std::move(other.isRevealed())},
-    m_numberOfSurroundingMines{std::move(other.numberOfSurroundingMines())},
-    m_columnIndex{std::move(other.columnIndex())},
-    m_rowIndex{std::move(other.rowIndex())},
+QmsButton::QmsButton(QmsButton &&rhs) noexcept :
+    QPushButton{rhs.parentWidget()},
+    m_hasMine{rhs.m_hasMine},
+    m_hasFlag{rhs.m_hasFlag},
+    m_hasQuestionMark{rhs.m_hasQuestionMark},
+    m_isRevealed{rhs.m_isRevealed},
+    m_numberOfSurroundingMines{rhs.m_numberOfSurroundingMines},
+    m_columnIndex{rhs.m_columnIndex},
+    m_rowIndex{rhs.m_rowIndex},
     m_isBeingLongClicked{false},
     m_blockClicks{false},
-    m_longClickTimer{new SteadyEventTimer{}}
+    m_longClickTimer{rhs.m_longClickTimer}
 {
     this->initialize();
 }
 
-QmsButton::QmsButton(std::shared_ptr<QmsButton>& other) :
-    QPushButton{static_cast<QWidget*>(other->parent())},
-    m_hasMine{std::move(other->m_hasMine)},
-    m_hasFlag{std::move(other->m_hasFlag)},
-    m_hasQuestionMark{std::move(other->m_hasQuestionMark)},
-    m_isRevealed{std::move(other->m_isRevealed)},
-    m_numberOfSurroundingMines{std::move(other->m_numberOfSurroundingMines)},
-    m_columnIndex{std::move(other->m_columnIndex)},
-    m_rowIndex{std::move(other->m_rowIndex)},
-    m_isBeingLongClicked{std::move(other->m_isBeingLongClicked)},
-    m_blockClicks{std::move(other->m_blockClicks)},
-    m_longClickTimer{std::move(other->m_longClickTimer)}
+QmsButton &QmsButton::operator=(const QmsButton &rhs)
 {
-    this->initialize();
+    this->setParent(rhs.parentWidget());
+    this->m_hasMine = rhs.m_hasMine;
+    this->m_hasFlag = rhs.m_hasFlag;
+    this->m_hasQuestionMark = rhs.m_hasQuestionMark;
+    this->m_isRevealed = rhs.m_isRevealed;
+    this->m_numberOfSurroundingMines = rhs.m_numberOfSurroundingMines;
+    this->m_columnIndex = rhs.m_columnIndex;
+    this->m_rowIndex = rhs.m_rowIndex;
+    this->m_isBeingLongClicked = false;
+    this->m_blockClicks = false;
+    this->m_longClickTimer = rhs.m_longClickTimer;
+    return *this;
 }
+
+QmsButton &QmsButton::operator=(QmsButton &&rhs) noexcept
+{
+    this->setParent(rhs.parentWidget());
+    this->m_hasMine = rhs.m_hasMine;
+    this->m_hasFlag = rhs.m_hasFlag;
+    this->m_hasQuestionMark = rhs.m_hasQuestionMark;
+    this->m_isRevealed = rhs.m_isRevealed;
+    this->m_numberOfSurroundingMines = rhs.m_numberOfSurroundingMines;
+    this->m_columnIndex = rhs.m_columnIndex;
+    this->m_rowIndex = rhs.m_rowIndex;
+    this->m_isBeingLongClicked = false;
+    this->m_blockClicks = false;
+    this->m_longClickTimer = rhs.m_longClickTimer;
+    return *this;
+}
+
 
 void QmsButton::initialize()
 {
@@ -137,7 +154,7 @@ void QmsButton::mousePressEvent(QMouseEvent *mouseEvent)
             emit(rightClicked(this));
         }
     }
-    this->m_longClickTimer->restart();
+    this->m_longClickTimer.restart();
     QTimer::singleShot(GameController::LONG_CLICK_THRESHOLD(), this, SLOT(doInformLongClick()));
 }
 
@@ -170,10 +187,10 @@ void QmsButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
         this->m_isRevealed = true;
     }
     this->setStyleSheet("");
-    this->m_longClickTimer->update();
+    this->m_longClickTimer.update();
     if (mouseEvent->button() == Qt::MouseButton::LeftButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+            if ((this->m_longClickTimer.totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
                 LOG_DEBUG() << QString{"%1 was long left clicked"}.arg(this->toQString());
                 emit (longLeftClickReleased(this));
             } else {
@@ -183,7 +200,7 @@ void QmsButton::mouseReleaseEvent(QMouseEvent *mouseEvent)
         }
     } else if (mouseEvent->button() == Qt::MouseButton::RightButton) {
         if ((!this->m_isRevealed) && (this->rect().contains(mouseEvent->pos()))) {
-            if ((this->m_longClickTimer->totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
+            if ((this->m_longClickTimer.totalTime() >= GameController::LONG_CLICK_THRESHOLD()) || (this->m_isBeingLongClicked)) {
                 LOG_DEBUG() << QString{"%1 was long right clicked"}.arg(this->toQString());
                 emit longRightClickReleased(this);
             } else {
@@ -279,8 +296,27 @@ void QmsButton::setNumberOfSurroundingMines(int numberOfSurroundingMines)
     }
 }
 
-QmsButton::~QmsButton()
+void QmsButton::setCoordinates(const MineCoordinates &coordinates)
 {
+    this->setColumnIndex(coordinates.X());
+    this->setRowIndex(coordinates.Y());
+}
 
+void QmsButton::setColumnIndex(int columnIndex)
+{
+    using QmsUtilities::toStdString;
+    if (columnIndex < 0) {
+        throw std::runtime_error("QmsButton::setRowIndex(int): columnIndex cannot be less than 0 (" + toStdString(columnIndex) + " < 0)");
+    }
+    this->m_columnIndex = columnIndex;
+}
+
+void QmsButton::setRowIndex(int rowIndex)
+{
+    using QmsUtilities::toStdString;
+    if (rowIndex < 0) {
+        throw std::runtime_error("QmsButton::setRowIndex(int): rowIndex cannot be less than 0 (" + toStdString(rowIndex) + " < 0)");
+    }
+    this->m_rowIndex = rowIndex;
 }
 

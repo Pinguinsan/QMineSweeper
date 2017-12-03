@@ -42,11 +42,7 @@ namespace QmsUtilities
 {
 
     template <typename T> inline std::string toStdString(const T &t) { return dynamic_cast<std::stringstream &>(std::stringstream{} << t).str(); }
-    QString getUserConfigurationFilePath();
-    QString getConfigurationFilePath();
-    void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath);
     QString getProgramSettingsDirectory();
-    QString getInstallDirectory();
     bool clearDirectoryOfFiles(const QString &dir);
     void checkOrCreateProgramLogDirectory();
     void checkOrCreateProgramSettingsDirectory();
@@ -263,10 +259,12 @@ namespace QmsUtilities
         return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});
     }
 
-    std::string boolToString(bool value);
-    bool stringToBool(const std::string &value);
-    QString boolToQString(bool value);
-    bool qStringToBool(const QString &value);
+
+    bool toBool(const QString &str, bool *ok = nullptr);
+    bool toBool(const std::string &str, bool *ok = nullptr);
+    QString boolToQString(bool state);
+    std::string boolToString(bool state);
+
     QByteArray getFileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
     QByteArray getFileChecksum(QIODevice *inputDevice, QCryptographicHash::Algorithm hashAlgorithm);
 

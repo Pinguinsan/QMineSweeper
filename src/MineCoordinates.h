@@ -32,8 +32,7 @@ class MineCoordinates
 {
 
 public:
-    MineCoordinates(int X, int Y);
-    MineCoordinates(const std::pair<int, int> &xy);
+    explicit MineCoordinates(int X, int Y);
 
     int X() const;
     void setX(int X);
@@ -42,20 +41,16 @@ public:
     void setY(int Y);
 
     bool operator==(const MineCoordinates &compareObject) const;
-    bool operator==(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator<(const MineCoordinates &compareObject) const;
-    bool operator<(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator<=(const MineCoordinates &compareObject) const;
-    bool operator<=(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator>(const MineCoordinates &compareObject) const;
-    bool operator>(std::shared_ptr<MineCoordinates> compareObject) const;
     bool operator>=(const MineCoordinates &compareObject) const;
-    bool operator>=(std::shared_ptr<MineCoordinates> compareObject) const;
     std::string toString() const;
     QString toQString() const;
     std::pair<int, int> toStdPair() const;
     friend std::ostream& operator<<(std::ostream &os, const MineCoordinates &mc);
-    friend std::ostream& operator<<(std::ostream &os, std::shared_ptr<MineCoordinates> mc);
+
+    static MineCoordinates parse(const std::string &str);
 
 private:
     int m_x;
