@@ -73,11 +73,13 @@ QmsGameState::QmsGameState(const QmsGameState &rhs) :
 	m_gameOver{rhs.m_gameOver},
 	m_totalButtonCount{rhs.m_totalButtonCount},
 	m_unopenedMineCount{ rhs.m_unopenedMineCount },
-	m_customMineRatio{new float{*rhs.m_customMineRatio}}
+	m_customMineRatio{nullptr}
 	
 
 {
-
+	if (rhs.m_customMineRatio) {
+		this->m_customMineRatio.reset(new float{ *rhs.m_customMineRatio });
+	}
 }
 
 QmsGameState::QmsGameState(QmsGameState &&rhs) :
@@ -110,7 +112,9 @@ QmsGameState &QmsGameState::operator=(const QmsGameState &rhs)
 	this->m_gameOver = rhs.m_gameOver;
 	this->m_totalButtonCount = rhs.m_totalButtonCount;
 	this->m_unopenedMineCount = rhs.m_unopenedMineCount;
-	this->m_customMineRatio.reset(new float{ *rhs.m_customMineRatio });
+	if (rhs.m_customMineRatio) {
+		this->m_customMineRatio.reset(new float{ *rhs.m_customMineRatio });
+	}
 	return *this;
 }
 
