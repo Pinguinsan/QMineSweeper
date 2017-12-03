@@ -320,3 +320,7 @@ void QmsButton::setRowIndex(int rowIndex)
     this->m_rowIndex = rowIndex;
 }
 
+void QmsButton::reveal() {
+    this->leftClicked(this);
+}
+

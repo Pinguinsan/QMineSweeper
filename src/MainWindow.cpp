@@ -295,8 +295,11 @@ void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGa
             emit(mineSweeperButtonCreated(it.second));
             it.second->setIconSize(it.second->size() * MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR);
             this->m_saveStyleSheet = it.second->styleSheet();
+            if (it.second->isRevealed()) {
+                it.second->reveal();
+            }
         }
-        emit(gameResumed());
+        //emit(gameResumed());
         return;
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
         errorString = "File does not exist";
