@@ -110,7 +110,8 @@ set (${PROJECT_NAME}_SOURCE_FILES
         ${SOURCE_ROOT}/MouseMoveableQMainWindow.cpp
         ${SOURCE_ROOT}/MouseMoveableQWidget.cpp
 		${SOURCE_ROOT}/AboutApplicationWidget.cpp
-        ${SOURCE_ROOT}/QmsGameState.cpp)
+        ${SOURCE_ROOT}/QmsGameState.cpp
+        ${SOURCE_ROOT}/AutoUpdateLCD.cpp)
 
 set(${PROJECT_NAME}_HEADER_FILES
         ${SOURCE_ROOT}/QmsGameState.h
@@ -131,7 +132,9 @@ set(${PROJECT_NAME}_HEADER_FILES
         ${SOURCE_ROOT}/Version.h
         ${SOURCE_ROOT}/EventTimer.h
         ${SOURCE_ROOT}/GlobalDefinitions.h
-        ${SOURCE_ROOT}/MineCoordinateHash.h)
+        ${SOURCE_ROOT}/MineCoordinateHash.h
+        ${SOURCE_ROOT}/ChangeAwareValue.h
+        ${SOURCE_ROOT}/AutoUpdateLCD.h)
 
 
 set (${PROJECT_NAME}_FORMS

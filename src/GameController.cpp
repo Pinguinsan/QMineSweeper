@@ -508,18 +508,15 @@ void GameController::onMineSweeperButtonRightClickReleased(QmsButton *msbp)
     } else if (msbp->hasFlag()) {
         msbp->setHasFlag(false);
         msbp->setHasQuestionMark(true);
-        msbp->setIcon(applicationIcons->STATUS_ICON_QUESTION);
-        incrementUserMineCountDisplay();
+        incrementUserMineCount();
     } else if (msbp->hasQuestionMark()) {
         msbp->setHasQuestionMark(false);
-        msbp->setIcon(applicationIcons->COUNT_MINES_0);
     } else {
         msbp->setHasFlag(true);
-        msbp->setIcon(applicationIcons->STATUS_ICON_FLAG);
-        decrementUserMineCountDisplay();
+        decrementUserMineCount();
     }
-    startResetIconTimer(this->s_DEFAULT_CRAZY_FACE_TIMEOUT, applicationIcons->FACE_ICON_CRAZY);
-    emit(userIsNoLongerIdle());
+    startResetIconTimer(static_cast<unsigned int>(this->s_DEFAULT_CRAZY_FACE_TIMEOUT), applicationIcons->FACE_ICON_CRAZY);
+    emit(this->userIsNoLongerIdle());
 }
 
 
@@ -580,22 +577,30 @@ int GameController::numberOfMovesMade() const
 
 void GameController::incrementNumberOfMovesMade()
 {
-    emit(numberOfMovesMadeChanged(++this->m_qmsGameState->m_numberOfMovesMade));
+    this->m_qmsGameState->m_numberOfMovesMade++;
 }
 
 void GameController::decrementNumberOfMovesMade()
 {
-    emit(numberOfMovesMadeChanged(--this->m_qmsGameState->m_numberOfMovesMade));
+    this->m_qmsGameState->m_numberOfMovesMade--;
 }
 
-void GameController::incrementUserMineCountDisplay()
+void GameController::incrementUserMineCount()
 {
-    emit(numberOfMinesRemainingChanged(++this->m_qmsGameState->m_userDisplayNumberOfMines));
+    this->m_qmsGameState->m_userDisplayNumberOfMines++;
 }
 
-void GameController::decrementUserMineCountDisplay()
+void GameController::decrementUserMineCount()
 {
-    emit(numberOfMinesRemainingChanged(--this->m_qmsGameState->m_userDisplayNumberOfMines));
+    this->m_qmsGameState->m_userDisplayNumberOfMines--;
+}
+
+ChangeAwareInt *GameController::userDisplayNumbersOfMinesDataSource() {
+    return &this->m_qmsGameState->m_userDisplayNumberOfMines;
+}
+
+ChangeAwareInt *GameController::numbersOfMovesMadeDataSource() {
+    return &this->m_qmsGameState->m_numberOfMovesMade;
 }
 
 double GameController::DEFAULT_NUMBER_OF_MINES()
@@ -653,7 +658,4 @@ int GameController::MILLISECOND_DELAY_DIGITS()
     return GameController::s_MILLISECOND_DISPLAY_DIGITS;
 }
 
-GameController::~GameController()
-{
 
-}

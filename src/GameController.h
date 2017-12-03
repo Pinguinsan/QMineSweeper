@@ -44,6 +44,9 @@ class GameController : public QObject
 {
     Q_OBJECT
 public:
+
+    ~GameController() override = default;
+
     /*Member access*/
     bool initialClickFlag() const;
     int numberOfColumns() const;
@@ -54,10 +57,13 @@ public:
     void setNumberOfMovesMade(int numberOfMovesMade);
     void incrementNumberOfMovesMade();
     void decrementNumberOfMovesMade();
-    void incrementUserMineCountDisplay();
-    void decrementUserMineCountDisplay();
+    void incrementUserMineCount();
+    void decrementUserMineCount();
     int userDisplayNumberOfMines() const;
     void setNumberOfMinesRemaining(int userDisplayNumberOfMines);
+
+    ChangeAwareInt *userDisplayNumbersOfMinesDataSource();
+    ChangeAwareInt *numbersOfMovesMadeDataSource();
     std::set<std::pair<int, int>> &mineCoordinates();
     ButtonContainer &mineSweeperButtons();
     std::shared_ptr<QmsButton> mineSweeperButtonAtIndex(const MineCoordinates &coordinates) const;
@@ -163,8 +169,6 @@ private:
     GameController(int columnCount, int rowCount);
     GameController(const GameController &other) = delete;
     GameController(GameController &&other) = delete;
-
-    ~GameController() override;
 
 };
 

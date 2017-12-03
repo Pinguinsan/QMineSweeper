@@ -75,15 +75,14 @@ public:
 
 private:
     std::unique_ptr<QTimer> m_eventTimer;
-    std::unique_ptr<EventTimer<std::chrono::steady_clock>> m_userIdleTimer;
-    std::unique_ptr<Ui::MainWindow> m_ui;
+    std::unique_ptr<SteadyEventTimer> m_userIdleTimer;
     std::unique_ptr<AboutApplicationWidget> m_aboutQmsDialog;
     std::unique_ptr<BoardResizeWidget>  m_boardResizeDialog;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
     std::unique_ptr<QLabel> m_statusBarLabel;
-
     QmsSettingsLoader::SupportedLanguage m_language;
+
     double m_reductionSizeScaleFactor;
     QString m_saveStyleSheet;
     QSize m_currentDefaultMineSize;
@@ -93,6 +92,7 @@ private:
     bool m_iconReductionSizeCacheIsValid;
     bool m_boardSizeGeometrySet;
     QString m_saveFilePath;
+    Ui::MainWindow *m_ui;
 
     static const int s_TASKBAR_HEIGHT;
     static const int s_GAME_TIMER_INTERVAL;
@@ -156,9 +156,6 @@ private slots:
     void onChangeBoardSizeActionTriggered();
     void onCustomMineRatioSet(float mineRatio);
 
-
-    void updateNumberOfMovesMadeLCD(int numberOfMovesMade);
-    void updateNumberOfMinesLCD(int numberOfMines);
     void onActionMuteSoundChecked(bool checked);
 
     void onLanguageSelected(bool triggered);

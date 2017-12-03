@@ -204,11 +204,21 @@ void QmsButton::setHasMine(bool hasMine)
 void QmsButton::setHasQuestionMark(bool hasQuestionMark)
 {
     this->m_hasQuestionMark = hasQuestionMark;
+    if (this->m_hasQuestionMark) {
+        this->setIcon(applicationIcons->STATUS_ICON_QUESTION);
+    } else {
+        this->setIcon(QIcon{});
+    }
 }
 
 void QmsButton::setHasFlag(bool hasFlag)
 {
     this->m_hasFlag = hasFlag;
+    if (this->m_hasFlag) {
+        this->setIcon(applicationIcons->STATUS_ICON_FLAG);
+    } else {
+        this->setIcon(QIcon{});
+    }
 }
 
 void QmsButton::setIsRevealed(bool isRevealed)

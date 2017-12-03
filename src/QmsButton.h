@@ -60,15 +60,12 @@ public:
     bool hasQuestionMark() const;
     bool isRevealed() const;
     std::shared_ptr<MineCoordinates> mineCoordinates() const;
-    bool isCornerButton() const;
-    bool isEdgeButton() const;
 
     void setHasMine(bool hasMine);
     void setHasFlag(bool hasFlag);
     void setHasQuestionMark(bool hasQuestionMark);
     void setIsRevealed(bool isRevealed);
     void setNumberOfSurroundingMines(int numberOfSurroundingMines);
-    void drawNumberOfSurroundingMines();
     void setBlockClicks(bool blockClicks);
     bool isBlockingClicks() const;
     std::string toString() const;

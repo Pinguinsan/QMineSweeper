@@ -16,7 +16,6 @@
 
 #include <QMediaPlayer>
 #include <QGridLayout>
-#include <QLCDNumber>
 #include <QDesktopWidget>
 #include <QWindow>
 #include <QString>
@@ -45,6 +44,7 @@
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "AutoUpdateLCD.h"
 #include <QMessageBox>
 
 #if defined(__ANDROID__)
@@ -78,7 +78,6 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     MouseMoveableQMainWindow{parent},
     m_eventTimer{new QTimer{}},
     m_userIdleTimer{new SteadyEventTimer{}},
-    m_ui{new Ui::MainWindow{}},
     m_aboutQmsDialog{new AboutApplicationWidget{}},
     m_boardResizeDialog{new BoardResizeWidget{}},
     m_languageActionGroup{new QActionGroup{nullptr}},
@@ -89,12 +88,20 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     m_currentMaxMineSize{QSize{0,0}},
     m_maxMineSizeCacheIsValid{false},
     m_boardSizeGeometrySet{false},
-    m_saveFilePath{""}
+    m_saveFilePath{""},
+    m_ui{new Ui::MainWindow{}}
 {
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
     this->m_ui->centralwidget->setMouseTracking(true);
     this->setStyleSheet("");
+
+    auto movesLCD = dynamic_cast<AutoUpdateLCD *>(this->m_ui->numberOfMoves);
+    auto minesLCD = dynamic_cast<AutoUpdateLCD *>(this->m_ui->minesRemaining);
+
+
+    movesLCD->setDataSource(gameController->numbersOfMovesMadeDataSource());
+    minesLCD->setDataSource(gameController->userDisplayNumbersOfMinesDataSource());
 
     QFont tempFont{this->m_statusBarLabel->font()};
     tempFont.setPointSize(MainWindow::s_STATUS_BAR_FONT_POINT_SIZE);
@@ -129,8 +136,11 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
 
     this->connect(this->m_eventTimer.get(), &QTimer::timeout, this, &MainWindow::eventLoop);
 
+    /*
     this->connect(gameController, &GameController::numberOfMinesRemainingChanged, this, &MainWindow::updateNumberOfMinesLCD);
     this->connect(gameController, &GameController::numberOfMovesMadeChanged, this, &MainWindow::updateNumberOfMovesMadeLCD);
+    */
+
     this->connect(gameController, &GameController::gameResumed, this, &MainWindow::onGameResumed);
     this->connect(gameController, &GameController::mineExplosionEvent, this, &MainWindow::onMineExplosionEventTriggered);
 
@@ -188,15 +198,11 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     this->connect(this->m_aboutQmsDialog.get(), &AboutApplicationWidget::aboutToClose, this, &MainWindow::onAboutQmsWindowClosed);
 
     this->m_eventTimer->start();
-    this->updateNumberOfMovesMadeLCD(gameController->numberOfMovesMade());
-    this->updateNumberOfMinesLCD(gameController->userDisplayNumberOfMines());
-
 }
 
 void MainWindow::onCustomMineRatioSet(float mineRatio)
 {
     LOG_DEBUG() << QString{R"(Custom mine ratio %1 has been set)"}.arg(QS_NUMBER(mineRatio));
-    this->updateNumberOfMinesLCD(gameController->numberOfMines());
 }
 
 void MainWindow::onSaveActionTriggered()
@@ -272,6 +278,7 @@ void MainWindow::onOpenActionTriggered()
     if (loadResult == LoadGameStateResult::Success) {
 		this->setupNewGame();
 		for (auto & it: gameController->mineSweeperButtons()) {
+            (void)it;
 			//TODO: Do something
 		}
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
@@ -504,7 +511,6 @@ void MainWindow::setupNewGame()
         delete wItem;
     }
     this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
-    this->updateNumberOfMinesLCD(gameController->numberOfMines());
     this->populateMineField();
     this->centerAndFitWindow(true, true);
 }
@@ -655,14 +661,7 @@ QSize MainWindow::getMaxMineSize()
  * the icons. The value is calculated based upon the size of the adjacent LCDs */
 void MainWindow::resizeResetIcon()
 {
-#if defined(__ANDROID__)
-    this->m_ui->resetButton->setFixedSize(gameController->mineSweeperButtonAtIndex(0, 0)->size());
-    this->m_ui->resetButton->setIconSize(this->m_ui->resetButton->size());
-    this->m_ui->numberOfMoves->setFixedSize(this->m_ui->numberOfMoves->size() * 3);
-    this->m_ui->minesRemaining->setFixedSize(this->m_ui->numberOfMoves->size());
-#else
     this->m_ui->resetButton->setIconSize(this->m_ui->resetButton->size() - this->getIconReductionSize());
-#endif
 }
 
 /* resetResetButtonIcon() : The reset button icon is changed in response to game events
@@ -758,8 +757,6 @@ void MainWindow::doGameReset()
     emit(resetGame());
     this->m_ui->resetButton->setIcon(applicationIcons->FACE_ICON_SMILEY);
     this->displayStatusMessage(QStatusBar::tr(START_NEW_GAME_INSTRUCTION));
-    this->updateNumberOfMinesLCD(gameController->numberOfMines());
-    this->updateNumberOfMovesMadeLCD(0);
 }
 
 /* eventLoop() : Called whenever the game timer times out, at the specified interval.
@@ -850,53 +847,6 @@ void MainWindow::updateUserIdleTimer()
 std::string MainWindow::getLCDPadding(uint8_t howMuch)
 {
     return QmsUtilities::getPadding(howMuch, '0');
-}
-
-/* updateNumberOfMinesLCD() : The right LCD on the MainWindow shows how
- * many mines may be remaining in the game, in accordance with how many mines have been flagged
- * by the user, indiciating that they thing there is a mine there. Whenever this value is updated
- * via the GameController, GameController emits a numberOfMinesRemainingChanged() signal, which is
- * hooked by this function. The LCD should always display 3 characters, so the parameter to the
- * function is checked against powers of 10, and the correct number of 0's are
- * added before the number is displayed */
-void MainWindow::updateNumberOfMinesLCD(int numberOfMines)
-{
-    using namespace QmsUtilities;
-    using namespace QmsStrings;
-    if (numberOfMines > 999) {
-        this->m_ui->minesRemaining->display(LCD_OVERFLOW_STRING);
-    } else if (numberOfMines <= 0) {
-        this->m_ui->minesRemaining->display(toQString(this->getLCDPadding(3)));
-    } else if (numberOfMines < 10) {
-        this->m_ui->minesRemaining->display(QStringFormat("%s%i", this->getLCDPadding(2).c_str(), numberOfMines));
-    } else if (numberOfMines < 100) {
-        this->m_ui->minesRemaining->display(QStringFormat("%s%i", this->getLCDPadding(1).c_str(), numberOfMines));
-    } else {
-        this->m_ui->minesRemaining->display(numberOfMines);
-    }
-}
-
-/* updateNumberOfMovesMadeLCD() : The left LCD on the MainWindow shows how
- * many moves have been made by the user. Whenever this is updated via the GameController,
- * GameController emits a numberOfMovesMadeChanged() signal, which is hooked by this function.
- * The LCD should always display 3 characters, so the parameter to the function is checked
- * against powers of 10, and the correct number of 0's are added before the number is displayed */
-void MainWindow::updateNumberOfMovesMadeLCD(int numberOfMovesMade)
-{
-    using namespace QmsUtilities;
-    using namespace QmsStrings;
-    if (numberOfMovesMade > 999) {
-        this->m_ui->numberOfMoves->display(LCD_OVERFLOW_STRING);
-    } else if (numberOfMovesMade <= 0) {
-        this->m_ui->numberOfMoves->display(toQString(this->getLCDPadding(3)));
-    } else if (numberOfMovesMade < 10) {
-        this->m_ui->numberOfMoves->display(QString{"%1%2"}.arg(this->getLCDPadding(2).c_str(), QS_NUMBER(numberOfMovesMade)));
-    } else if (numberOfMovesMade < 100) {
-        this->m_ui->numberOfMoves->display(QString{"%1%2"}.arg(this->getLCDPadding(2).c_str(), QS_NUMBER(numberOfMovesMade)));
-    } else {
-        this->m_ui->numberOfMoves->display(numberOfMovesMade);
-    }
-
 }
 
 /* onMineExplosionEventTriggered() : When a player reveals a mine, a mineExplosionEvent() signal is
@@ -1008,5 +958,5 @@ void MainWindow::drawNumberOfSurroundingMines(QmsButton *msb)
  * of by c++11's smart pointers (unique_ptr and shared_ptr) */
 MainWindow::~MainWindow()
 {
-
+    delete this->m_ui;
 }

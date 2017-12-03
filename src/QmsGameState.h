@@ -30,6 +30,7 @@
 
 #include "MineCoordinateHash.h"
 #include "EventTimer.h"
+#include "ChangeAwareValue.h"
 
 class QString;
 class QmsButton;
@@ -67,7 +68,7 @@ public:
     QmsGameState();
     QmsGameState(int columnCount, int rowCount);
     QmsGameState(const QmsGameState &);
-	QmsGameState(QmsGameState &&rhs);
+	QmsGameState(QmsGameState &&rhs) noexcept;
 	QmsGameState& operator=(const QmsGameState &);
 	QmsGameState& operator=(QmsGameState &&rhs);
 	~QmsGameState() = default;
@@ -79,12 +80,12 @@ private:
     std::unique_ptr<SteadyEventTimer> m_playTimer;
     std::set<std::pair<int, int>> m_mineCoordinates;
     ButtonContainer m_mineSweeperButtons;
-    int m_numberOfMines;
-    int m_userDisplayNumberOfMines;
+	int m_numberOfMines;
+    ChangeAwareInt m_userDisplayNumberOfMines;
     bool m_initialClickFlag;
     int m_numberOfColumns;
     int m_numberOfRows;
-    int m_numberOfMovesMade;
+    ChangeAwareInt m_numberOfMovesMade;
     GameState m_gameState;
     bool m_gameOver;
     int m_totalButtonCount;

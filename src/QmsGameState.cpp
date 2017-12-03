@@ -69,8 +69,9 @@ QmsGameState::QmsGameState(const QmsGameState &rhs) :
 	m_initialClickFlag{rhs.m_initialClickFlag},
 	m_numberOfColumns{rhs.m_numberOfColumns},
 	m_numberOfRows{rhs.m_numberOfRows},
-	m_gameState{rhs.m_gameState},
-	m_gameOver{rhs.m_gameOver},
+    m_numberOfMovesMade{rhs.m_numberOfMovesMade},
+    m_gameState{rhs.m_gameState},
+    m_gameOver{rhs.m_gameOver},
 	m_totalButtonCount{rhs.m_totalButtonCount},
 	m_unopenedMineCount{ rhs.m_unopenedMineCount },
 	m_customMineRatio{nullptr}
@@ -82,14 +83,15 @@ QmsGameState::QmsGameState(const QmsGameState &rhs) :
 	}
 }
 
-QmsGameState::QmsGameState(QmsGameState &&rhs) :
+QmsGameState::QmsGameState(QmsGameState &&rhs) noexcept :
 	m_playTimer{ std::move( rhs.m_playTimer) },
 	m_numberOfMines{ rhs.m_numberOfMines },
 	m_userDisplayNumberOfMines{ rhs.m_userDisplayNumberOfMines },
 	m_initialClickFlag{ rhs.m_initialClickFlag },
 	m_numberOfColumns{ rhs.m_numberOfColumns },
 	m_numberOfRows{ rhs.m_numberOfRows },
-	m_gameState{ rhs.m_gameState },
+    m_numberOfMovesMade{rhs.m_numberOfMovesMade},
+    m_gameState{ rhs.m_gameState },
 	m_gameOver{ rhs.m_gameOver },
 	m_totalButtonCount{ rhs.m_totalButtonCount },
 	m_unopenedMineCount{ rhs.m_unopenedMineCount },
