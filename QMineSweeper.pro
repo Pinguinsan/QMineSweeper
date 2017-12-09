@@ -76,15 +76,3 @@ win32 {
     HEADERS += src/version.h
 }
 
-android {
-    DISTFILES += Android/AndroidManifest.xml \
-                Android/gradle.properties \
-                 Android/gradle/wrapper/gradle-wrapper.jar \
-                 Android/gradlew \
-                 Android/res/values/libs.xml \
-                 Android/build.gradle \
-                 Android/gradle/wrapper/gradle-wrapper.properties \
-                 Android/gradlew.bat
-
-    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/Android
-}

@@ -8,6 +8,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+if (POLICY CMP0071)
+    cmake_policy(SET CMP0071 NEW)
+endif()
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -16,13 +20,17 @@ if (WIN32)
     if (NOT WIN_COMPILER)
         message(FATAL_ERROR "Please specify -DWIN_COMPILER=MSVC or -DWIN_COMPILER=MINGW")
     endif()
-endif()
-
-IF (NOT MSVC)
+    IF (WIN_COMPILER STREQUAL "MINGW")
+        set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+        set(CMAKE_CXX_FLAGS_DEBUG "-g")
+        set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    endif()
+else()
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
+
 
 if (WIN32)
     if (WIN_COMPILER STREQUAL "MSVC")
@@ -154,8 +162,8 @@ set (${PROJECT_NAME}_RESOURCES
 #qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 qt5_add_resources(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
-if (WIN32 OR CYGWIN OR MSYS_PLATFORM)
-add_executable(QMineSweeper
+if (WIN32)
+add_executable(${PROJECT_NAME}
         WIN32
         ${${PROJECT_NAME}_SOURCE_FILES}
         ${${PROJECT_NAME}_HEADER_FILES}
@@ -167,7 +175,7 @@ target_link_libraries (${PROJECT_NAME}
         ${QT_LINK_LIBRARIES})
 
 
-if (MSVC)
+if (WIN_COMPILER STREQUAL "MSVC")
     add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
             COMMAND "${QT_ROOT}/${MSVC_QT_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
@@ -191,3 +199,6 @@ target_link_libraries (${PROJECT_NAME}
         pthread)
 endif()
 
+target_include_directories(${PROJECT_NAME}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
