@@ -52,6 +52,15 @@ public:
     void closeEvent(QCloseEvent *event) override;
     void showEvent(QShowEvent *event) override;
 
+    void setMaximumColumns(int maximumColumns);
+    void setMaximumRows(int maximumRows);
+    void setMinimumColumns(int minimumColumns);
+    void setMinimumRows(int minimumRows);
+    int minimumRows() const;
+    int minimumColumns() const;
+    int maximumRows() const;
+    int maximumColumns() const;
+
 signals:
     void aboutToClose(ResizeWidgetResult result);
     void keyPressEvent(QKeyEvent *event);
