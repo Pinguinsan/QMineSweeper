@@ -6,6 +6,7 @@ project(${PROJECT_NAME} CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 if (POLICY CMP0071)
@@ -25,6 +26,31 @@ if (WIN32)
         set(CMAKE_CXX_FLAGS_DEBUG "-g")
         set(CMAKE_CXX_FLAGS_RELEASE "-O3")
     endif()
+        if (WIN_COMPILER STREQUAL "MSVC")
+        set (WINDOWS_COMPILER MSVC)
+        set(COVERAGE_LINK_FLAGS  "/SUBSYSTEM:WINDOWS ")
+        set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
+    else()
+        set (WINDOWS_COMPILER MINGW)
+        set(COVERAGE_LINK_FLAGS  "-mwindows")
+        set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
+    endif()
+
+
+    #Change this variable to the current Qt root!
+    if (NOT QT_ROOT)
+        set(QT_ROOT "C:/Qt/5.10.0")
+    endif()
+    #Change this variable to the mingw version used by your Qt build version (NOT THE COMPILER PATH)
+    if (WIN_COMPILER STREQUAL "MSVC")
+        if (NOT QT_MSVC_VERSION)
+            set (QT_MSVC_VERSION "msvc2017_64")
+        endif()
+    else()
+        if (NOT QT_MINGW_VERSION)
+            set(QT_MINGW_VERSION "mingw53_32")
+        endif()
+    endif()
 else()
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -32,49 +58,19 @@ else()
 endif()
 
 
-if (WIN32)
-    if (WIN_COMPILER STREQUAL "MSVC")
-        set (FS_ROOT "C:")
-		set (WINDOWS_COMPILER MSVC)
-        set(COVERAGE_LINK_FLAGS  "/SUBSYSTEM:WINDOWS ")
-		set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
-    else()
-        set (FS_ROOT "C:")
-		set (WINDOWS_COMPILER MINGW)
-		set(COVERAGE_LINK_FLAGS  "-mwindows")
-		set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
-    endif()
-
-
-    #Change this variable to the current Qt root!
-    if (NOT QT_ROOT)
-        set(QT_ROOT "${FS_ROOT}/Qt/5.10.0")
-    endif()
-    #Change this variable to the mingw version used by your Qt build version (NOT THE COMPILER PATH)
-	if (WIN_COMPILER STREQUAL "MSVC")
-		if (NOT MSVC_QT_VERSION)
-			set (MSVC_QT_VERSION "msvc2017_64")
-		endif()
-	else()
-		if (NOT MINGW_VERSION)
-			set(MINGW_QT_VERSION "mingw53_32")
-		endif()
-	endif()
-endif()
-
-
 set(QT_PACKAGES Qt5Widgets Qt5Gui Qt5Core Qt5Multimedia Qt5SerialPort)
 set(QT_LINK_LIBRARIES)
+set(QT_LIBRARY_LIST)
 
 if (WIN32)
         if (WIN_COMPILER STREQUAL "MSVC")
-                set(Qt5_DIR "${QT_ROOT}/${MSVC_QT_VERSION}/lib/cmake/Qt5")
-                set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/${MSVC_QT_VERSION}/bin/qmake.exe")
-                message(STATUS "QT_ROOT = ${QT_ROOT}")
+            set(Qt5_DIR "${QT_ROOT}/${QT_MSVC_VERSION}/lib/cmake/Qt5")
+            set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/${QT_MSVC_VERSION}/bin/qmake.exe")
+            message(STATUS "QT_ROOT = ${QT_ROOT}")
         else()
-                set(Qt5_DIR "${QT_ROOT}/${MINGW_QT_VERSION}/lib/cmake/Qt5")
-                set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/${MINGW_QT_VERSION}/bin/qmake.exe")
-                message(STATUS "QT_ROOT = ${QT_ROOT}")
+            set(Qt5_DIR "${QT_ROOT}/${QT_MINGW_VERSION}/lib/cmake/Qt5")
+            set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/${QT_MINGW_VERSION}/bin/qmake.exe")
+            message(STATUS "QT_ROOT = ${QT_ROOT}")
         endif()
 endif()
 
@@ -83,12 +79,13 @@ foreach(Qt5Package ${QT_PACKAGES})
     string(SUBSTRING ${Qt5Package} 0 3 Qt5PackageBase)
     string(SUBSTRING ${Qt5Package} 3 -1 Qt5PackageTail)
     string(CONCAT Qt5PackageLib "${Qt5PackageBase}" "::" "${Qt5PackageTail}")
+    list(APPEND QT_LIBRARY_LIST "${Qt5PackageTail}")
     list(APPEND QT_LINK_LIBRARIES "${Qt5PackageLib}")
     if (WIN32)
 		if (WIN_COMPILER STREQUAL "MSVC")
-            set(${Qt5Package}_DIR "${QT_ROOT}/${MSVC_QT_VERSION}/lib/cmake/${Qt5Package}")
+            set(${Qt5Package}_DIR "${QT_ROOT}/${QT_MSVC_VERSION}/lib/cmake/${Qt5Package}")
 		else()
-            set(${Qt5Package}_DIR "${QT_ROOT}/${MINGW_QT_VERSION}/lib/cmake/${Qt5Package}")
+            set(${Qt5Package}_DIR "${QT_ROOT}/${QT_MINGW_VERSION}/lib/cmake/${Qt5Package}")
         endif()
         message(STATUS "${Qt5Package}_DIR = ${${Qt5Package}_DIR}")
     endif()
@@ -159,7 +156,7 @@ set (${PROJECT_NAME}_RESOURCES
         ${RESOURCES_ROOT}/translations.qrc)
 
 
-#qt5_wrap_ui (QMINESWEEPER_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
+qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 qt5_add_resources(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
 if (WIN32)
@@ -171,18 +168,15 @@ add_executable(${PROJECT_NAME}
         ${${PROJECT_NAME}_RESOURCES_RCC}
         resources/QMineSweeper.rc)
 
-target_link_libraries (${PROJECT_NAME}
-        ${QT_LINK_LIBRARIES})
-
 
 if (WIN_COMPILER STREQUAL "MSVC")
     add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND "${QT_ROOT}/${MSVC_QT_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+            COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
 else()
     add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND "${QT_ROOT}/${MINGW_QT_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+            COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
 
 endif()
 
@@ -195,10 +189,11 @@ add_executable(QMineSweeper
         ${${PROJECT_NAME}_RESOURCES_RCC})
 
 target_link_libraries (${PROJECT_NAME}
-        ${QT_LINK_LIBRARIES}
         pthread)
 endif()
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
+qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
