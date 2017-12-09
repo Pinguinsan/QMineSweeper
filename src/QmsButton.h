@@ -18,10 +18,6 @@
 #ifndef QMINESWEEPER_QMSBUTTON_H
 #define QMINESWEEPER_QMSBUTTON_H
 
-#if defined(__ANDROID__)
-    #include <QTouchEvent>
-#endif
-
 #include <QPushButton>
 #include <QLabel>
 

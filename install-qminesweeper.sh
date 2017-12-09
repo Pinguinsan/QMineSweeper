@@ -1,1 +1,0 @@
-install-qminesweeper-cmake.sh
