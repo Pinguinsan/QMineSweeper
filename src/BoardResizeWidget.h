@@ -69,6 +69,10 @@ private:
     Ui::BoardResizeWidget *m_ui;
     int m_numberOfColumns;
     int m_numberOfRows;
+	int m_minimumColumns;
+	int m_maximumColumns;
+	int m_minimumRows;
+	int m_maximumRows;
     ResizeWidgetResult m_resultToEmit;
 
     void onPresetBoardSizeActionTriggered(QPushButton *pressedButton);
@@ -78,6 +82,8 @@ private:
     void onBtnIncrementColumnsClicked(bool down);
     void onBtnDecrementColumnsClicked(bool down);
 
+	static const std::pair<int, int> DEFAULT_COLUMN_MIN_MAX;
+	static const std::pair<int, int> DEFAULT_ROW_MIN_MAX;
     static const std::pair<int, int> BEGINNER_GAME_DIMENSIONS;
     static const std::pair<int, int> INTERMEDIATE_GAME_DIMENSIONS;
     static const std::pair<int, int> ADVANCED_GAME_DIMENSIONS;

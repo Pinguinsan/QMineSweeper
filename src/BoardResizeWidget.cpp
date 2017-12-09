@@ -27,6 +27,8 @@
 #include "QmsApplicationSettings.h"
 #include "GlobalDefinitions.h"
 
+const std::pair<int, int> BoardResizeWidget::DEFAULT_ROW_MIN_MAX{ 3, 1000 };
+const std::pair<int, int> BoardResizeWidget::DEFAULT_COLUMN_MIN_MAX{ 3, 1000 };
 const std::pair<int, int> BoardResizeWidget::BEGINNER_GAME_DIMENSIONS{9, 9};
 const std::pair<int, int> BoardResizeWidget::INTERMEDIATE_GAME_DIMENSIONS{18, 9};
 const std::pair<int, int> BoardResizeWidget::ADVANCED_GAME_DIMENSIONS{18, 18};
@@ -37,6 +39,10 @@ BoardResizeWidget::BoardResizeWidget(QWidget *parent) :
     m_ui{new Ui::BoardResizeWidget{}},
     m_numberOfColumns{0},
     m_numberOfRows{0},
+	m_minimumColumns{DEFAULT_COLUMN_MIN_MAX.first},
+	m_maximumColumns{DEFAULT_COLUMN_MIN_MAX.second},
+	m_minimumRows{DEFAULT_ROW_MIN_MAX.first},
+	m_maximumRows{DEFAULT_ROW_MIN_MAX.second},
     m_resultToEmit{ GameBoardSize{0, 0, 0}, BoardResizeWidget::ResizeWidgetExitCode::Rejected}
 {
     this->m_ui->setupUi(this);
@@ -193,19 +199,97 @@ void BoardResizeWidget::onOkayButtonClicked(bool checked)
     }
 }
 
+void BoardResizeWidget::setMaximumColumns(int maximumColumns) {
+	using QmsUtilities::stringToInt;
+	using QmsUtilities::toStdString;
+	if (maximumColumns < this->m_minimumColumns) {
+		throw std::runtime_error("BoardResizeWidget::setMaximumColumns(int): column count cannot be less than current minimum column count (" + toStdString(maximumColumns) + " < " + toStdString(this->m_minimumColumns) + ")");
+	} else if (maximumColumns < 0) {
+		throw std::runtime_error("BoardResizeWidget::setMaximumColumns(int): column count cannot be less than or equal to zero (" + toStdString(maximumColumns) + " <= 0");
+	}
+	this->m_maximumColumns = maximumColumns;
+	int currentColumns{ stringToInt(this->m_ui->lblColumns->text().toStdString()) };
+	if (currentColumns > maximumColumns) {
+		this->m_ui->lblColumns ->setText(QS_NUMBER(this->m_maximumColumns));
+	}
+}
+
+void BoardResizeWidget::setMaximumRows(int maximumRows) {
+	using QmsUtilities::stringToInt;
+	using QmsUtilities::toStdString;
+	if (maximumRows < this->m_minimumRows) {
+		throw std::runtime_error("BoardResizeWidget::setMaximumRows(int): row count cannot be less than current minimum row count (" + toStdString(maximumRows) + " < " + toStdString(this->m_minimumRows) + ")");
+	} else if (maximumRows < 0) {
+		throw std::runtime_error("BoardResizeWidget::setMaximumRows(int): row count cannot be less than or equal to zero (" + toStdString(maximumRows) + " <= 0");
+	}
+	this->m_maximumRows = maximumRows;
+	int currentRows{ stringToInt(this->m_ui->lblRows->text().toStdString()) };
+	if (currentRows > this->m_maximumRows) {
+		this->m_ui->lblRows->setText(QS_NUMBER(this->m_maximumRows));
+	}
+}
+
+void BoardResizeWidget::setMinimumColumns(int minimumColumns) {
+	using QmsUtilities::stringToInt;
+	using QmsUtilities::toStdString;
+	if (minimumColumns > this->m_maximumColumns) {
+		throw std::runtime_error("BoardResizeWidget::setMinimumColumns(int): column count cannot be greater than current maximum column count (" + toStdString(minimumColumns) + " < " + toStdString(this->m_maximumColumns) + ")");
+	} else if (minimumColumns < 0) {
+		throw std::runtime_error("BoardResizeWidget::setMinimumColumns(int): column count cannot be less than or equal to zero (" + toStdString(minimumColumns) + " <= 0");
+	}
+	this->m_minimumColumns = minimumColumns;
+	int currentColumns{ stringToInt(this->m_ui->lblColumns->text().toStdString()) };
+	if (currentColumns < this->m_minimumColumns) {
+		this->m_ui->lblColumns->setText(QS_NUMBER(this->m_minimumColumns));
+	}
+}
+
+void BoardResizeWidget::setMinimumRows(int minimumRows) {
+	using QmsUtilities::stringToInt;
+	using QmsUtilities::toStdString;
+	if (minimumRows > this->m_maximumRows) {
+		throw std::runtime_error("BoardResizeWidget::setMinimumRows(int): row count cannot be greater than current maximum row count (" + toStdString(minimumRows) + " < " + toStdString(this->m_maximumRows) + ")");
+	} else if (minimumRows < 0) {
+		throw std::runtime_error("BoardResizeWidget::setMinimumRows(int): row count cannot be less than or equal to zero (" + toStdString(minimumRows) + " <= 0");
+	}
+	this->m_minimumRows = minimumRows;
+	int currentRows{ stringToInt(this->m_ui->lblRows->text().toStdString()) };
+	if (currentRows < this->m_minimumRows) {
+		this->m_ui->lblRows->setText(QS_NUMBER(this->m_minimumRows));
+	}
+}
+
+int BoardResizeWidget::minimumRows() const {
+	return this->m_minimumRows;
+}
+
+int BoardResizeWidget::minimumColumns() const {
+	return this->m_minimumColumns;
+}
+
+int BoardResizeWidget::maximumRows() const {
+	return this->m_maximumRows;
+}
+
+int BoardResizeWidget::maximumColumns() const {
+	return this->m_maximumColumns;
+}
+
 void BoardResizeWidget::onBtnIncrementRowsClicked(bool down)
 {
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentRows{stringToInt(this->m_ui->lblRows->text().toStdString())};
-    this->m_ui->lblRows->setText(QS_NUMBER(currentRows + 1));
+	if (currentRows < this->m_maximumRows) {
+		this->m_ui->lblRows->setText(QS_NUMBER(currentRows + 1));
+	}
 }
 
 void BoardResizeWidget::onBtnDecrementRowsClicked(bool down) {
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentRows{stringToInt(this->m_ui->lblRows->text().toStdString())};
-    if (currentRows != 0) {
+    if (currentRows > this->m_minimumRows) {
         this->m_ui->lblRows->setText(QS_NUMBER(currentRows - 1));
     }
 }
@@ -216,7 +300,9 @@ void BoardResizeWidget::onBtnIncrementColumnsClicked(bool down)
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
-    this->m_ui->lblColumns->setText(QS_NUMBER(currentColumns + 1));
+	if (currentColumns < this->m_maximumColumns) {
+		this->m_ui->lblColumns->setText(QS_NUMBER(currentColumns + 1));
+	}
 }
 
 void BoardResizeWidget::onBtnDecrementColumnsClicked(bool down)
@@ -224,7 +310,7 @@ void BoardResizeWidget::onBtnDecrementColumnsClicked(bool down)
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
-    if (currentColumns != 0) {
+    if (currentColumns > this->m_maximumColumns) {
         this->m_ui->lblColumns->setText(QS_NUMBER(currentColumns - 1));
     }
 }
