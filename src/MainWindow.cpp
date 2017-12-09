@@ -47,29 +47,19 @@
 #include "AutoUpdateLCD.h"
 #include <QMessageBox>
 
-#if defined(__ANDROID__)
-    const int MainWindow::s_TASKBAR_HEIGHT{10};
-    const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
-    const int MainWindow::s_WIDTH_SCALE_FACTOR{28};
-    const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
-    const int MainWindow::s_NUMBER_OF_VERTIAL_MARGINS{4};
-    const int MainWindow::s_DEFAULT_MINE_SIZE_SCALE_FACTOR{1};
-    const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{14};
-    const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.8};
+
+#if defined(_WIN32)
+    const int MainWindow::s_TASKBAR_HEIGHT{25};
 #else
-    #if defined(_WIN32)
-        const int MainWindow::s_TASKBAR_HEIGHT{25};
-    #else
-        const int MainWindow::s_TASKBAR_HEIGHT{15};
-    #endif //defined(_WIN32)
-    const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
-    const int MainWindow::s_WIDTH_SCALE_FACTOR{28};
-    const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
-    const int MainWindow::s_NUMBER_OF_VERTIAL_MARGINS{4};
-    const int MainWindow::s_DEFAULT_MINE_SIZE_SCALE_FACTOR{19};
-    const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{12};
-    const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
-#endif
+    const int MainWindow::s_TASKBAR_HEIGHT{15};
+#endif //defined(_WIN32)
+const int MainWindow::s_HEIGHT_SCALE_FACTOR{18};
+const int MainWindow::s_WIDTH_SCALE_FACTOR{28};
+const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
+const int MainWindow::s_NUMBER_OF_VERTIAL_MARGINS{4};
+const int MainWindow::s_DEFAULT_MINE_SIZE_SCALE_FACTOR{19};
+const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{12};
+const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
 
 /* MainWindow() : Constructor. All UI stuff if initialized and
  * relevant events are hooked (QObject::connect()) to set up the game to play */
