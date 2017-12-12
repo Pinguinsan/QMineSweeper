@@ -74,18 +74,21 @@ MainWindow::MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLangua
     m_translator{new QTranslator{}},
     m_statusBarLabel{new QLabel{}},
     m_language{initialDisplayLanguage},
+    m_reductionSizeScaleFactor{0},
     m_currentDefaultMineSize{QSize{0,0}},
     m_currentMaxMineSize{QSize{0,0}},
+    m_currentIconReductionSize{QSize{0, 0}},
     m_maxMineSizeCacheIsValid{false},
+    m_iconReductionSizeCacheIsValid{false},
     m_boardSizeGeometrySet{false},
     m_saveFilePath{""},
     m_ui{new Ui::MainWindow{}}
 {
+
     using namespace QmsStrings;
     this->m_ui->setupUi(this);
     this->m_ui->centralwidget->setMouseTracking(true);
     this->setStyleSheet("");
-
 
 
     this->m_ui->numberOfMoves->setDataSource(gameController->numbersOfMovesMadeDataSource());
@@ -763,12 +766,12 @@ void MainWindow::eventLoop()
 {
     this->updateVisibleGameTimer();
     this->updateUserIdleTimer();
-    this->updateGeometry();
+    this->updateMyGeometry();
 }
 
-/* updateGeometry() : Convenience function to center and fit the window,
+/* updateMyGeometry() : Convenience function to center and fit the window,
  * if it is not already set by checking the size against the calculated minimum size */
-void MainWindow::updateGeometry()
+void MainWindow::updateMyGeometry()
 {
     if (this->size() != this->minimumSize()) {
         this->centerAndFitWindow(true, true);

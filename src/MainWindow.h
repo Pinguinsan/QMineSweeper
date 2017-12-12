@@ -163,7 +163,7 @@ private slots:
     void onSaveActionTriggered();
     void onSaveAsActionTriggered();
     void onOpenActionTriggered();
-    void updateGeometry();
+    void updateMyGeometry();
 
     void onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState);
 };
