@@ -90,7 +90,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
     QmsUtilities::checkOrCreateProgramLogDirectory();
-    QmsUtilities::checkOrCreateProgramSettingsDirectory();
 
      for (auto iter = argv + 1; iter != (argv + argc); iter++) {
          if (isSwitch(*iter, HELP_SWITCHES)) {
@@ -296,7 +295,6 @@ template <typename StringType, typename FileStringType>
 void logToFile(const StringType &str, const FileStringType &filePath)
 {
     QFile qFile{filePath};
-    QString stringCopy{toQString(str)};
     if (qFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
         if (qFile.write(toStdString(str).c_str(), toStdString(str).length()) == -1) {
             throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(toQString(str), toQString(filePath)).toStdString());

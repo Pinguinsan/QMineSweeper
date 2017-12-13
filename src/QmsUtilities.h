@@ -42,7 +42,6 @@ namespace QmsUtilities
 {
 
     template <typename T> inline std::string toStdString(const T &t) { return dynamic_cast<std::stringstream &>(std::stringstream{} << t).str(); }
-    QString getProgramSettingsDirectory();
     bool clearDirectoryOfFiles(const QString &dir);
     void checkOrCreateProgramLogDirectory();
     void checkOrCreateProgramSettingsDirectory();
@@ -72,25 +71,15 @@ namespace QmsUtilities
 
     void logString(const std::string &str);
 
-    template<typename T>
-    std::string toString(const T &convert)
-    {
-        std::string returnString{""};
-        std::stringstream transfer;
-        transfer << convert;
-        transfer >> returnString;
-        return returnString;
-    }
 
+	QString getProgramSettingsDirectory();
 
-    std::string toString(const std::string &str);
-    std::string toString(const char *str);
     std::string getPadding(size_t howMuch, char padChar);
     std::string getPadding(size_t howMuch, const char *padString);
     std::string getPadding(size_t howMuch, const std::string &padString);
 
     template <typename T>
-    QString toQString(const T &convert) { return QString::fromStdString(toString(convert)); }
+    QString toQString(const T &convert) { return QString::fromStdString(toStdString(convert)); }
     QString toQString(const std::string &convert);
     QString toQString(const char *convert);
     QString toQString(const QString &convert);

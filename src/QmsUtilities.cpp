@@ -104,18 +104,6 @@ void checkOrCreateProgramLogDirectory()
     }
 }
 
-#if defined(_WIN32)
-QString getLogFilePath()
-    {
-        if (!logFileName.isEmpty()) {
-            return QString{"%1log\\%2"}.arg(programSettingsDirectory, logFileName);
-        } else {
-            QString log{getLogFileName()};
-            QString settings{getProgramSettingsDirectory()};
-            return  QString{"%1log\\%2"}.arg(settings, log);
-        }
-    }
-#else
 QString getLogFilePath()
 {
     if (logFileName.isEmpty()) {
@@ -123,7 +111,6 @@ QString getLogFilePath()
     }
     return QString{"%1/%2/%3"}.arg(QDir::tempPath(), QCoreApplication::applicationName(), logFileName);
 }
-#endif
 
 QString getLogFileName()
 {
@@ -148,7 +135,7 @@ QString getProgramSettingsDirectory()
     if (!programSettingsDirectory.isEmpty()) {
         return programSettingsDirectory;
     }
-    QString homeDirectory{QDir::toNativeSeparators(QDir::homePath())};
+    QString homeDirectory{QDir::homePath()};
     QDir baseDirectory{homeDirectory};
     if (!baseDirectory.exists()) {
         throw std::runtime_error("You don't exist, go away");
@@ -156,9 +143,9 @@ QString getProgramSettingsDirectory()
     QString additionalSettingsPath{""};
 #if defined(_WIN32)
     if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-                additionalSettingsPath += "\\AppData\\Local\\QMineSweeper\\";
+                additionalSettingsPath += "/AppData/Local/QMineSweeper/";
             } else {
-                additionalSettingsPath += "\\QMineSweeper\\";
+                additionalSettingsPath += "/QMineSweeper/";
             }
 #else
     additionalSettingsPath += "/.local/share/QMineSweeper/";
@@ -300,26 +287,6 @@ QString getCurrentArchitecture()
 {
     return QSysInfo::currentCpuArchitecture();
 }
-
-void checkOrCreateProgramSettingsDirectory()
-{
-    QString settings{getProgramSettingsDirectory()};
-    QDir settingsDirectory{settings};
-    std::vector<QString> toLogInfo{};
-    if (settingsDirectory.exists()) {
-        toLogInfo.push_back(QString{"Detected settings directory at %1"}.arg(settings));
-    } else {
-        if (settingsDirectory.mkpath(".")) {
-            toLogInfo.push_back(QString{"Settings directory not found, created new directory at %1"}.arg(settings));
-        } else {
-            throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
-        }
-    }
-    for (auto &it : toLogInfo) {
-        LOG_INFO() << it;
-    }
-}
-
 
 static std::unique_ptr<Random> randomDevice = std::unique_ptr<Random>{new Random()};
 
