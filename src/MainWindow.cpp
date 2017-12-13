@@ -216,6 +216,7 @@ void MainWindow::onSaveAsActionTriggered()
     this->m_saveFilePath = fileDialog.getSaveFileName(this, QFileDialog::tr(QmsStrings::SAVE_FILE_CAPTION));
 
     if (this->m_saveFilePath == "") {
+        emit(gameResumed());
         return;
     } else {
         if (!this->m_saveFilePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
