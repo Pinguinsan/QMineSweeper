@@ -179,7 +179,7 @@ if (WIN_COMPILER STREQUAL "MSVC")
     add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
             COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
-else()
+elseif(WIN_COMPILER STREQUAL "MINGW")
     add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
             COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
@@ -188,7 +188,7 @@ endif()
 
 else()
 
-add_executable(QMineSweeper
+add_executable(${PROJECT_NAME}
         ${${PROJECT_NAME}_SOURCE_FILES}
         ${${PROJECT_NAME}_HEADER_FILES}
         ${${PROJECT_NAME}_FORMS}

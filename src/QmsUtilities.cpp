@@ -129,32 +129,30 @@ QString getLogFileName()
     }
     return logFileName;
 }
-
-QString getProgramSettingsDirectory()
-{
-    if (!programSettingsDirectory.isEmpty()) {
-        return programSettingsDirectory;
-    }
-    QString homeDirectory{QDir::homePath()};
-    QDir baseDirectory{homeDirectory};
-    if (!baseDirectory.exists()) {
-        throw std::runtime_error("You don't exist, go away");
-    }
-    QString additionalSettingsPath{""};
-#if defined(_WIN32)
-    if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-                additionalSettingsPath += "/AppData/Local/QMineSweeper/";
+    QString getProgramSettingsDirectory()
+    {
+        if (!programSettingsDirectory.isEmpty()) {
+            return programSettingsDirectory;
+        }
+        QString homeDirectory{QDir::toNativeSeparators(QDir::homePath())};
+        QDir baseDirectory{homeDirectory};
+        if (!baseDirectory.exists()) {
+            throw std::runtime_error("You don't exist, go away");
+        }
+        QString additionalSettingsPath{""};
+        #if defined(_WIN32)
+            if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
+                additionalSettingsPath += (QString{"\\AppData\\Local\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
             } else {
-                additionalSettingsPath += "/QMineSweeper/";
+                additionalSettingsPath += (QString{"\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
             }
-#else
-    additionalSettingsPath += "/.local/share/QMineSweeper/";
-#endif
-    programSettingsDirectory = homeDirectory + additionalSettingsPath;
-    return programSettingsDirectory;
+        #else
+            additionalSettingsPath += (QString{"/.local/share/"} + GlobalSettings::PROGRAM_LONG_NAME + "/");
+        #endif
+        programSettingsDirectory = homeDirectory + additionalSettingsPath;
+        return programSettingsDirectory;
 
-}
-
+    }
 QString getOSVersion()
 {
 #if defined(_WIN32)
