@@ -12,6 +12,7 @@
 
 .vs/
 .idea/
+.vscode/
 cmake-build-debug/
 
 # Qt-es

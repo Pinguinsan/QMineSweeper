@@ -18,6 +18,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (WIN32)
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+		set(WIN_COMPILER "MSVC")
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		set(WIN_COMPILER "MINGW")
+    endif()
     if (NOT WIN_COMPILER)
         message(FATAL_ERROR "Please specify -DWIN_COMPILER=MSVC or -DWIN_COMPILER=MINGW")
     endif()
