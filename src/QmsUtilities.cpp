@@ -17,6 +17,7 @@
 
 #include "QmsUtilities.h"
 #include "GlobalDefinitions.h"
+#include "QmsApplicationSettings.h"
 
 #include <QDateTime>
 #include <QByteArray>
@@ -142,12 +143,12 @@ QString getLogFileName()
         QString additionalSettingsPath{""};
         #if defined(_WIN32)
             if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-                additionalSettingsPath += (QString{"\\AppData\\Local\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
+                additionalSettingsPath += (QString{"\\AppData\\Local\\"} + QmsGlobalSettings::LONG_PROGRAM_NAME + "\\");
             } else {
-                additionalSettingsPath += (QString{"\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
+                additionalSettingsPath += (QString{"\\"} + QmsGlobalSettings::LONG_PROGRAM_NAME + "\\");
             }
         #else
-            additionalSettingsPath += (QString{"/.local/share/"} + GlobalSettings::PROGRAM_LONG_NAME + "/");
+            additionalSettingsPath += (QString{"/.local/share/"} + QmsGlobalSettings::LONG_PROGRAM_NAME + "/");
         #endif
         programSettingsDirectory = homeDirectory + additionalSettingsPath;
         return programSettingsDirectory;

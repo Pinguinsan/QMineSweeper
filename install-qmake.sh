@@ -289,6 +289,7 @@ changeDirectory "$buildDir" || { echo "Unable to enter build directory \"$buildD
 runQmake "$filePath" || { echo "qmake failed, bailing out"; exit 1; }
 runMake || { echo "make failed, bailing out"; exit 1; }
 generateDesktopFile || { echo "Could not generate desktop file, bailing out"; exit 1; }
+createDirectory "$appDir" || { echo "Could not create application directory, bailing out"; exit 1; }
 copyFile "$buildDir/$desktopFileName" "$appDir" || { echo "Could not copy desktop file to application directory, bailing out"; exit 1; }
 suLinkFile "$buildDir/$programName" "$globalBinDir"  || { echo "Could not link file, bailing out"; exit 1; }
 copyFile "$buildDir/$desktopFileName" "$HOME/Desktop/"
