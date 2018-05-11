@@ -22,8 +22,8 @@
 
 #include <QSettings>
 
-const int QmsSettingsLoader::DEFAULT_NUMBER_OF_COLUMNS{9};
-const int QmsSettingsLoader::DEFAULT_NUMBER_OF_ROWS{9};
+const int QmsSettingsLoader::DEFAULT_COLUMN_COUNT{9};
+const int QmsSettingsLoader::DEFAULT_ROW_COUNT{9};
 const int QmsSettingsLoader::DEFAULT_AUDIO_VOLUME{20};
 const char *QmsSettingsLoader::NUMBER_OF_COLUMNS_KEY{"columns"};
 const char *QmsSettingsLoader::NUMBER_OF_ROWS_KEY{"rows"};
@@ -66,10 +66,10 @@ QmsApplicationSettings QmsSettingsLoader::loadApplicationSettings() {
     int volume{settingsLoader.value(QmsSettingsLoader::AUDIO_VOLUME_KEY).toInt()};
     QmsApplicationSettings settings{};
     if (columns <= 0) {
-        columns = QmsSettingsLoader::DEFAULT_NUMBER_OF_COLUMNS;
+        columns = QmsSettingsLoader::DEFAULT_COLUMN_COUNT;
     }
     if (rows <= 0) {
-        rows = QmsSettingsLoader::DEFAULT_NUMBER_OF_ROWS;
+        rows = QmsSettingsLoader::DEFAULT_ROW_COUNT;
     }
     if (volume < 0) {
         volume = QmsSettingsLoader::DEFAULT_AUDIO_VOLUME;
