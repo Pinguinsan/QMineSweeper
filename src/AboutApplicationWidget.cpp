@@ -19,7 +19,6 @@ AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     m_ui{new Ui::AboutApplicationWidget{}},
     m_licenseHiddenHeight{-1}
 {
-
     using namespace QmsStrings;
     using namespace QmsGlobalSettings;
     this->m_ui->setupUi(this);
@@ -44,8 +43,7 @@ AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
 }
 
 
-void AboutApplicationWidget::onLicenseButtonClicked(bool checked)
-{
+void AboutApplicationWidget::onLicenseButtonClicked(bool checked) {
     (void)checked;
     if (this->m_ui->twLicenses->isVisible()) {
         this->clearLicenseText();
@@ -63,8 +61,7 @@ void AboutApplicationWidget::onLicenseButtonClicked(bool checked)
     this->m_ui->twLicenses->setVisible(!this->m_ui->twLicenses->isVisible());
 }
 
-int AboutApplicationWidget::addLicenseTab(const QString &licenseName, const QString &licensePath)
-{
+int AboutApplicationWidget::addLicenseTab(const QString &licenseName, const QString &licensePath) {
     if (this->m_licenseTabs.find(licenseName.toStdString()) != this->m_licenseTabs.end()) {
         return -1;
     }

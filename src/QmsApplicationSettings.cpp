@@ -21,6 +21,13 @@
 
 #include "QmsApplicationSettings.hpp"
 
+#if defined(_WIN32)
+#    define PLATFORM_CONFIG_FORMAT QSettings::Format::IniFormat
+#else
+#    define PLATFORM_CONFIG_FORMAT QSettings::Format::NativeFormat
+#endif //defined(_WIN32)
+
+
 namespace QmsGlobalSettings
 {
     const char *PROGRAM_NAME{"QMineSweeper"};

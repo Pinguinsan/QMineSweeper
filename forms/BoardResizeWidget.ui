@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>732</width>
-    <height>498</height>
+    <width>569</width>
+    <height>416</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -54,7 +54,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -78,7 +78,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -102,7 +102,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -138,7 +138,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>48</pointsize>
+          <pointsize>32</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -174,7 +174,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>48</pointsize>
+          <pointsize>32</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -189,7 +189,7 @@
        <widget class="QLabel" name="lblColumnTitle">
         <property name="font">
          <font>
-          <pointsize>32</pointsize>
+          <pointsize>24</pointsize>
          </font>
         </property>
         <property name="text">
@@ -237,7 +237,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>48</pointsize>
+          <pointsize>32</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -258,7 +258,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>48</pointsize>
+          <pointsize>32</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -273,7 +273,7 @@
        <widget class="QLabel" name="lblRowsTitle">
         <property name="font">
          <font>
-          <pointsize>32</pointsize>
+          <pointsize>24</pointsize>
          </font>
         </property>
         <property name="text">
@@ -291,7 +291,7 @@
     <widget class="QFrame" name="okayCancelButtonFrame">
      <property name="font">
       <font>
-       <pointsize>16</pointsize>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="frameShape">
@@ -311,7 +311,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="toolTip">
@@ -332,7 +332,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="toolTip">

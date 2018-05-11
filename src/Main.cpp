@@ -176,8 +176,8 @@ int main(int argc, char *argv[])
          }
      }
      if (rowCount == -1) {
-         columnCount = QmsSettingsLoader::DEFAULT_COLUMN_COUNT();
-         rowCount = QmsSettingsLoader::DEFAULT_ROW_COUNT();
+         columnCount = QmsSettingsLoader::DEFAULT_COLUMN_COUNT;
+         rowCount = QmsSettingsLoader::DEFAULT_ROW_COUNT;
      } else {
         columnsSetByCommandLine = true;
     }
@@ -185,8 +185,8 @@ int main(int argc, char *argv[])
     QmsApplicationSettings settings{QmsSettingsLoader::loadApplicationSettings()};
     if (!columnsSetByCommandLine) {
         if ((columnCount <= 0) || (rowCount <= 0)) {
-            columnCount = QmsSettingsLoader::DEFAULT_COLUMN_COUNT();
-            rowCount = QmsSettingsLoader::DEFAULT_ROW_COUNT();
+            columnCount = QmsSettingsLoader::DEFAULT_COLUMN_COUNT;
+            rowCount = QmsSettingsLoader::DEFAULT_ROW_COUNT;
         } else {
             columnCount = settings.numberOfColumns();
             rowCount = settings.numberOfRows();
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 #else
     QmsSoundEffects::initializeInstance(settings.audioVolume());
 #endif
-    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(QmsSettingsLoader::DEFAULT_LANGUAGE())};
+    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(QmsSettingsLoader::DEFAULT_LANGUAGE)};
     gameController->bindMainWindow(mainWindow);
     if (mineRatioSetByCommandLine) {
         LOG_INFO() << QString{R"(Using custom mine ratio %1)"}.arg(QS_NUMBER(mineRatio));

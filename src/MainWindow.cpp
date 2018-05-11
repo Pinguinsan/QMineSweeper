@@ -864,10 +864,9 @@ void MainWindow::onMineExplosionEventTriggered()
 /* onMuteSoundClicked() : Called when the "Mute Sound" menu option is
  * clicked. If the option is checked, all sounds from QMineSweeper
  * are disabled. If not, they are enabled */
-void MainWindow::onActionMuteSoundChecked(bool checked)
-{
+void MainWindow::onActionMuteSoundChecked(bool checked) {
     applicationSoundEffects->setAudioMuted(checked);
-    LOG_INFO() << QString{"Game audio volume set to %1"}.arg((checked ? QS_NUMBER(QmsSettingsLoader::DEFAULT_AUDIO_VOLUME()) : "0"));
+    LOG_INFO() << QString{"Game audio volume set to %1"}.arg((checked ? QS_NUMBER(QmsSettingsLoader::DEFAULT_AUDIO_VOLUME) : "0"));
 }
 
 /* onChangeBoardSizeActionTriggered() : Called when the "change board size" menu option

@@ -34,28 +34,25 @@ public:
     };
 
     static void initializeInstance(QObject *parent = nullptr);
-
-    static int DEFAULT_COLUMN_COUNT();
-    static int DEFAULT_ROW_COUNT();
-    static int DEFAULT_AUDIO_VOLUME();
-    static QmsSettingsLoader::SupportedLanguage DEFAULT_LANGUAGE();
     static const char *languageToString(QmsSettingsLoader::SupportedLanguage language);
     static QmsApplicationSettings loadApplicationSettings();
     static void saveApplicationSettings(const QmsApplicationSettings &settings);
+
+    static const QmsSettingsLoader::SupportedLanguage DEFAULT_LANGUAGE;
+    static const int DEFAULT_COLUMN_COUNT;
+    static const int DEFAULT_ROW_COUNT;
+    static const int DEFAULT_AUDIO_VOLUME;
+
 private:
-    static const int s_DEFAULT_NUMBER_OF_COLUMNS;
-    static const int s_DEFAULT_NUMBER_OF_ROWS;
-    static const int s_DEFAULT_AUDIO_VOLUME;
-    static const char *s_NUMBER_OF_COLUMNS_KEY;
-    static const char *s_NUMBER_OF_ROWS_KEY;
-    static const char *s_AUDIO_VOLUME_KEY;
-    static const QmsSettingsLoader::SupportedLanguage s_DEFAULT_LANGUAGE;
+    static const char *NUMBER_OF_COLUMNS_KEY;
+    static const char *NUMBER_OF_ROWS_KEY;
+    static const char *AUDIO_VOLUME_KEY;
 
 
     explicit QmsSettingsLoader(QObject *parent = nullptr);
     QmsSettingsLoader(const QmsSettingsLoader &) = delete;
     QmsSettingsLoader &operator=(const QmsSettingsLoader &) = delete;
-    ~QmsSettingsLoader() override;
+    ~QmsSettingsLoader() override = default;
 };
 
 extern QmsSettingsLoader *settingsLoader;
