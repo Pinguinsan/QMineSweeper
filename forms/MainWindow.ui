@@ -1047,7 +1047,7 @@
    <widget class="QMenu" name="menuPreferences">
     <property name="font">
      <font>
-      <pointsize>16</pointsize>
+      <pointsize>12</pointsize>
      </font>
     </property>
     <property name="title">
@@ -1069,7 +1069,7 @@
    <widget class="QMenu" name="menuHelp">
     <property name="font">
      <font>
-      <pointsize>16</pointsize>
+      <pointsize>12</pointsize>
      </font>
     </property>
     <property name="title">
