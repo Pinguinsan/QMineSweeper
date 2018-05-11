@@ -21,7 +21,7 @@ namespace Ui {
     class BoardResizeWidget;
 }
 
-#include "MouseMoveableQWidget.h"
+#include "MouseMoveableQWidget.hpp"
 
 class QDesktopWidget;
 class QPushButton;

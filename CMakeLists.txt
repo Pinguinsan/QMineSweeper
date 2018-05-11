@@ -124,27 +124,27 @@ set (${PROJECT_NAME}_SOURCE_FILES
         "${SOURCE_ROOT}/AutoUpdateLCD.cpp")
 
 set(${PROJECT_NAME}_HEADER_FILES
-        "${SOURCE_ROOT}/QmsGameState.h"
-        "${SOURCE_ROOT}/MouseMoveableQWidget.h"
-        "${SOURCE_ROOT}/MouseMoveableQMainWindow.h"
-        "${SOURCE_ROOT}/BoardResizeWidget.h"
-        "${SOURCE_ROOT}/QmsApplicationSettings.h"
-        "${SOURCE_ROOT}/QmsSettingsLoader.h"
-        "${SOURCE_ROOT}/QmsButton.h"
-        "${SOURCE_ROOT}/QmsSoundEffects.h"
-        "${SOURCE_ROOT}/QmsUtilities.h"
-        "${SOURCE_ROOT}/QmsIcons.h"
-        "${SOURCE_ROOT}/QmsStrings.h"
-        "${SOURCE_ROOT}/MineCoordinates.h"
-        "${SOURCE_ROOT}/GameController.h"
-        "${SOURCE_ROOT}/MainWindow.h"
-        "${SOURCE_ROOT}/AboutApplicationWidget.h"
-        "${SOURCE_ROOT}/Version.h"
-        "${SOURCE_ROOT}/EventTimer.h"
-        "${SOURCE_ROOT}/GlobalDefinitions.h"
-        "${SOURCE_ROOT}/MineCoordinateHash.h"
-        "${SOURCE_ROOT}/ChangeAwareValue.h"
-        "${SOURCE_ROOT}/AutoUpdateLCD.h")
+        "${SOURCE_ROOT}/QmsGameState.hpp"
+        "${SOURCE_ROOT}/MouseMoveableQWidget.hpp"
+        "${SOURCE_ROOT}/MouseMoveableQMainWindow.hpp"
+        "${SOURCE_ROOT}/BoardResizeWidget.hpp"
+        "${SOURCE_ROOT}/QmsApplicationSettings.hpp"
+        "${SOURCE_ROOT}/QmsSettingsLoader.hpp"
+        "${SOURCE_ROOT}/QmsButton.hpp"
+        "${SOURCE_ROOT}/QmsSoundEffects.hpp"
+        "${SOURCE_ROOT}/QmsUtilities.hpp"
+        "${SOURCE_ROOT}/QmsIcons.hpp"
+        "${SOURCE_ROOT}/QmsStrings.hpp"
+        "${SOURCE_ROOT}/MineCoordinates.hpp"
+        "${SOURCE_ROOT}/GameController.hpp"
+        "${SOURCE_ROOT}/MainWindow.hpp"
+        "${SOURCE_ROOT}/AboutApplicationWidget.hpp"
+        "${SOURCE_ROOT}/Version.hpp"
+        "${SOURCE_ROOT}/EventTimer.hpp"
+        "${SOURCE_ROOT}/GlobalDefinitions.hpp"
+        "${SOURCE_ROOT}/MineCoordinateHash.hpp"
+        "${SOURCE_ROOT}/ChangeAwareValue.hpp"
+        "${SOURCE_ROOT}/AutoUpdateLCD.hpp")
 
 
 set (${PROJECT_NAME}_FORMS

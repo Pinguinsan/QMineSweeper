@@ -18,7 +18,7 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "GameController.h"
+#include "GameController.hpp"
 
 #include <QString>
 #include <QMessageBox>
@@ -26,13 +26,13 @@
 #include <sstream>
 #include <QtCore/QCoreApplication>
 
-#include "QmsButton.h"
-#include "MineCoordinates.h"
-#include "MainWindow.h"
-#include "QmsIcons.h"
-#include "QmsUtilities.h"
-#include "QmsStrings.h"
-#include "GlobalDefinitions.h"
+#include "QmsButton.hpp"
+#include "MineCoordinates.hpp"
+#include "MainWindow.hpp"
+#include "QmsIcons.hpp"
+#include "QmsUtilities.hpp"
+#include "QmsStrings.hpp"
+#include "GlobalDefinitions.hpp"
 
 const double GameController::s_DEFAULT_NUMBER_OF_MINES{81.0};
 const int GameController::s_GAME_TIMER_INTERVAL{100};

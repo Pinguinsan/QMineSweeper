@@ -25,7 +25,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QIcon>
-#include "EventTimer.h"
+#include "EventTimer.hpp"
 
 #include <memory>
 #include <string>

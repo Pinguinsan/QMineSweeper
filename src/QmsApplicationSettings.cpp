@@ -19,7 +19,7 @@
 ***********************************************************************/
 
 
-#include "QmsApplicationSettings.h"
+#include "QmsApplicationSettings.hpp"
 
 namespace QmsGlobalSettings
 {

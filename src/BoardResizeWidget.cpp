@@ -14,7 +14,7 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "BoardResizeWidget.h"
+#include "BoardResizeWidget.hpp"
 #include "ui_BoardResizeWidget.h"
 
 #include <QDesktopWidget>
@@ -22,10 +22,10 @@
 #include <QString>
 #include <QRect>
 
-#include "QmsUtilities.h"
-#include "QmsStrings.h"
-#include "QmsApplicationSettings.h"
-#include "GlobalDefinitions.h"
+#include "QmsUtilities.hpp"
+#include "QmsStrings.hpp"
+#include "QmsApplicationSettings.hpp"
+#include "GlobalDefinitions.hpp"
 
 const std::pair<int, int> BoardResizeWidget::DEFAULT_ROW_MIN_MAX{ 3, 1000 };
 const std::pair<int, int> BoardResizeWidget::DEFAULT_COLUMN_MIN_MAX{ 3, 1000 };

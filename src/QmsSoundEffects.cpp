@@ -17,9 +17,9 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "QmsSoundEffects.h"
-#include "QmsUtilities.h"
-#include "GlobalDefinitions.h"
+#include "QmsSoundEffects.hpp"
+#include "QmsUtilities.hpp"
+#include "GlobalDefinitions.hpp"
 
 #include <limits>
 #include <exception>

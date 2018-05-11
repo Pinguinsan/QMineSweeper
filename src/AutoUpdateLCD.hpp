@@ -5,7 +5,7 @@
 #ifndef QMINESWEEPER_AUTOUPDATELCD_H
 #define QMINESWEEPER_AUTOUPDATELCD_H
 
-#include "ChangeAwareValue.h"
+#include "ChangeAwareValue.hpp"
 #include <QLCDNumber>
 
 

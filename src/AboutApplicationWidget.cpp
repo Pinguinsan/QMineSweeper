@@ -1,10 +1,10 @@
-#include "AboutApplicationWidget.h"
+#include "AboutApplicationWidget.hpp"
 #include "ui_AboutApplicationWidget.h"
 
-#include "GlobalDefinitions.h"
-#include "QmsStrings.h"
-#include "QmsApplicationSettings.h"
-#include "QmsIcons.h"
+#include "GlobalDefinitions.hpp"
+#include "QmsStrings.hpp"
+#include "QmsApplicationSettings.hpp"
+#include "QmsIcons.hpp"
 
 #include <QDesktopWidget>
 #include <QDateTime>

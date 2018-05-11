@@ -29,9 +29,9 @@
 #include <map>
 #include <QtCore/QXmlStreamReader>
 
-#include "MineCoordinateHash.h"
-#include "EventTimer.h"
-#include "ChangeAwareValue.h"
+#include "MineCoordinateHash.hpp"
+#include "EventTimer.hpp"
+#include "ChangeAwareValue.hpp"
 
 class QString;
 class QmsButton;

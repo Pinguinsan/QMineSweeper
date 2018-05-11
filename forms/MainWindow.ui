@@ -1221,7 +1221,7 @@
   <customwidget>
    <class>AutoUpdateLCD</class>
    <extends>QLCDNumber</extends>
-   <header>src/AutoUpdateLCD.h</header>
+   <header>src/AutoUpdateLCD.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

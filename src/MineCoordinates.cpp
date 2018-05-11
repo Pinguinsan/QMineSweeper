@@ -16,7 +16,7 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "MineCoordinates.h"
+#include "MineCoordinates.hpp"
 
 /* MineCoordinates() : Constructor for MineCoordinates using separate
  * x and y parameters, simply copying these elements to m_x and m_y */

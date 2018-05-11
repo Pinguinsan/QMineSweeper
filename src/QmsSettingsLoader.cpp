@@ -15,10 +15,10 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "QmsSettingsLoader.h"
-#include "QmsStrings.h"
-#include "QmsApplicationSettings.h"
-#include "GlobalDefinitions.h"
+#include "QmsSettingsLoader.hpp"
+#include "QmsStrings.hpp"
+#include "QmsApplicationSettings.hpp"
+#include "GlobalDefinitions.hpp"
 
 #include <QSettings>
 

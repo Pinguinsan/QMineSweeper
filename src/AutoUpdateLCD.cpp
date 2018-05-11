@@ -2,7 +2,7 @@
 // Created by pinguinsan on 12/3/17.
 //
 
-#include "AutoUpdateLCD.h"
+#include "AutoUpdateLCD.hpp"
 
 void AutoUpdateLCD::setDataSource(ChangeAwareInt *dataSource) {
     if (this->m_dataSource) {

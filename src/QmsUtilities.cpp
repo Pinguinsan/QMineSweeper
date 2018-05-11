@@ -15,9 +15,9 @@
 *    If not, see <http://www.gnu.org/licenses/>                        *
 ***********************************************************************/
 
-#include "QmsUtilities.h"
-#include "GlobalDefinitions.h"
-#include "QmsApplicationSettings.h"
+#include "QmsUtilities.hpp"
+#include "GlobalDefinitions.hpp"
+#include "QmsApplicationSettings.hpp"
 
 #include <QDateTime>
 #include <QByteArray>

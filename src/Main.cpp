@@ -38,16 +38,16 @@
 #include <QDateTime>
 #include <forward_list>
 
-#include "MainWindow.h"
-#include "QmsButton.h"
-#include "QmsIcons.h"
-#include "QmsStrings.h"
-#include "QmsSoundEffects.h"
-#include "QmsSettingsLoader.h"
-#include "QmsUtilities.h"
-#include "GameController.h"
-#include "GlobalDefinitions.h"
-#include "QmsApplicationSettings.h"
+#include "MainWindow.hpp"
+#include "QmsButton.hpp"
+#include "QmsIcons.hpp"
+#include "QmsStrings.hpp"
+#include "QmsSoundEffects.hpp"
+#include "QmsSettingsLoader.hpp"
+#include "QmsUtilities.hpp"
+#include "GameController.hpp"
+#include "GlobalDefinitions.hpp"
+#include "QmsApplicationSettings.hpp"
 
 /*
  * The program is organized like this:

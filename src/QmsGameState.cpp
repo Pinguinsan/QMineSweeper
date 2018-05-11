@@ -19,11 +19,11 @@
 ***********************************************************************/
 
 
-#include "QmsGameState.h"
-#include "QmsStrings.h"
-#include "GlobalDefinitions.h"
-#include "QmsButton.h"
-#include "QmsUtilities.h"
+#include "QmsGameState.hpp"
+#include "QmsStrings.hpp"
+#include "GlobalDefinitions.hpp"
+#include "QmsButton.hpp"
+#include "QmsUtilities.hpp"
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>

@@ -30,21 +30,21 @@
 
 #include <cctype>
 
-#include "QmsButton.h"
-#include "QmsIcons.h"
-#include "GameController.h"
-#include "BoardResizeWidget.h"
-#include "QmsSoundEffects.h"
-#include "QmsUtilities.h"
-#include "QmsStrings.h"
-#include "QmsSettingsLoader.h"
-#include "GlobalDefinitions.h"
-#include "QmsApplicationSettings.h"
-#include "AboutApplicationWidget.h"
+#include "QmsButton.hpp"
+#include "QmsIcons.hpp"
+#include "GameController.hpp"
+#include "BoardResizeWidget.hpp"
+#include "QmsSoundEffects.hpp"
+#include "QmsUtilities.hpp"
+#include "QmsStrings.hpp"
+#include "QmsSettingsLoader.hpp"
+#include "GlobalDefinitions.hpp"
+#include "QmsApplicationSettings.hpp"
+#include "AboutApplicationWidget.hpp"
 
-#include "MainWindow.h"
+#include "MainWindow.hpp"
 #include "ui_MainWindow.h"
-#include "AutoUpdateLCD.h"
+#include "AutoUpdateLCD.hpp"
 #include <QMessageBox>
 
 
