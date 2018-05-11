@@ -1,12 +1,9 @@
-#CMakeLists.txt -> QMineSweeper
+cmake_minimum_required (VERSION 3.1)
 
-cmake_minimum_required (VERSION 3.2)
-set (PROJECT_NAME QMineSweeper)
-project(${PROJECT_NAME} CXX)
+project(QMineSweeper CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 if (POLICY CMP0071)
@@ -18,7 +15,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (WIN32)
-
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		set(WIN_COMPILER "MSVC")
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -105,61 +101,61 @@ foreach(Qt5Package ${QT_PACKAGES})
 endforeach(Qt5Package)
 
 
-set (SOURCE_ROOT src)
-set (RESOURCES_ROOT resources)
-set (FORMS_ROOT forms)
+set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set (RESOURCES_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+set (FORMS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/forms")
 
 set (${PROJECT_NAME}_SOURCE_FILES
-        ${SOURCE_ROOT}/Main.cpp
-        ${SOURCE_ROOT}/MainWindow.cpp
-        ${SOURCE_ROOT}/GameController.cpp
-        ${SOURCE_ROOT}/MineCoordinates.cpp
-        ${SOURCE_ROOT}/QmsIcons.cpp
-        ${SOURCE_ROOT}/QmsUtilities.cpp
-        ${SOURCE_ROOT}/QmsSoundEffects.cpp
-        ${SOURCE_ROOT}/QmsButton.cpp
-        ${SOURCE_ROOT}/QmsSettingsLoader.cpp
-        ${SOURCE_ROOT}/QmsApplicationSettings.cpp
-        ${SOURCE_ROOT}/BoardResizeWidget.cpp
-        ${SOURCE_ROOT}/MouseMoveableQMainWindow.cpp
-        ${SOURCE_ROOT}/MouseMoveableQWidget.cpp
-		${SOURCE_ROOT}/AboutApplicationWidget.cpp
-        ${SOURCE_ROOT}/QmsGameState.cpp
-        ${SOURCE_ROOT}/AutoUpdateLCD.cpp)
+        "${SOURCE_ROOT}/Main.cpp"
+        "${SOURCE_ROOT}/MainWindow.cpp"
+        "${SOURCE_ROOT}/GameController.cpp"
+        "${SOURCE_ROOT}/MineCoordinates.cpp"
+        "${SOURCE_ROOT}/QmsIcons.cpp"
+        "${SOURCE_ROOT}/QmsUtilities.cpp"
+        "${SOURCE_ROOT}/QmsSoundEffects.cpp"
+        "${SOURCE_ROOT}/QmsButton.cpp"
+        "${SOURCE_ROOT}/QmsSettingsLoader.cpp"
+        "${SOURCE_ROOT}/QmsApplicationSettings.cpp"
+        "${SOURCE_ROOT}/BoardResizeWidget.cpp"
+        "${SOURCE_ROOT}/MouseMoveableQMainWindow.cpp"
+        "${SOURCE_ROOT}/MouseMoveableQWidget.cpp"
+		"${SOURCE_ROOT}/AboutApplicationWidget.cpp"
+        "${SOURCE_ROOT}/QmsGameState.cpp"
+        "${SOURCE_ROOT}/AutoUpdateLCD.cpp")
 
 set(${PROJECT_NAME}_HEADER_FILES
-        ${SOURCE_ROOT}/QmsGameState.h
-         ${SOURCE_ROOT}/MouseMoveableQWidget.h
-         ${SOURCE_ROOT}/MouseMoveableQMainWindow.h
-         ${SOURCE_ROOT}/BoardResizeWidget.h
-         ${SOURCE_ROOT}/QmsApplicationSettings.h
-         ${SOURCE_ROOT}/QmsSettingsLoader.h
-         ${SOURCE_ROOT}/QmsButton.h
-         ${SOURCE_ROOT}/QmsSoundEffects.h
-         ${SOURCE_ROOT}/QmsUtilities.h
-         ${SOURCE_ROOT}/QmsIcons.h
-        ${SOURCE_ROOT}/QmsStrings.h
-         ${SOURCE_ROOT}/MineCoordinates.h
-         ${SOURCE_ROOT}/GameController.h
-         ${SOURCE_ROOT}/MainWindow.h
-		 ${SOURCE_ROOT}/AboutApplicationWidget.h
-        ${SOURCE_ROOT}/Version.h
-        ${SOURCE_ROOT}/EventTimer.h
-        ${SOURCE_ROOT}/GlobalDefinitions.h
-        ${SOURCE_ROOT}/MineCoordinateHash.h
-        ${SOURCE_ROOT}/ChangeAwareValue.h
-        ${SOURCE_ROOT}/AutoUpdateLCD.h)
+        "${SOURCE_ROOT}/QmsGameState.h"
+        "${SOURCE_ROOT}/MouseMoveableQWidget.h"
+        "${SOURCE_ROOT}/MouseMoveableQMainWindow.h"
+        "${SOURCE_ROOT}/BoardResizeWidget.h"
+        "${SOURCE_ROOT}/QmsApplicationSettings.h"
+        "${SOURCE_ROOT}/QmsSettingsLoader.h"
+        "${SOURCE_ROOT}/QmsButton.h"
+        "${SOURCE_ROOT}/QmsSoundEffects.h"
+        "${SOURCE_ROOT}/QmsUtilities.h"
+        "${SOURCE_ROOT}/QmsIcons.h"
+        "${SOURCE_ROOT}/QmsStrings.h"
+        "${SOURCE_ROOT}/MineCoordinates.h"
+        "${SOURCE_ROOT}/GameController.h"
+        "${SOURCE_ROOT}/MainWindow.h"
+        "${SOURCE_ROOT}/AboutApplicationWidget.h"
+        "${SOURCE_ROOT}/Version.h"
+        "${SOURCE_ROOT}/EventTimer.h"
+        "${SOURCE_ROOT}/GlobalDefinitions.h"
+        "${SOURCE_ROOT}/MineCoordinateHash.h"
+        "${SOURCE_ROOT}/ChangeAwareValue.h"
+        "${SOURCE_ROOT}/AutoUpdateLCD.h")
 
 
 set (${PROJECT_NAME}_FORMS
-        ${FORMS_ROOT}/MainWindow.ui
-        ${FORMS_ROOT}/BoardResizeWidget.ui
-		${FORMS_ROOT}/AboutApplicationWidget.ui)
+        "${FORMS_ROOT}/MainWindow.ui"
+        "${FORMS_ROOT}/BoardResizeWidget.ui"
+		"${FORMS_ROOT}/AboutApplicationWidget.ui")
 
 set (${PROJECT_NAME}_RESOURCES
-        ${RESOURCES_ROOT}/icons.qrc
-        ${RESOURCES_ROOT}/sounds.qrc
-        ${RESOURCES_ROOT}/translations.qrc)
+        "${RESOURCES_ROOT}/icons.qrc"
+        "${RESOURCES_ROOT}/sounds.qrc"
+        "${RESOURCES_ROOT}/translations.qrc")
 
 
 qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
@@ -172,7 +168,7 @@ add_executable(${PROJECT_NAME}
         ${${PROJECT_NAME}_HEADER_FILES}
         ${${PROJECT_NAME}_FORMS}
         ${${PROJECT_NAME}_RESOURCES_RCC}
-        resources/QMineSweeper.rc)
+        "${RESOURCES_ROOT}/QMineSweeper.rc")
 
 
 if (WIN_COMPILER STREQUAL "MSVC")
