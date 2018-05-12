@@ -92,40 +92,34 @@ BoardResizeWidget::BoardResizeWidget(QWidget *parent) :
     );
 }
 
-void BoardResizeWidget::onBtnBeginnerPresetClicked(bool down)
-{
+void BoardResizeWidget::onBtnBeginnerPresetClicked(bool down) {
     Q_UNUSED(down);
     this->onPresetBoardSizeActionTriggered(this->m_ui->btnBeginner);
 }
 
-void BoardResizeWidget::onBtnIntermediatePresetClicked(bool down)
-{
+void BoardResizeWidget::onBtnIntermediatePresetClicked(bool down) {
     Q_UNUSED(down);
     this->onPresetBoardSizeActionTriggered(this->m_ui->btnIntermediate);
 }
 
-void BoardResizeWidget::onBtnAdvancedPresetClicked(bool down)
-{
+void BoardResizeWidget::onBtnAdvancedPresetClicked(bool down) {
     Q_UNUSED(down);
     this->onPresetBoardSizeActionTriggered(this->m_ui->btnAdvanced);
 }
 
-void BoardResizeWidget::onBtnExtremePresetClicked(bool down)
-{
+void BoardResizeWidget::onBtnExtremePresetClicked(bool down) {
     Q_UNUSED(down);
     this->onPresetBoardSizeActionTriggered(this->m_ui->btnExtreme);
 }
 
-void BoardResizeWidget::showEvent(QShowEvent *event)
-{
+void BoardResizeWidget::showEvent(QShowEvent *event) {
     Q_UNUSED(event);
     this->m_resultToEmit.boardSize.columns = 0;
     this->m_resultToEmit.boardSize.rows = 0;
     this->m_resultToEmit.userAction = BoardResizeWidget::ResizeWidgetExitCode::Rejected;
 }
 
-void BoardResizeWidget::closeEvent(QCloseEvent *event)
-{
+void BoardResizeWidget::closeEvent(QCloseEvent *event) {
     Q_UNUSED(event);
     emit(this->aboutToClose(this->m_resultToEmit));
 }
@@ -259,8 +253,7 @@ int BoardResizeWidget::maximumColumns() const {
 	return this->m_maximumColumns;
 }
 
-void BoardResizeWidget::onBtnIncrementRowsClicked(bool down)
-{
+void BoardResizeWidget::onBtnIncrementRowsClicked(bool down) {
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentRows{stringToInt(this->m_ui->lblRows->text().toStdString())};
@@ -279,8 +272,7 @@ void BoardResizeWidget::onBtnDecrementRowsClicked(bool down) {
 }
 
 
-void BoardResizeWidget::onBtnIncrementColumnsClicked(bool down)
-{
+void BoardResizeWidget::onBtnIncrementColumnsClicked(bool down) {
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
@@ -289,19 +281,17 @@ void BoardResizeWidget::onBtnIncrementColumnsClicked(bool down)
 	}
 }
 
-void BoardResizeWidget::onBtnDecrementColumnsClicked(bool down)
-{
+void BoardResizeWidget::onBtnDecrementColumnsClicked(bool down) {
     using QmsUtilities::stringToInt;
     Q_UNUSED(down);
     int currentColumns{stringToInt(this->m_ui->lblColumns->text().toStdString())};
-    if (currentColumns > this->m_maximumColumns) {
+    if (currentColumns > this->m_minimumColumns) {
         this->m_ui->lblColumns->setText(QS_NUMBER(currentColumns - 1));
     }
 }
 
 
-void BoardResizeWidget::onCancelButtonClicked(bool checked)
-{
+void BoardResizeWidget::onCancelButtonClicked(bool checked) {
     Q_UNUSED(checked);
     this->m_resultToEmit.boardSize.columns = 0;
     this->m_resultToEmit.boardSize.rows = 0;

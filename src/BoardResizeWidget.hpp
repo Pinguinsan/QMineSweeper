@@ -69,7 +69,6 @@ private:
     ResizeWidgetResult m_resultToEmit;
 
     void onPresetBoardSizeActionTriggered(QPushButton *pressedButton);
-
     void onBtnIncrementRowsClicked(bool down);
     void onBtnDecrementRowsClicked(bool down);
     void onBtnIncrementColumnsClicked(bool down);

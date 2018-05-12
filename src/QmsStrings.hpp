@@ -16,8 +16,8 @@ namespace QmsStrings
     const char * const ERROR_LOADING_FILE_TITLE{"Error Loading File"};
     const char * const ERROR_LOADING_FILE_MESSAGE{"An error occurred while loading file %1 (%2)"};
 
-const char * const ERROR_SAVING_FILE_TITLE{"Error Saving File"};
-const char * const ERROR_SAVING_FILE_MESSAGE{"An error occurred while saving file %1 (%2)"};
+	const char * const ERROR_SAVING_FILE_TITLE{"Error Saving File"};
+	const char * const ERROR_SAVING_FILE_MESSAGE{"An error occurred while saving file %1 (%2)"};
 
     const char * const RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING{"Current (columns x rows): "};
     const char * const RESIZE_BOARD_WINDOW_CONFIRMATION{"Are you sure you'd like to end the current %1x%2 game and start a new %3x%4 game?"};
@@ -70,13 +70,13 @@ const char * const ERROR_SAVING_FILE_MESSAGE{"An error occurred while saving fil
     const char * const STATUS_ICON_FLAG_CHECK_PATH{":/status-icons/png/status-icons/flag-check.png"};
     const char * const STATUS_ICON_FLAG_X_PATH{":/status-icons/png/status-icons/flag-x.png"};
 
-    const char * const EXPLOSION_EFFECT_SOURCE_PATH{"qrc:/sounds/sounds/explosion-fast.wav"};
+    const char * const EXPLOSION_EFFECT_SOURCE_PATH{"qrc:///sounds/sounds/explosion-fast.wav"};
 
     const char * const QMINESWEEPER_LICENSE_PATH{":/licenses/licenses/LICENSE"};
     const char * const RESIZE_BOARD_BUTTON_GAME_DIMENSIONS_KEY{"GameDimensions"};
     const char * const RESIZE_BOARD_BUTTON_MINE_RATIO_KEY{"MineRatio"};
     const char * const RESIZE_BOARD_BUTTON_LAST_MOUSE_DOWN_TIME{"LastMouseDownTime"};
-    const char * const RESIZE_BOARD_BUTTON_LAST_MOUSE__TIME{"IsBeingLongPressed"};
+    const char * const RESIZE_BOARD_BUTTON_LAST_MOUSE_TIME{"IsBeingLongPressed"};
 
 
     static const char *const QMS_GAME_STATE_XML_KEY{"QmsGameState"};
