@@ -1,25 +1,5 @@
-/***********************************************************************
-*    gamecontroller.h:                                                 *
-*    Main controlling logic for the game                               *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of a GameController class        *
-*    A GameController object handles all of the click and pause events *
-*    for QMineSweeper, including signals from the main window and from *
-*    individual mines. It also holds shared_ptrs to each  MineSweeper  *
-*    button, and protects them by only allowing access by coordinates  *
-*    (via either a MineCoordinates instance or an x and y coordinate)  *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_GAMECONTROLLER_H
-#define QMINESWEEPER_GAMECONTROLLER_H
+#ifndef QMINESWEEPER_GAMECONTROLLER_HPP
+#define QMINESWEEPER_GAMECONTROLLER_HPP
 
 #include <QObject>
 
@@ -178,4 +158,4 @@ private:
 extern GameController *gameController;
 
 
-#endif //QMINESWEEPER_GAMECONTROLLER_H
+#endif //QMINESWEEPER_GAMECONTROLLER_HPP

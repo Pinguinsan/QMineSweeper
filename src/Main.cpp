@@ -1,17 +1,3 @@
-/***********************************************************************
-*    main.cpp:                                                         *
-*    Only exists to create the main window and set it along            *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a source file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    The source code is released under the GNU LGPL                    *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -68,6 +54,39 @@ const std::unordered_set<const char *> VERSION_SWITCHES{"v", "-v", "--v", "-vers
 const std::unordered_set<const char *> DIMENSIONS_SWITCHES{"-d", "--d", "-dimensions", "--dimensions"};
 const std::unordered_set<const char *> MINE_RATIO_SWITCHES{"-r", "--r", "-ratio", "--ratio", "-mine-ratio", "--mine-ratio"};
 const std::unordered_set<const char *> VERBOSE_LOGGING_SWITCHES{"-o", "--o", "-verbose", "--verbose"};
+
+/*
+static const ProgramOption verboseOption       {'e', "verbose", no_argument, "Enable verbose logging"};
+static const ProgramOption helpOption          {'h', "help", no_argument, "Display help text and exit"};
+static const ProgramOption versionOption       {'v', "version", no_argument, "Display version text and exit"};
+static const ProgramOption dimensionsSwitches  {'d', "dimensions", required_argument, "Specify serial port for Lin controller (ex /dev/ttyACM0)"};
+static const ProgramOption languageOption      {'l', "language", required_argument, "Specify program language (ex Japanese)"};
+static const ProgramOption linMethodOption     {'m', "lin-method", required_argument, "Specify Lin controller communication method (ex TCP or RS232)"};
+static const ProgramOption listenerOption      {'s', "listener", no_argument, "Initialize a LinSignalListener (slave) rather than a LinController (master)"};
+
+static struct option longOptions[]{
+        verboseOption.toPosixOption(),
+        helpOption.toPosixOption(),
+        versionOption.toPosixOption(),
+        linControllerOption.toPosixOption(),
+        languageOption.toPosixOption(),
+        linMethodOption.toPosixOption(),
+        listenerOption.toPosixOption(),
+        {nullptr, 0, nullptr, 0}
+};
+
+static const size_t constexpr PROGRAM_OPTION_COUNT{arraySize(longOptions)-1};
+
+static std::array<const ProgramOption *, PROGRAM_OPTION_COUNT> programOptions {
+        &verboseOption,
+        &helpOption,
+        &versionOption,
+        &linControllerOption,
+        &languageOption,
+        &linMethodOption,
+        &listenerOption
+};
+*/
 
 void displayHelp();
 void displayVersion();

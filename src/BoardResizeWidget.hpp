@@ -1,21 +1,5 @@
-/***********************************************************************
-*    boardresizewidget.h:                                              *
-*    Custom QWidget for settings the board dimensions                  *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of a BoardResizeWidget class     *
-*    The BoardResizeWidget is used to change the size of the game board*
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_BOARDRESIZEWIDGET_H
-#define QMINESWEEPER_BOARDRESIZEWIDGET_H
+#ifndef QMINESWEEPER_BOARDRESIZEWIDGET_HPP
+#define QMINESWEEPER_BOARDRESIZEWIDGET_HPP
 
 namespace Ui {
     class BoardResizeWidget;
@@ -100,4 +84,4 @@ private:
 
 };
 
-#endif //QMINESWEEPER_BOARDRESIZEWIDGET_H
+#endif //QMINESWEEPER_BOARDRESIZEWIDGET_HPP

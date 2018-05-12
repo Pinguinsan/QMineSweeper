@@ -1,5 +1,5 @@
-#ifndef QMINESWEEPER_CHANGEAWAREVALUE_H
-#define QMINESWEEPER_CHANGEAWAREVALUE_H
+#ifndef QMINESWEEPER_CHANGEAWAREVALUE_HPP
+#define QMINESWEEPER_CHANGEAWAREVALUE_HPP
 
 #include <unordered_set>
 
@@ -101,4 +101,4 @@ typedef ChangeAwareValueEventListener<double> ChangeAwareDoubleEventListener;
 
 
 
-#endif //QMINESWEEPER_CHANGEAWAREVALUE_H
+#endif //QMINESWEEPER_CHANGEAWAREVALUE_HPP

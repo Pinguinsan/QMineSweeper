@@ -1,22 +1,5 @@
-/***********************************************************************
-*    qminesweeperutilities.h:                                          *
-*    Namespace for general utilities used by classes in QMineSweeper   *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the declarations for a QmsUtilities               *
-*    namespace. QmsUtilities holds utilities shared by all             *
-*    classes, such a delay functions, random functions, etc            *
-*    The source code is released under the LGPL                        *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_QMSUTILITIES_H
-#define QMINESWEEPER_QMSUTILITIES_H
+#ifndef QMINESWEEPER_QMSUTILITIES_HPP
+#define QMINESWEEPER_QMSUTILITIES_HPP
 
 #include <iostream>
 #include <sstream>
@@ -202,7 +185,7 @@ namespace QmsUtilities
                                                                     foundPosition,
                                                                     match.str().length()));
                 }
-            } catch (std::exception e) {
+            } catch (const std::exception &e) {
                 //TODO: Throw instead of just output exception 
                 std::cout << e.what() << std::endl;
             }
@@ -266,4 +249,4 @@ namespace QmsUtilities
     std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip);
 }
 
-#endif //QMINESWEEPER_QMSUTILITIES_H
+#endif //QMINESWEEPER_QMSUTILITIES_HPP

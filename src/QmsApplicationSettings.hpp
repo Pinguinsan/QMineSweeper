@@ -1,25 +1,5 @@
-/***********************************************************************
-*    qmsapplicationsettings.h                                          *
-*    Class to hold default and user settings used in QMineSweeper      *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the declarations of a QmsApplicationSettings      *
-*    class, as well as a QmsGlobalSettings namespace                   *
-*    QmsGlobalSettings contains default settings, as well as           *
-*    information about the program (author name, upstream url, etc)    *
-*    QmsApplicationSettings holds settings such as board size,         *
-*    icon sets, timers, difficulties, and other various items          *
-*    The source code is released under the LGPL                        *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_QMSAPPLICATIONSETTINGS_H
-#define QMINESWEEPER_QMSAPPLICATIONSETTINGS_H
+#ifndef QMINESWEEPER_QMSAPPLICATIONSETTINGS_HPP
+#define QMINESWEEPER_QMSAPPLICATIONSETTINGS_HPP
 
 namespace QmsGlobalSettings
 {
@@ -68,4 +48,4 @@ private:
     int m_audioVolume;
 };
 
-#endif // QMINESWEEPER_QMSAPPLICATIONSETTINGS_H
+#endif // QMINESWEEPER_QMSAPPLICATIONSETTINGS_HPP

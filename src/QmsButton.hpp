@@ -1,22 +1,5 @@
-/***********************************************************************
-*    qmsbutton.h:                                                      *
-*    Custom QPushButton serving as the base for a QMineSweeper button  *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file holds the declarations of a custom QPushButton class    *
-*    QmsButton is the base for the game, representing                  *
-*    a single mine field object, which houses all relevant information *
-*    The source code is released under the LGPL                        *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_QMSBUTTON_H
-#define QMINESWEEPER_QMSBUTTON_H
+#ifndef QMINESWEEPER_QMSBUTTON_HPP
+#define QMINESWEEPER_QMSBUTTON_HPP
 
 #include <QPushButton>
 #include <QLabel>
@@ -102,4 +85,4 @@ private:
 
 };
 
-#endif //QMINESWEEPER_QMSBUTTON_H
+#endif //QMINESWEEPER_QMSBUTTON_HPP

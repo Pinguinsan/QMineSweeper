@@ -1,9 +1,5 @@
-//
-// Created by pinguinsan on 12/3/17.
-//
-
-#ifndef QMINESWEEPER_AUTOUPDATELCD_H
-#define QMINESWEEPER_AUTOUPDATELCD_H
+#ifndef QMINESWEEPER_AUTOUPDATELCD_HPP
+#define QMINESWEEPER_AUTOUPDATELCD_HPP
 
 #include "ChangeAwareValue.hpp"
 #include <QLCDNumber>
@@ -26,4 +22,4 @@ private:
 };
 
 
-#endif //QMINESWEEPER_AUTOUPDATELCD_H
+#endif //QMINESWEEPER_AUTOUPDATELCD_HPP

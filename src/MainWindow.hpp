@@ -1,21 +1,5 @@
-/***********************************************************************
-*    mainwindow.h:                                                     *
-*    Main window for displaying the game                               *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of a custom QMainWindow class    *
-*    MainWindow is the default container for a Qt Desktop Application  *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_MAINWINDOW_H
-#define QMINESWEEPER_MAINWINDOW_H
+#ifndef QMINESWEEPER_MAINWINDOW_HPP
+#define QMINESWEEPER_MAINWINDOW_HPP
 
 #include <QMainWindow>
 #include <QDialog>
@@ -168,4 +152,4 @@ private slots:
     void onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState);
 };
 
-#endif // QMINESWEEPER_MAINWINDOW_H
+#endif // QMINESWEEPER_MAINWINDOW_HPP

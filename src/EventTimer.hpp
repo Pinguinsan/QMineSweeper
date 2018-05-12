@@ -1,28 +1,5 @@
-/***********************************************************************
-*    eventtimer.h:                                                     *
-*    Class EventTimer, for timing events and getting calculated times  *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for tjlutils:                               *
-*    https://github.com/Pinguinsan/tjlutils                            *
-*    This file may be distributed with the entire tjlutils library,    *
-*    but may also be distributed as a standalone file                  *
-*    The source code is released under the GNU LGPL                    *
-*    This file holds the declarations of an EventTimer template class  *
-*    EventTimer is used to time events that need to be able to pause   *
-*    The class also allows access to calculated out hours/minutes/etc, *
-*    suitable for a running game timer (eg 00:01.295)                  *
-*    The default clock type is std::chrono::steady_clock, but this can *
-*    be changed during instantiation via the template parameter to any *
-*    clock specified in the std::chrono namespace (ie system_clock)    *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with tjlutils                                *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef TJLUTILS_EVENTTIMER_H
-#define TJLUTILS_EVENTTIMER_H
+#ifndef QMINESWEEPER_EVENTTIMER_H
+#define QMINESWEEPER_EVENTTIMER_H
 
 #include <chrono>
 #include <string>
@@ -279,4 +256,4 @@ typedef EventTimer<std::chrono::steady_clock> SteadyEventTimer;
 typedef EventTimer<std::chrono::high_resolution_clock> HighResolutionEventTimer;
 typedef EventTimer<std::chrono::system_clock> SystemEventTimer;
 
-#endif //TJLUTILS_EVENTTIMER_H
+#endif //QMINESWEEPER_EVENTTIMER_H

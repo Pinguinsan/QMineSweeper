@@ -1,5 +1,5 @@
-#ifndef QMINESWEEPER_VERSION_H
-#define QMINESWEEPER_VERSION_H
+#ifndef QMINESWEEPER_VERSION_HPP
+#define QMINESWEEPER_VERSION_HPP
 
 #define VER_FILEVERSION             1,0,0,0
 #define VER_FILEVERSION_STR         "1.0.0.0\0"
@@ -18,4 +18,4 @@
 
 #define VER_COMPANYDOMAIN_STR       "com.tlewiscpp.qminesweeper"
 
-#endif //QMINESWEEPER_VERSION_H
+#endif //QMINESWEEPER_VERSION_HPP

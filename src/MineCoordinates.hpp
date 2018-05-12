@@ -1,23 +1,5 @@
-/***********************************************************************
-*    minecoordinates.h:                                                *
-*    Custom pair class that includes the x and y coordinates for mines *
-*    Copyright (c) 2017 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for QMineSweeper:                           *
-*    https://github.com/tlewiscpp/QMineSweeper                         *
-*    This file contains the declarations for a custom pair class       *
-*    MineCoordinates serve as the x and y (or row and column)          *
-*    coordinates for mines, abstracted so as not use use a lot of      *
-*    unnamed std::pair<int, int> data structures                       *
-*    The source code is released under the LGPL                        *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with QMineSweeper                            *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
-
-#ifndef QMINESWEEPER_MINECOORDINATES_H
-#define QMINESWEEPER_MINECOORDINATES_H
+#ifndef QMINESWEEPER_MINECOORDINATES_HPP
+#define QMINESWEEPER_MINECOORDINATES_HPP
 
 #include <functional>
 #include <algorithm>
@@ -58,4 +40,4 @@ private:
 
 };
 
-#endif //QMINESWEEPER_MINECOORDINATES_H
+#endif //QMINESWEEPER_MINECOORDINATES_HPP
