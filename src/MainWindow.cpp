@@ -249,7 +249,7 @@ void MainWindow::onOpenActionTriggered()
     fileDialog.setNameFilter(QString{ MainWindow::tr("QMineSweeper files : (*.%1)") }.arg(QmsStrings::SAVED_GAME_FILE_EXTENSION));
     QString maybeNewGamePath{fileDialog.getOpenFileName(this, MainWindow::tr(QmsStrings::OPEN_FILE_CAPTION))};
 
-    if (maybeNewGamePath == "") {
+    if (maybeNewGamePath.isEmpty()) {
         return;
     }
     if (!maybeNewGamePath.endsWith(QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
@@ -287,6 +287,8 @@ void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGa
         errorString = "Hash verification failed (was the save file altered?)";
     } else if (loadResult == LoadGameStateResult::UnableToOpenFile) {
         errorString = "Could not open file";
+    } else {
+        errorString = "Unknown error";
     }
 
     std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};

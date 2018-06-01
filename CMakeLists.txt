@@ -191,6 +191,7 @@ add_executable(${PROJECT_NAME}
         ${${PROJECT_NAME}_RESOURCES_RCC})
 
 target_link_libraries (${PROJECT_NAME}
+        ${QT_LINK_LIBRARIES}
         pthread)
 endif()
 
@@ -198,4 +199,4 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
+#qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
