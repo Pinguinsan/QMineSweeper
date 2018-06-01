@@ -104,6 +104,18 @@ endforeach(Qt5Package)
 set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set (RESOURCES_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set (FORMS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/forms")
+set (THIRD_PARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
+
+if (WIN32 OR WIN64)
+    if (WIN_COMPILER STREQUAL "MSVC")
+        add_subdirectory(${THIRD_PARTY_ROOT}/win32/getopt)
+        set(PLATFORM_SPECIFIC_LIBS getopt-win32)
+    else()
+        set(PLATFORM_SPECIFIC_LIBS pthread)
+    endif()
+else()
+    set (PLATFORM_SPECIFIC_LIBS pthread)
+endif()
 
 set (${PROJECT_NAME}_SOURCE_FILES
         "${SOURCE_ROOT}/Main.cpp"
@@ -162,38 +174,39 @@ qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 qt5_add_resources(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
 if (WIN32)
-add_executable(${PROJECT_NAME}
-        WIN32
-        ${${PROJECT_NAME}_SOURCE_FILES}
-        ${${PROJECT_NAME}_HEADER_FILES}
-        ${${PROJECT_NAME}_FORMS}
-        ${${PROJECT_NAME}_RESOURCES_RCC}
-        "${RESOURCES_ROOT}/QMineSweeper.rc")
+    add_executable(${PROJECT_NAME}
+            WIN32
+            ${${PROJECT_NAME}_SOURCE_FILES}
+            ${${PROJECT_NAME}_HEADER_FILES}
+            ${${PROJECT_NAME}_FORMS}
+            ${${PROJECT_NAME}_RESOURCES_RCC}
+            "${RESOURCES_ROOT}/QMineSweeper.rc")
 
 
-if (WIN_COMPILER STREQUAL "MSVC")
-    add_custom_command(TARGET ${PROJECT_NAME}
-            POST_BUILD
-            COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
-elseif(WIN_COMPILER STREQUAL "MINGW")
-    add_custom_command(TARGET ${PROJECT_NAME}
-            POST_BUILD
-            COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+    if (WIN_COMPILER STREQUAL "MSVC")
+        add_custom_command(TARGET ${PROJECT_NAME}
+                POST_BUILD
+                COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+    elseif(WIN_COMPILER STREQUAL "MINGW")
+        add_custom_command(TARGET ${PROJECT_NAME}
+                POST_BUILD
+                COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
 
-endif()
+    endif()
 
 else()
 
-add_executable(${PROJECT_NAME}
-        ${${PROJECT_NAME}_SOURCE_FILES}
-        ${${PROJECT_NAME}_HEADER_FILES}
-        ${${PROJECT_NAME}_FORMS}
-        ${${PROJECT_NAME}_RESOURCES_RCC})
+    add_executable(${PROJECT_NAME}
+            ${${PROJECT_NAME}_SOURCE_FILES}
+            ${${PROJECT_NAME}_HEADER_FILES}
+            ${${PROJECT_NAME}_FORMS}
+            ${${PROJECT_NAME}_RESOURCES_RCC})
+endif()
+
 
 target_link_libraries (${PROJECT_NAME}
         ${QT_LINK_LIBRARIES}
-        pthread)
-endif()
+        ${PLATFORM_SPECIFIC_LIBS})
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

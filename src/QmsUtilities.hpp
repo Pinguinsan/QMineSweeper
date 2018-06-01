@@ -36,8 +36,36 @@ namespace QmsUtilities
     QString getCurrentArchitecture();
     bool containsSeparator(const char *testString);
     std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions);
-    std::pair<int, int> tryParseDimensions(const char *maybeDimensions);
+    float tryParseMineRatio(const std::string &maybeMineRatio);
+    bool isValidMineRatio(float mineRatio);
 
+
+    QString getPID();
+    QString getProcessUUID();
+
+    //Does str start with target?
+    template <typename CharT>
+    inline bool startsWith(const std::basic_string<CharT> &str, const std::basic_string<CharT> &target) {
+        return ( (str.length() >= target.length()) && std::equal(target.begin(), target.end(), str.begin()) );
+    }
+
+    //Does str end with target?
+    template <typename CharT>
+    inline bool endsWith(const std::basic_string<CharT> &str, const std::basic_string<CharT> &target) {
+        return ( (str.length() >= target.length()) && std::equal(target.rbegin(), target.rend(), str.rbegin()) );
+    }
+
+    //Does str start with target?
+    template <typename CharT>
+    inline bool startsWith(const std::basic_string<CharT> &str, CharT target) {
+        return (!str.empty() && ( *(str.end()-1) == target));
+    }
+
+    //Does str end with target?
+    template <typename CharT>
+    inline bool endsWith(const std::basic_string<CharT> &str, CharT target) {
+        return (!str.empty() && (*str.begin() == target));
+    }
 
     class Random
     {

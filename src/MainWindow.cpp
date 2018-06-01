@@ -190,7 +190,7 @@ void MainWindow::onSaveActionTriggered()
 void MainWindow::onSaveAsActionTriggered()
 {
     emit(gamePaused());
-    QFileDialog fileDialog;
+    QFileDialog fileDialog{};
     fileDialog.setDirectory(QmsUtilities::getProgramSettingsDirectory());
     fileDialog.setDefaultSuffix(QmsStrings::SAVED_GAME_FILE_EXTENSION);
     fileDialog.setConfirmOverwrite(true);

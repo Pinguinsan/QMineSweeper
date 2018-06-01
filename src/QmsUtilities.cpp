@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include <QDir>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QUuid>
 
 namespace QmsUtilities
 {
@@ -70,21 +71,35 @@ bool clearDirectoryOfFiles(const QString &directoryPath) {
 void checkOrCreateProgramLogDirectory()
 {
     std::vector<QString> toLogInfo{};
-    QString settings{QDir::tempPath() + '/' + QCoreApplication::applicationName()};
-    QDir settingsDirectory{settings};
-    if (settingsDirectory.exists()) {
-        clearDirectoryOfFiles(settings);
-        toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(settings));
+    QString logDirectoryString{QDir::tempPath() + '/' + QCoreApplication::applicationName()};
+    QDir logDirectory{logDirectoryString};
+    if (logDirectory.exists()) {
+        clearDirectoryOfFiles(logDirectoryString);
+        toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(logDirectoryString));
         toLogInfo.emplace_back("Cleared stale log entries");
     } else {
-        if (settingsDirectory.mkpath(".")) {
-            toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(settings));
+        if (logDirectory.mkpath(".")) {
+            toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(logDirectoryString));
         } else {
-            throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
+            throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(logDirectoryString).toStdString());
         }
     }
     for (auto &it : toLogInfo) {
         LOG_INFO() << it;
+    }
+}
+
+void checkOrCreateProgramSettingsDirectory() {
+    QString settings{QmsUtilities::getProgramSettingsDirectory()};
+    QDir settingsDirectory{settings};
+    if (settingsDirectory.exists()) {
+        LOG_INFO() << QString{"Detected settings directory at %1"}.arg(settings);
+    } else {
+        if (settingsDirectory.mkpath(".")) {
+            LOG_INFO() << QString{"Settings directory not found, created new directory at %1"}.arg(settings);
+        } else {
+            throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
+        }
     }
 }
 
@@ -126,9 +141,9 @@ QString getLogFileName()
         QString additionalSettingsPath{""};
         #if defined(_WIN32)
             if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-                additionalSettingsPath += (QString{"\\AppData\\Local\\"} + QmsGlobalSettings::LONG_PROGRAM_NAME + "\\");
+                additionalSettingsPath += (QString{R"(\AppData\Local\)"} + QmsGlobalSettings::LONG_PROGRAM_NAME + R"(\)");
             } else {
-                additionalSettingsPath += (QString{"\\"} + QmsGlobalSettings::LONG_PROGRAM_NAME + "\\");
+                additionalSettingsPath += (QString{R"(\)"} + QmsGlobalSettings::LONG_PROGRAM_NAME + R"(\)");
             }
         #else
             additionalSettingsPath += (QString{"/.local/share/"} + QmsGlobalSettings::LONG_PROGRAM_NAME + "/");
@@ -298,6 +313,23 @@ QString toQString(const std::string &convert) { return QString::fromStdString(co
 QString toQString(const char *convert) { return QString::fromStdString(static_cast<std::string>(convert)); }
 QString toQString(const QString &convert) { return convert; }
 
+static QString PID{""};
+static QString processUUID{""};
+
+QString getPID() {
+    if (PID.isEmpty()) {
+        PID = QS_NUMBER(QCoreApplication::applicationPid());
+    }
+    return PID;
+}
+
+QString getProcessUUID() {
+    if (processUUID.isEmpty()) {
+        processUUID = QUuid::createUuid().toString();
+    }
+    return processUUID;
+}
+
 int roundIntuitively(double numberToRound)
 {
     double tempContainer{numberToRound - static_cast<int>(numberToRound)};
@@ -442,9 +474,21 @@ std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
     }
 }
 
-std::pair<int, int> tryParseDimensions(const char *maybeDimensions)
-{
-    return tryParseDimensions(std::string{maybeDimensions});
+float tryParseMineRatio(const std::string &str) {
+    float mineRatio{};
+    try {
+        mineRatio = std::stof(str);
+    } catch (std::exception &e) {
+        return mineRatio;
+    }
+    if (!QmsUtilities::isValidMineRatio(mineRatio)) {
+        mineRatio = float{};
+    }
+    return mineRatio;
+}
+
+bool isValidMineRatio(float mineRatio) {
+    return ( (mineRatio >= 0.1) && (mineRatio < 1.0) );
 }
 
 bool containsSeparator(const char *testString)
