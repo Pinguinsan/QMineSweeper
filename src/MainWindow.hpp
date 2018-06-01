@@ -88,7 +88,7 @@ private:
     static const int s_NUMBER_OF_VERTIAL_MARGINS;
     static const int s_DEFAULT_MINE_SIZE_SCALE_FACTOR;
     static const int s_STATUS_BAR_FONT_POINT_SIZE;
-    static const double s_MINE_ICON_REDUCTION_SCALE_FACTOR;
+    static const double MINE_ICON_REDUCTION_SCALE_FACTOR;
 
     void hideEvent(QHideEvent *event) override;
     void showEvent(QShowEvent *event) override;

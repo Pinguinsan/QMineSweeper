@@ -43,7 +43,7 @@ const int MainWindow::s_NUMBER_OF_HORIZONTAL_MARGINS{2};
 const int MainWindow::s_NUMBER_OF_VERTIAL_MARGINS{4};
 const int MainWindow::s_DEFAULT_MINE_SIZE_SCALE_FACTOR{19};
 const int MainWindow::s_STATUS_BAR_FONT_POINT_SIZE{12};
-const double MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
+const double MainWindow::MINE_ICON_REDUCTION_SCALE_FACTOR{0.75};
 
 /* MainWindow() : Constructor. All UI stuff if initialized and
  * relevant events are hooked (QObject::connect()) to set up the game to play */
@@ -267,17 +267,17 @@ void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGa
         this->setupNewGame();
         gameController->applyGameState(gameState);
         for (auto &it : gameController->mineSweeperButtons()) {
-            (void)it;
-            this->m_ui->mineFrameGridLayout->addWidget(it.second.get(), it.first.Y(), it.first.X(), 1, 1);
+            auto button = it.second;
+            this->m_ui->mineFrameGridLayout->addWidget(button.get(), it.first.Y(), it.first.X(), 1, 1);
             it.second->setFixedSize(getMaxMineSize());
-            emit(mineSweeperButtonCreated(it.second));
-            it.second->setIconSize(it.second->size() * MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR);
-            this->m_saveStyleSheet = it.second->styleSheet();
-            if (it.second->isRevealed()) {
-                it.second->reveal();
+            emit(mineSweeperButtonCreated(button));
+            it.second->setIconSize(button->size() * MainWindow::MINE_ICON_REDUCTION_SCALE_FACTOR);
+            this->m_saveStyleSheet = button->styleSheet();
+            if (button->isRevealed()) {
+                button->reveal();
             }
         }
-        //emit(gameResumed());
+        emit(gameResumed());
         return;
     } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
         errorString = "File does not exist";
@@ -559,7 +559,7 @@ void MainWindow::populateMineField()
             this->m_ui->mineFrameGridLayout->addWidget(tempPtr.get(), rowIndex, columnIndex, 1, 1);
             tempPtr->setFixedSize(getMaxMineSize());
             emit(mineSweeperButtonCreated(tempPtr));
-            tempPtr->setIconSize(tempPtr->size() * MainWindow::s_MINE_ICON_REDUCTION_SCALE_FACTOR);
+            tempPtr->setIconSize(tempPtr->size() * MainWindow::MINE_ICON_REDUCTION_SCALE_FACTOR);
             this->m_saveStyleSheet = tempPtr->styleSheet();
             tempPtr->setCheckable(true);
         }
