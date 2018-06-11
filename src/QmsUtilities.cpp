@@ -445,6 +445,24 @@ std::string stripAllFromString(const std::string &stringToStrip, char whatToStri
     return stripAllFromString(stringToStrip, std::string(1, whatToStrip));
 }
 
+std::string getSignalName(int signalNumber) {
+#if defined(_WIN32)
+    switch (signalNumber) {
+        case SIGABRT_COMPAT :
+        case SIGABRT        : return "Abnormal termination";
+        case SIGFPE         : return "Floating-point error";
+        case SIGILL         : return "Illegal instruction";
+        case SIGINT         : return "CTRL+C signal";
+        case SIGSEGV        : return "Illegal storage access";
+        case SIGTERM        : return "Termination request";
+        case SIGBREAK       : return "Break signal";
+        default             : return "Unknown signal";
+    };
+#else
+    return strsignal(signalNumber);
+#endif //defined(_WIN32)
+}
+
 
 std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions)
 {

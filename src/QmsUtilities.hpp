@@ -38,6 +38,7 @@ namespace QmsUtilities
     std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions);
     float tryParseMineRatio(const std::string &maybeMineRatio);
     bool isValidMineRatio(float mineRatio);
+    std::string getSignalName(int signalNumber);
 
 
     QString getPID();

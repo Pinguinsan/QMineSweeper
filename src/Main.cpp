@@ -4,19 +4,16 @@
 #include <algorithm>
 
 #if defined(_WIN32)
-
 #include <Windows.h>
-
 #else
-#include <signal.h>
 #include <unistd.h>
-
 #endif
 
 #include <QApplication>
 #include <QRect>
 #include <QDateTime>
 #include <forward_list>
+#include <signal.h>
 
 #include "MainWindow.hpp"
 #include "QmsButton.hpp"
@@ -226,21 +223,27 @@ float tryParseMineRatio(std::string str) {
 
 void interruptHandler(int signalNumber) {
 #if defined(_WIN32)
-    Q_UNUSED(signalNumber);
+    std::cout << std::endl << "Caught signal " << signalNumber << " (" << QmsUtilities::getSignalName(signalNumber) << "), exiting " << PROGRAM_NAME << std::endl;
+    exit (signalNumber);
 #else
     if ((signalNumber == SIGUSR1) || (signalNumber == SIGUSR2) || (signalNumber == SIGCHLD)) {
         return;
     }
-    std::cout << std::endl << "Caught signal " << signalNumber << " (" << strsignal(signalNumber) << "), exiting " << PROGRAM_NAME << std::endl;
+    std::cout << std::endl << "Caught signal " << signalNumber << " (" << QmsUtilities::getSignalName(signalNumber) << "), exiting " << PROGRAM_NAME << std::endl;
     exit (signalNumber);
-#endif
+#endif //defined(_WIN32)
 }
 
 void installSignalHandlers(void (*signalHandler)(int)) {
 #if defined(_WIN32)
-    Q_UNUSED(signalHandler);
+    signal(SIGABRT, signalHandler);
+    signal(SIGFPE, signalHandler);
+    signal(SIGILL, signalHandler);
+    signal(SIGINT, signalHandler);
+    signal(SIGSEGV, signalHandler);
+    signal(SIGTERM, signalHandler);
 #else
-    static struct sigaction signalInterruptHandler;
+    static struct sigaction signalInterruptHandler{};
     signalInterruptHandler.sa_handler = signalHandler;
     sigemptyset(&signalInterruptHandler.sa_mask);
     signalInterruptHandler.sa_flags = 0;
@@ -260,7 +263,7 @@ void installSignalHandlers(void (*signalHandler)(int)) {
     sigaction(SIGTSTP, &signalInterruptHandler, NULL);
     sigaction(SIGTTIN, &signalInterruptHandler, NULL);
     sigaction(SIGTTOU, &signalInterruptHandler, NULL);
-#endif
+#endif //defined(_WIN32)
 }
 
 void displayVersion() {
