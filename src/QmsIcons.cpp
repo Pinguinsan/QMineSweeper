@@ -44,11 +44,18 @@ QmsIcons::QmsIcons() :
     //Constructor
 }
 
-void QmsIcons::initializeInstance()
+QmsIcons *QmsIcons::initializeInstance()
 {
     if (applicationIcons == nullptr) {
         applicationIcons = new QmsIcons{};
     }
+    return applicationIcons;
+}
+
+QmsIcons &QmsIcons::changeIconPalette(QIcon *icon) {
+    //TODO: Implement
+    Q_UNUSED(icon);
+    return *this;
 }
 
 /* ~QmsIcons() : Destructor, empty by default */

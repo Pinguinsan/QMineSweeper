@@ -1,0 +1,2 @@
+ - Loading files does not yet work
+ - UI does not scale properly on very small screens

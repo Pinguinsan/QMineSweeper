@@ -24,7 +24,7 @@ if (WIN32)
         message(FATAL_ERROR "Please specify -DWIN_COMPILER=MSVC or -DWIN_COMPILER=MINGW")
     endif()
     IF (WIN_COMPILER STREQUAL "MINGW")
-        set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+        set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
         set(CMAKE_CXX_FLAGS_DEBUG "-g")
         set(CMAKE_CXX_FLAGS_RELEASE "-O3")
     endif()
@@ -54,7 +54,7 @@ if (WIN32)
         endif()
     endif()
 else()
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
@@ -147,6 +147,7 @@ set(${PROJECT_NAME}_HEADER_FILES
         "${SOURCE_ROOT}/QmsUtilities.hpp"
         "${SOURCE_ROOT}/QmsIcons.hpp"
         "${SOURCE_ROOT}/QmsStrings.hpp"
+        "${SOURCE_ROOT}/ProgramOption.hpp"
         "${SOURCE_ROOT}/MineCoordinates.hpp"
         "${SOURCE_ROOT}/GameController.hpp"
         "${SOURCE_ROOT}/MainWindow.hpp"

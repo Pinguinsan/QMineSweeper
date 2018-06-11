@@ -24,4 +24,4 @@ private:
     QPoint m_mousePressLocation;
 };
 
-#endif // MOUSEMOVEABLEQWIDGET_HPP
+#endif //QMINESWEEPER_MOUSEMOVEABLEQWIDGET_HPP
