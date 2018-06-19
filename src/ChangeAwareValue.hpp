@@ -1,33 +1,33 @@
 #ifndef QMINESWEEPER_CHANGEAWAREVALUE_HPP
 #define QMINESWEEPER_CHANGEAWAREVALUE_HPP
 
-#include <unordered_set>
+#include "AbstractEventNotifier.hpp"
 
-template <typename Value>
+template <typename ValueType>
 class ChangeAwareValue;
 
-template <typename Value>
+template <typename ValueType>
 struct ChangeAwareValueEventListener {
-    friend class ChangeAwareValue<Value>;
+    friend class ChangeAwareValue<ValueType>;
     virtual ~ChangeAwareValueEventListener() = default;
 protected:
-    virtual void valueChanged(Value value) = 0;
+    virtual void valueChanged(ValueType value) = 0;
 };
 
 
-template <typename Value>
-class ChangeAwareValue
+template <typename ValueType>
+class ChangeAwareValue : public AbstractEventNotifier<ChangeAwareValueEventListener<ValueType>>
 {
-    using EventListener = ChangeAwareValueEventListener<Value>;
+    using EventListener = ChangeAwareValueEventListener<ValueType>;
 
 public:
-    explicit ChangeAwareValue(Value value, EventListener *initialListener = nullptr) :
+    explicit ChangeAwareValue(const ValueType &value, EventListener *initialListener = nullptr) :
         m_value{value}
     {
         if (initialListener) {
             this->addEventListener(initialListener);
         }
-        if (this->m_value != Value{}) {
+        if (this->m_value != ValueType{}) {
             this->notifyValueChanged();
         }
     }
@@ -35,18 +35,10 @@ public:
     ChangeAwareValue(const ChangeAwareValue &rhs) = default;
     ChangeAwareValue(ChangeAwareValue &&rhs) noexcept = default;
     ChangeAwareValue &operator=(const ChangeAwareValue &rhs) = default;
-    ChangeAwareValue &operator=(ChangeAwareValue &&rhs) = default;
+    ChangeAwareValue &operator=(ChangeAwareValue &&rhs) noexcept = default;
     ~ChangeAwareValue() = default;
 
-    void addEventListener(EventListener *eventListener) {
-        this->m_eventListeners.insert(eventListener);
-    }
-
-    void removeEventListener(EventListener *eventListener) {
-        this->m_eventListeners.erase(eventListener);
-    }
-
-    ChangeAwareValue &setValue(Value value) {
+    ChangeAwareValue &setValue(const ValueType &value) {
         bool emitNeeded{value != this->m_value};
         this->m_value = value;
         if (emitNeeded) {
@@ -55,48 +47,47 @@ public:
         return *this;
     }
 
-    ChangeAwareValue &operator++(Value value) {
+    ChangeAwareValue &operator++(const ValueType &value) {
         (void)value;
         ++this->m_value;
         this->notifyValueChanged();
         return *this;
     }
 
-    ChangeAwareValue &operator--(Value value) {
+    ChangeAwareValue &operator--(const ValueType &value) {
         (void)value;
         --this->m_value;
         this->notifyValueChanged();
         return *this;
     }
 
-    ChangeAwareValue &operator=(Value value) {
+    ChangeAwareValue &operator=(const ValueType &value) {
         this->setValue(value);
         return *this;
     }
 
-    operator Value() {
+    operator ValueType() {
         return this->m_value;
     }
 
-    Value value() const {
+    ValueType value() const {
         return this->m_value;
     }
 
 private:
-    Value m_value;
-    std::unordered_set<ChangeAwareValueEventListener<Value> *> m_eventListeners;
+    ValueType m_value;
 
     void notifyValueChanged() {
-        for (auto &it : this->m_eventListeners) {
+        for (auto &it : this->eventListeners()) {
             if (it) it->valueChanged(this->m_value);
         }
     }
 };
 
 typedef ChangeAwareValue<int> ChangeAwareInt;
-typedef ChangeAwareValue<double> ChangeAwareDouble;
-
 typedef ChangeAwareValueEventListener<int> ChangeAwareIntEventListener;
+
+typedef ChangeAwareValue<double> ChangeAwareDouble;
 typedef ChangeAwareValueEventListener<double> ChangeAwareDoubleEventListener;
 
 

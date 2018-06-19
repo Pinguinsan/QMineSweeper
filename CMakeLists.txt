@@ -157,7 +157,8 @@ set(${PROJECT_NAME}_HEADER_FILES
         "${SOURCE_ROOT}/GlobalDefinitions.hpp"
         "${SOURCE_ROOT}/MineCoordinateHash.hpp"
         "${SOURCE_ROOT}/ChangeAwareValue.hpp"
-        "${SOURCE_ROOT}/AutoUpdateLCD.hpp")
+        "${SOURCE_ROOT}/AutoUpdateLCD.hpp"
+        "${SOURCE_ROOT}/AbstractEventNotifier.hpp")
 
 
 set (${PROJECT_NAME}_FORMS
