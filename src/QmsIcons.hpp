@@ -2,8 +2,6 @@
 #define QMINESWEEPER_QMSICONS_HPP
 
 #include <QIcon>
-#include "../../../../../../Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.14.26428/include/memory"
-#include "../../../../../../Qt/Tools/mingw492_32/i686-w64-mingw32/include/c++/bits/shared_ptr.h"
 
 class QmsIcons
 {
