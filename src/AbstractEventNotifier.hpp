@@ -16,6 +16,13 @@ public:
         this->m_eventListeners.erase(eventListener);
         return *this;
     }
+
+    AbstractEventNotifier() = default;
+    AbstractEventNotifier(const AbstractEventNotifier &rhs) = default;
+    AbstractEventNotifier(AbstractEventNotifier &&rhs) noexcept = default;
+    AbstractEventNotifier &operator=(const AbstractEventNotifier &rhs) = default;
+    AbstractEventNotifier &operator=(AbstractEventNotifier &&rhs) noexcept = default;
+    virtual ~AbstractEventNotifier() = default;
 protected:
     std::unordered_set<EventListenerType *> &eventListeners() {
         return this->m_eventListeners;
