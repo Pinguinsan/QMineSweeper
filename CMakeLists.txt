@@ -60,7 +60,7 @@ else()
 endif()
 
 
-set(QT_PACKAGES Qt5Widgets Qt5Gui Qt5Core Qt5Multimedia Qt5SerialPort)
+set(QT_PACKAGES Qt5Widgets Qt5Gui Qt5Core Qt5Multimedia)
 set(QT_LINK_LIBRARIES)
 set(QT_LIBRARY_LIST)
 
