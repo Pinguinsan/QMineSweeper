@@ -25,6 +25,4 @@
 #    define QS_NUMBER(x) QString::number(x)
 #endif
 
-
-
 #endif // QMINESWEEPER_GLOBALDEFINITIONS_HPP

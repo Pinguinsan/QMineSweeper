@@ -3,8 +3,7 @@
 
 #include <QIcon>
 
-class QmsIcons
-{
+class QmsIcons {
 public:
     const QIcon MINE_ICON_16;
     const QIcon MINE_ICON_24;

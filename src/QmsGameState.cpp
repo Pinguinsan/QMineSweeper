@@ -14,54 +14,50 @@ const std::pair<double, double> QmsGameState::s_CELL_TO_MINE_RATIOS{std::make_pa
 const int QmsGameState::s_CELL_TO_MINE_THRESHOLD{82};
 
 QmsGameState::QmsGameState() :
-    QmsGameState{0, 0}
-{
+        QmsGameState{0, 0} {
 
 }
 
 QmsGameState::QmsGameState(int columnCount, int rowCount) :
-    m_playTimer{},
-    m_numberOfMines{0},
-    m_userDisplayNumberOfMines{0},
-    m_initialClickFlag{true},
-    m_numberOfColumns{columnCount},
-    m_numberOfRows{rowCount},
-    m_numberOfMovesMade{0},
-    m_gameState{GameState::GameInactive},
-    m_gameOver{false},
-    m_totalButtonCount{this->m_numberOfColumns*this->m_numberOfRows},
-    m_unopenedMineCount{this->m_numberOfColumns*this->m_numberOfRows},
-    m_customMineRatio{nullptr},
-    m_filePath{""}
-
-{
+        m_playTimer{},
+        m_numberOfMines{0},
+        m_userDisplayNumberOfMines{0},
+        m_initialClickFlag{true},
+        m_numberOfColumns{columnCount},
+        m_numberOfRows{rowCount},
+        m_numberOfMovesMade{0},
+        m_gameState{GameState::GameInactive},
+        m_gameOver{false},
+        m_totalButtonCount{this->m_numberOfColumns * this->m_numberOfRows},
+        m_unopenedMineCount{this->m_numberOfColumns * this->m_numberOfRows},
+        m_customMineRatio{nullptr},
+        m_filePath{""} {
     using namespace QmsUtilities;
     this->m_numberOfMines = ((this->m_numberOfColumns * this->m_numberOfRows) < this->s_CELL_TO_MINE_THRESHOLD) ?
-            roundIntuitively(this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.first) :
-            roundIntuitively(this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.second);
-	this->m_userDisplayNumberOfMines = this->m_numberOfMines;
+                            roundIntuitively(
+                                    this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.first) :
+                            roundIntuitively(
+                                    this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.second);
+    this->m_userDisplayNumberOfMines = this->m_numberOfMines;
 }
 
 QmsGameState::QmsGameState(const QmsGameState &rhs) :
-	m_playTimer{rhs.m_playTimer},
-	m_numberOfMines{rhs.m_numberOfMines},
-	m_userDisplayNumberOfMines{rhs.m_userDisplayNumberOfMines},
-	m_initialClickFlag{rhs.m_initialClickFlag},
-	m_numberOfColumns{rhs.m_numberOfColumns},
-	m_numberOfRows{rhs.m_numberOfRows},
-    m_numberOfMovesMade{rhs.m_numberOfMovesMade},
-    m_gameState{rhs.m_gameState},
-    m_gameOver{rhs.m_gameOver},
-	m_totalButtonCount{rhs.m_totalButtonCount},
-	m_unopenedMineCount{ rhs.m_unopenedMineCount },
-	m_customMineRatio{nullptr},
-    m_filePath{rhs.m_filePath}
-	
-
-{
-	if (rhs.m_customMineRatio) {
-		this->m_customMineRatio.reset(new float{ *rhs.m_customMineRatio });
-	}
+        m_playTimer{rhs.m_playTimer},
+        m_numberOfMines{rhs.m_numberOfMines},
+        m_userDisplayNumberOfMines{rhs.m_userDisplayNumberOfMines},
+        m_initialClickFlag{rhs.m_initialClickFlag},
+        m_numberOfColumns{rhs.m_numberOfColumns},
+        m_numberOfRows{rhs.m_numberOfRows},
+        m_numberOfMovesMade{rhs.m_numberOfMovesMade},
+        m_gameState{rhs.m_gameState},
+        m_gameOver{rhs.m_gameOver},
+        m_totalButtonCount{rhs.m_totalButtonCount},
+        m_unopenedMineCount{rhs.m_unopenedMineCount},
+        m_customMineRatio{nullptr},
+        m_filePath{rhs.m_filePath} {
+    if (rhs.m_customMineRatio) {
+        this->m_customMineRatio.reset(new float{*rhs.m_customMineRatio});
+    }
     this->m_mineCoordinates.clear();
     for (const auto &it : rhs.m_mineCoordinates) {
         this->m_mineCoordinates.emplace(it);
@@ -75,22 +71,19 @@ QmsGameState::QmsGameState(const QmsGameState &rhs) :
 }
 
 QmsGameState::QmsGameState(QmsGameState &&rhs) noexcept :
-	m_playTimer{ std::move( rhs.m_playTimer) },
-	m_numberOfMines{ rhs.m_numberOfMines },
-	m_userDisplayNumberOfMines{ rhs.m_userDisplayNumberOfMines },
-	m_initialClickFlag{ rhs.m_initialClickFlag },
-	m_numberOfColumns{ rhs.m_numberOfColumns },
-	m_numberOfRows{ rhs.m_numberOfRows },
-    m_numberOfMovesMade{rhs.m_numberOfMovesMade},
-    m_gameState{ rhs.m_gameState },
-	m_gameOver{ rhs.m_gameOver },
-	m_totalButtonCount{ rhs.m_totalButtonCount },
-	m_unopenedMineCount{ rhs.m_unopenedMineCount },
-	m_customMineRatio{ std::move(rhs.m_customMineRatio ) },
-    m_filePath{rhs.m_filePath}
-
-
-{
+        m_playTimer{std::move(rhs.m_playTimer)},
+        m_numberOfMines{rhs.m_numberOfMines},
+        m_userDisplayNumberOfMines{rhs.m_userDisplayNumberOfMines},
+        m_initialClickFlag{rhs.m_initialClickFlag},
+        m_numberOfColumns{rhs.m_numberOfColumns},
+        m_numberOfRows{rhs.m_numberOfRows},
+        m_numberOfMovesMade{rhs.m_numberOfMovesMade},
+        m_gameState{rhs.m_gameState},
+        m_gameOver{rhs.m_gameOver},
+        m_totalButtonCount{rhs.m_totalButtonCount},
+        m_unopenedMineCount{rhs.m_unopenedMineCount},
+        m_customMineRatio{std::move(rhs.m_customMineRatio)},
+        m_filePath{rhs.m_filePath} {
     this->m_mineCoordinates.clear();
     for (const auto &it : rhs.m_mineCoordinates) {
         this->m_mineCoordinates.emplace(it);
@@ -107,8 +100,7 @@ QString QmsGameState::filePath() const {
     return this->m_filePath;
 }
 
-QmsGameState &QmsGameState::operator=(const QmsGameState &rhs)
-{
+QmsGameState &QmsGameState::operator=(const QmsGameState &rhs) {
     this->m_mineCoordinates.clear();
     for (const auto &it : rhs.m_mineCoordinates) {
         this->m_mineCoordinates.emplace(it);
@@ -118,66 +110,61 @@ QmsGameState &QmsGameState::operator=(const QmsGameState &rhs)
     for (const auto &it : rhs.m_mineSweeperButtons) {
         this->m_mineSweeperButtons.emplace(it);
     }
-
-	this->m_playTimer = rhs.m_playTimer;
-	this->m_numberOfMines = rhs.m_numberOfMines;
-	this->m_userDisplayNumberOfMines = rhs.m_userDisplayNumberOfMines;
-	this->m_initialClickFlag = rhs.m_initialClickFlag;
-	this->m_numberOfColumns = rhs.m_numberOfColumns;
-	this->m_numberOfRows = rhs.m_numberOfRows;
-	this->m_gameState = rhs.m_gameState;
-	this->m_gameOver = rhs.m_gameOver;
-	this->m_totalButtonCount = rhs.m_totalButtonCount;
-	this->m_unopenedMineCount = rhs.m_unopenedMineCount;
-	if (rhs.m_customMineRatio) {
-		this->m_customMineRatio.reset(new float{ *rhs.m_customMineRatio });
-	}
-    this->m_filePath = rhs.m_filePath;
-	return *this;
-}
-
-QmsGameState &QmsGameState::operator=(QmsGameState &&rhs)
-{
-    this->m_mineCoordinates.clear();
-    for (const auto &it : rhs.m_mineCoordinates) {
-        this->m_mineCoordinates.emplace(it);
-    }
-
-    this->m_mineSweeperButtons.clear();
-    for (const auto &it : rhs.m_mineSweeperButtons) {
-        this->m_mineSweeperButtons.emplace(it);
-    }
-
 
     this->m_playTimer = rhs.m_playTimer;
-	this->m_numberOfMines = rhs.m_numberOfMines;
-	this->m_userDisplayNumberOfMines = rhs.m_userDisplayNumberOfMines;
-	this->m_initialClickFlag = rhs.m_initialClickFlag;
-	this->m_numberOfColumns = rhs.m_numberOfColumns;
-	this->m_numberOfRows = rhs.m_numberOfRows;
-	this->m_gameState = rhs.m_gameState;
-	this->m_gameOver = rhs.m_gameOver;
-	this->m_totalButtonCount = rhs.m_totalButtonCount;
-	this->m_unopenedMineCount = rhs.m_unopenedMineCount;
-	this->m_customMineRatio = std::move(rhs.m_customMineRatio);
+    this->m_numberOfMines = rhs.m_numberOfMines;
+    this->m_userDisplayNumberOfMines = rhs.m_userDisplayNumberOfMines;
+    this->m_initialClickFlag = rhs.m_initialClickFlag;
+    this->m_numberOfColumns = rhs.m_numberOfColumns;
+    this->m_numberOfRows = rhs.m_numberOfRows;
+    this->m_gameState = rhs.m_gameState;
+    this->m_gameOver = rhs.m_gameOver;
+    this->m_totalButtonCount = rhs.m_totalButtonCount;
+    this->m_unopenedMineCount = rhs.m_unopenedMineCount;
+    if (rhs.m_customMineRatio) {
+        this->m_customMineRatio.reset(new float{*rhs.m_customMineRatio});
+    }
+    this->m_filePath = rhs.m_filePath;
+    return *this;
+}
+
+QmsGameState &QmsGameState::operator=(QmsGameState &&rhs) {
+    this->m_mineCoordinates.clear();
+    for (const auto &it : rhs.m_mineCoordinates) {
+        this->m_mineCoordinates.emplace(it);
+    }
+
+    this->m_mineSweeperButtons.clear();
+    for (const auto &it : rhs.m_mineSweeperButtons) {
+        this->m_mineSweeperButtons.emplace(it);
+    }
+
+    this->m_playTimer = rhs.m_playTimer;
+    this->m_numberOfMines = rhs.m_numberOfMines;
+    this->m_userDisplayNumberOfMines = rhs.m_userDisplayNumberOfMines;
+    this->m_initialClickFlag = rhs.m_initialClickFlag;
+    this->m_numberOfColumns = rhs.m_numberOfColumns;
+    this->m_numberOfRows = rhs.m_numberOfRows;
+    this->m_gameState = rhs.m_gameState;
+    this->m_gameOver = rhs.m_gameOver;
+    this->m_totalButtonCount = rhs.m_totalButtonCount;
+    this->m_unopenedMineCount = rhs.m_unopenedMineCount;
+    this->m_customMineRatio = std::move(rhs.m_customMineRatio);
     this->m_filePath = rhs.m_filePath;
 
     return *this;
 }
 
-
-LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath)
-{
+LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath) {
     QmsGameState loadedState;
-	const auto result = QmsGameState::loadFromFile(filePath, loadedState);
+    const auto result = QmsGameState::loadFromFile(filePath, loadedState);
     if (result == LoadGameStateResult::Success) {
-		*this = loadedState;
+        *this = loadedState;
     }
     return result;
 }
 
-LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState)
-{
+LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState) {
     Q_UNUSED(targetState);
     using namespace QmsUtilities;
     QFile inputFile{filePath};
@@ -251,8 +238,7 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
     return LoadGameStateResult::Success;
 }
 
-std::list<MineCoordinates> QmsGameState::readMineCoordinateListFromXmlFile(QXmlStreamReader &reader)
-{
+std::list<MineCoordinates> QmsGameState::readMineCoordinateListFromXmlFile(QXmlStreamReader &reader) {
     //QMS_BUTTON_LIST_START_ELEMENT_XML_KEY
     auto returnList = std::list<MineCoordinates>{};
     while (!reader.atEnd() && !reader.hasError()) {
@@ -269,8 +255,8 @@ std::list<MineCoordinates> QmsGameState::readMineCoordinateListFromXmlFile(QXmlS
     return returnList;
 }
 
-std::list<std::pair<MineCoordinates, std::shared_ptr<QmsButton>>> QmsGameState::readQmsButtonListFromXmlFile(QXmlStreamReader &reader)
-{
+std::list<std::pair<MineCoordinates, std::shared_ptr<QmsButton>>>
+QmsGameState::readQmsButtonListFromXmlFile(QXmlStreamReader &reader) {
     auto returnList = std::list<std::pair<MineCoordinates, std::shared_ptr<QmsButton>>>{};
     while (!reader.atEnd() && !reader.hasError()) {
         reader.readNext();
@@ -286,8 +272,8 @@ std::list<std::pair<MineCoordinates, std::shared_ptr<QmsButton>>> QmsGameState::
     return returnList;
 }
 
-std::pair<MineCoordinates, std::shared_ptr<QmsButton>> QmsGameState::readQmsButtonFromXmlFile(QXmlStreamReader &reader)
-{
+std::pair<MineCoordinates, std::shared_ptr<QmsButton>>
+QmsGameState::readQmsButtonFromXmlFile(QXmlStreamReader &reader) {
     using namespace QmsUtilities;
     MineCoordinates coordinates{0, 0};
     std::shared_ptr<QmsButton> button{std::make_shared<QmsButton>(0, 0, nullptr)};
@@ -321,8 +307,7 @@ std::pair<MineCoordinates, std::shared_ptr<QmsButton>> QmsGameState::readQmsButt
     return std::make_pair(coordinates, button);
 }
 
-SteadyEventTimer QmsGameState::readEventTimerFromXmlFile(QXmlStreamReader &reader)
-{
+SteadyEventTimer QmsGameState::readEventTimerFromXmlFile(QXmlStreamReader &reader) {
     using QmsUtilities::toBool;
     SteadyEventTimer eventTimer{};
     while (!reader.atEnd() && !reader.hasError()) {
@@ -347,8 +332,7 @@ SteadyEventTimer QmsGameState::readEventTimerFromXmlFile(QXmlStreamReader &reade
     return eventTimer;
 }
 
-SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
-{
+SaveGameStateResult QmsGameState::saveToFile(const QString &filePath) {
     this->m_filePath = filePath;
     QFile outputFile{filePath};
     if (outputFile.exists()) {
@@ -357,7 +341,7 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
         }
     }
     if (!outputFile.open(QIODevice::OpenModeFlag::ReadWrite)) {
-       return SaveGameStateResult::UnableToOpenFile;
+        return SaveGameStateResult::UnableToOpenFile;
     }
     using namespace QmsUtilities;
     //auto flaggedMines = std::count_if(this->m_mineSweeperButtons.begin(), this->m_mineSweeperButtons.end(), [](auto container) { return container.second->hasFlag(); });
@@ -367,30 +351,30 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
     writeToFile.setAutoFormatting(true);
     writeToFile.setAutoFormattingIndent(4);
     writeToFile.writeStartDocument();
-        writeToFile.writeStartElement(QMS_GAME_STATE_XML_KEY);
-            writeToFile.writeTextElement(COLUMN_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfColumns));
-            writeToFile.writeTextElement(ROW_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfRows));
-            writeToFile.writeTextElement(MINE_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfMines));
-            writeToFile.writeTextElement(MOVES_MADE_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfMovesMade));
-            writeToFile.writeTextElement(MINES_REMAINING_COUNT_XML_KEY, QS_NUMBER(this->m_unopenedMineCount));
+    writeToFile.writeStartElement(QMS_GAME_STATE_XML_KEY);
+    writeToFile.writeTextElement(COLUMN_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfColumns));
+    writeToFile.writeTextElement(ROW_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfRows));
+    writeToFile.writeTextElement(MINE_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfMines));
+    writeToFile.writeTextElement(MOVES_MADE_COUNT_XML_KEY, QS_NUMBER(this->m_numberOfMovesMade));
+    writeToFile.writeTextElement(MINES_REMAINING_COUNT_XML_KEY, QS_NUMBER(this->m_unopenedMineCount));
 
-            writeToFile.writeStartElement(PLAY_TIMER_START_ELEMENT_XML_KEY);
-                writeToFile.writeTextElement(PLAY_TIMER_IS_PAUSED_XML_KEY, boolToQString(this->m_playTimer.m_isPaused));
-                writeToFile.writeTextElement(PLAY_TIMER_TOTAL_TIME_XML_KEY, QS_NUMBER(this->m_playTimer.m_totalTime));
-            writeToFile.writeEndElement(); //PlayTime
+    writeToFile.writeStartElement(PLAY_TIMER_START_ELEMENT_XML_KEY);
+    writeToFile.writeTextElement(PLAY_TIMER_IS_PAUSED_XML_KEY, boolToQString(this->m_playTimer.m_isPaused));
+    writeToFile.writeTextElement(PLAY_TIMER_TOTAL_TIME_XML_KEY, QS_NUMBER(this->m_playTimer.m_totalTime));
+    writeToFile.writeEndElement(); //PlayTime
 
-            writeToFile.writeStartElement(MINE_COORDINATE_LIST_XML_KEY);
-                for (auto &it: this->m_mineCoordinates) {
-                    writeToFile.writeTextElement(MINE_COORDINATES_XML_KEY, QString{MineCoordinates{it}.toString().c_str()});
-                }
-            writeToFile.writeEndElement(); //MineCoordinates
+    writeToFile.writeStartElement(MINE_COORDINATE_LIST_XML_KEY);
+    for (auto &it: this->m_mineCoordinates) {
+        writeToFile.writeTextElement(MINE_COORDINATES_XML_KEY, QString{MineCoordinates{it}.toString().c_str()});
+    }
+    writeToFile.writeEndElement(); //MineCoordinates
 
-            writeToFile.writeStartElement(QMS_BUTTON_LIST_START_ELEMENT_XML_KEY);
-                for (auto &it : this->m_mineSweeperButtons) {
-					writeQmsButtonToXmlStream(writeToFile, it.first, it.second);
-                }
-            writeToFile.writeEndElement(); //MineSweeperButtons
-        writeToFile.writeEndElement(); //QmsGameState
+    writeToFile.writeStartElement(QMS_BUTTON_LIST_START_ELEMENT_XML_KEY);
+    for (auto &it : this->m_mineSweeperButtons) {
+        writeQmsButtonToXmlStream(writeToFile, it.first, it.second);
+    }
+    writeToFile.writeEndElement(); //MineSweeperButtons
+    writeToFile.writeEndElement(); //QmsGameState
     writeToFile.writeEndDocument();
     outputFile.seek(0);
     /*
@@ -423,19 +407,18 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath)
     return SaveGameStateResult::Success;
 }
 
-
-
 void QmsGameState::writeQmsButtonToXmlStream(QXmlStreamWriter &writeToFile, const MineCoordinates &coordinates,
-                                             std::shared_ptr<QmsButton> targetButton)
-{
-	using namespace QmsUtilities;
-	writeToFile.writeStartElement(QMS_BUTTON_START_ELEMENT_XML_KEY);
-	writeToFile.writeTextElement(QMS_BUTTON_MINE_COORDINATES_XML_KEY, QString{ coordinates.toString().c_str() });
-	writeToFile.writeTextElement(QMS_BUTTON_IS_BLOCKING_CLICKS_XML_KEY, boolToQString(targetButton->isBlockingClicks()));
-	writeToFile.writeTextElement(QMS_BUTTON_SURROUNDING_MINE_COUNT_XML_KEY, QS_NUMBER(targetButton->numberOfSurroundingMines()));
-	writeToFile.writeTextElement(QMS_BUTTON_IS_CHECKED_XML_KEY, boolToQString(targetButton->isChecked()));
-	writeToFile.writeTextElement(QMS_BUTTON_HAS_FLAG_XML_KEY, boolToQString(targetButton->hasFlag()));
-	writeToFile.writeTextElement(QMS_BUTTON_HAS_MINE_XML_KEY, boolToQString(targetButton->hasMine()));
-	writeToFile.writeTextElement(QMS_BUTTON_IS_REVEALED_XML_KEY, boolToQString(targetButton->isRevealed()));
-	writeToFile.writeEndElement(); //QmsButton
+                                             std::shared_ptr<QmsButton> targetButton) {
+    using namespace QmsUtilities;
+    writeToFile.writeStartElement(QMS_BUTTON_START_ELEMENT_XML_KEY);
+    writeToFile.writeTextElement(QMS_BUTTON_MINE_COORDINATES_XML_KEY, QString{coordinates.toString().c_str()});
+    writeToFile.writeTextElement(QMS_BUTTON_IS_BLOCKING_CLICKS_XML_KEY,
+                                 boolToQString(targetButton->isBlockingClicks()));
+    writeToFile.writeTextElement(QMS_BUTTON_SURROUNDING_MINE_COUNT_XML_KEY,
+                                 QS_NUMBER(targetButton->numberOfSurroundingMines()));
+    writeToFile.writeTextElement(QMS_BUTTON_IS_CHECKED_XML_KEY, boolToQString(targetButton->isChecked()));
+    writeToFile.writeTextElement(QMS_BUTTON_HAS_FLAG_XML_KEY, boolToQString(targetButton->hasFlag()));
+    writeToFile.writeTextElement(QMS_BUTTON_HAS_MINE_XML_KEY, boolToQString(targetButton->hasMine()));
+    writeToFile.writeTextElement(QMS_BUTTON_IS_REVEALED_XML_KEY, boolToQString(targetButton->isRevealed()));
+    writeToFile.writeEndElement(); //QmsButton
 }

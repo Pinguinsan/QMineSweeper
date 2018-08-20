@@ -15,6 +15,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (WIN32)
+    if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set (DEPLOY_BUILD_ARGUMENT "--debug")
+    else()
+        set (DEPLOY_BUILD_ARGUMENT "--release")
+    endif()
+
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		set(WIN_COMPILER "MSVC")
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -188,11 +194,11 @@ if (WIN32)
     if (WIN_COMPILER STREQUAL "MSVC")
         add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+                COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" "${CMAKE_BINARY_DIR}/" ${DEPLOY_BUILD_ARGUMENT})
     elseif(WIN_COMPILER STREQUAL "MINGW")
         add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+                COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" "${CMAKE_BINARY_DIR}/" ${DEPLOY_BUILD_ARGUMENT})
 
     endif()
 

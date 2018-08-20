@@ -11,9 +11,8 @@ namespace Ui {
 
 class QDesktopWidget;
 
-class AboutApplicationWidget : public QWidget
-{
-    Q_OBJECT
+class AboutApplicationWidget : public QWidget {
+Q_OBJECT
 public:
     explicit AboutApplicationWidget(QWidget *parent = nullptr);
     ~AboutApplicationWidget() override;

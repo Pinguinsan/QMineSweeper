@@ -3,25 +3,24 @@
 
 #include "AbstractEventNotifier.hpp"
 
-template <typename ValueType>
+template<typename ValueType>
 class ChangeAwareValue;
 
-template <typename ValueType>
+template<typename ValueType>
 struct ChangeAwareValueEventListener {
     friend class ChangeAwareValue<ValueType>;
+
     virtual ~ChangeAwareValueEventListener() = default;
 protected:
     virtual void valueChanged(ValueType value) = 0;
 };
 
-
-template <typename ValueType>
-class ChangeAwareValue : public AbstractEventNotifier<ChangeAwareValueEventListener<ValueType>>
-{
+template<typename ValueType>
+class ChangeAwareValue : public AbstractEventNotifier<ChangeAwareValueEventListener<ValueType>> {
 public:
-    explicit ChangeAwareValue(const ValueType &value, ChangeAwareValueEventListener<ValueType> *initialListener = nullptr) :
-        m_value{value}
-    {
+    explicit ChangeAwareValue(const ValueType &value,
+                              ChangeAwareValueEventListener<ValueType> *initialListener = nullptr) :
+            m_value{value} {
         if (initialListener) {
             this->addEventListener(initialListener);
         }
@@ -31,8 +30,7 @@ public:
     }
 
     ChangeAwareValue() :
-        ChangeAwareValue{ValueType{}, nullptr}
-    {
+            ChangeAwareValue{ValueType{}, nullptr} {
 
     }
 
@@ -76,13 +74,12 @@ private:
     }
 };
 
-template <typename ValueType>
-class ChangeAwarePrimitive : public ChangeAwareValue<ValueType>
-{
+template<typename ValueType>
+class ChangeAwarePrimitive : public ChangeAwareValue<ValueType> {
 public:
-    explicit ChangeAwarePrimitive(const ValueType &value, ChangeAwareValueEventListener<ValueType> *initialListener = nullptr) :
-        ChangeAwareValue<ValueType>{value, initialListener}
-    {
+    explicit ChangeAwarePrimitive(const ValueType &value,
+                                  ChangeAwareValueEventListener<ValueType> *initialListener = nullptr) :
+            ChangeAwareValue<ValueType>{value, initialListener} {
 
     }
 
@@ -98,13 +95,13 @@ public:
     }
 
     const ChangeAwarePrimitive<ValueType> operator++(int value) {
-        (void)value;
+        (void) value;
         this->setValue(this->value() + 1);
         return *this;
     }
 
     const ChangeAwarePrimitive<ValueType> operator--(int value) {
-        (void)value;
+        (void) value;
         this->setValue(this->value() - 1);
         return *this;
     }
@@ -116,7 +113,5 @@ typedef ChangeAwareValueEventListener<int> ChangeAwareIntEventListener;
 
 typedef ChangeAwarePrimitive<double> ChangeAwareDouble;
 typedef ChangeAwareValueEventListener<double> ChangeAwareDoubleEventListener;
-
-
 
 #endif //QMINESWEEPER_CHANGEAWAREVALUE_HPP

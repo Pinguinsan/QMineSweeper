@@ -3,9 +3,8 @@
 
 #include <unordered_set>
 
-template <typename EventListenerType>
-class AbstractEventNotifier
-{
+template<typename EventListenerType>
+class AbstractEventNotifier {
 public:
     inline AbstractEventNotifier &addEventListener(EventListenerType *eventListener) {
         this->m_eventListeners.insert(eventListener);
@@ -27,6 +26,7 @@ protected:
     std::unordered_set<EventListenerType *> &eventListeners() {
         return this->m_eventListeners;
     }
+
 private:
     std::unordered_set<EventListenerType *> m_eventListeners;
 };

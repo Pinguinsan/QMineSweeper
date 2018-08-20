@@ -12,38 +12,53 @@
 #include "BoardResizeWidget.hpp"
 #include "QmsGameState.hpp"
 
-
-namespace Ui
-{
+namespace Ui {
     class MainWindow;
 }
 
 class QmsButton;
+
 class GameController;
+
 class AboutQmsWidget;
+
 class QmsIcons;
+
 class QmsSoundEffects;
+
 class QmsApplicationSettings;
+
 class QDesktopWidget;
+
 class QMediaPlayer;
+
 class QDialog;
+
 class QWindow;
+
 class QString;
+
 class QTimer;
+
 class QActionGroup;
+
 class QTranslator;
+
 class QLabel;
+
 class QDialog;
+
 class QPoint;
+
 class QMoveEvent;
+
 class AboutApplicationWidget;
 
-class MainWindow : public MouseMoveableQMainWindow
-{
-        Q_OBJECT
+class MainWindow : public MouseMoveableQMainWindow {
+Q_OBJECT
 public:
     explicit MainWindow(QmsSettingsLoader::SupportedLanguage initialDisplayLanguage,
-                           QWidget *parent = nullptr);
+                        QWidget *parent = nullptr);
     ~MainWindow() override;
 
     void populateMineField();
@@ -62,7 +77,7 @@ private:
     std::unique_ptr<QTimer> m_eventTimer;
     std::unique_ptr<SteadyEventTimer> m_userIdleTimer;
     std::unique_ptr<AboutApplicationWidget> m_aboutQmsDialog;
-    std::unique_ptr<BoardResizeWidget>  m_boardResizeDialog;
+    std::unique_ptr<BoardResizeWidget> m_boardResizeDialog;
     std::unique_ptr<QActionGroup> m_languageActionGroup;
     std::unique_ptr<QTranslator> m_translator;
     std::unique_ptr<QLabel> m_statusBarLabel;
@@ -79,15 +94,15 @@ private:
     QString m_saveFilePath;
     Ui::MainWindow *m_ui;
 
-    static const int s_TASKBAR_HEIGHT;
-    static const int s_GAME_TIMER_INTERVAL;
-    static const double s_DEFAULT_NUMBER_OF_MINES;
-    static const int s_HEIGHT_SCALE_FACTOR;
-    static const int s_WIDTH_SCALE_FACTOR;
-    static const int s_NUMBER_OF_HORIZONTAL_MARGINS;
-    static const int s_NUMBER_OF_VERTIAL_MARGINS;
-    static const int s_DEFAULT_MINE_SIZE_SCALE_FACTOR;
-    static const int s_STATUS_BAR_FONT_POINT_SIZE;
+    static const int TASKBAR_HEIGHT;
+    static const int GAME_TIMER_INTERVAL;
+    static const double DEFAULT_NUMBER_OF_MINES;
+    static const int HEIGHT_SCALE_FACTOR;
+    static const int WIDTH_SCALE_FACTOR;
+    static const int NUMBER_OF_HORIZONTAL_MARGINS;
+    static const int NUMBER_OF_VERTIAL_MARGINS;
+    static const int DEFAULT_MINE_SIZE_SCALE_FACTOR;
+    static const int STATUS_BAR_FONT_POINT_SIZE;
     static const double MINE_ICON_REDUCTION_SCALE_FACTOR;
 
     void hideEvent(QHideEvent *event) override;

@@ -10,8 +10,7 @@
 
 #include "QmsUtilities.hpp"
 
-class MineCoordinates
-{
+class MineCoordinates {
 
 public:
     explicit MineCoordinates(int X, int Y);
@@ -30,7 +29,7 @@ public:
     std::string toString() const;
     QString toQString() const;
     std::pair<int, int> toStdPair() const;
-    friend std::ostream& operator<<(std::ostream &os, const MineCoordinates &mc);
+    friend std::ostream &operator<<(std::ostream &os, const MineCoordinates &mc);
 
     static MineCoordinates parse(const std::string &str);
 

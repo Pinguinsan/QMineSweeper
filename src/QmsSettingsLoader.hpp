@@ -6,9 +6,8 @@
 
 class QmsApplicationSettings;
 
-class QmsSettingsLoader : public QObject
-{
-    Q_OBJECT
+class QmsSettingsLoader : public QObject {
+Q_OBJECT
 public:
 
     enum class SupportedLanguage {
@@ -30,7 +29,6 @@ private:
     static const char *NUMBER_OF_COLUMNS_KEY;
     static const char *NUMBER_OF_ROWS_KEY;
     static const char *AUDIO_VOLUME_KEY;
-
 
     explicit QmsSettingsLoader(QObject *parent = nullptr);
     QmsSettingsLoader(const QmsSettingsLoader &) = delete;

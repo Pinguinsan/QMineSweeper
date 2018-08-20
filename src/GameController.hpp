@@ -20,9 +20,8 @@ class MainWindow;
 class QString;
 class QmsGameState;
 
-class GameController : public QObject
-{
-    Q_OBJECT
+class GameController : public QObject {
+Q_OBJECT
 public:
 
     ~GameController() override = default;
@@ -81,7 +80,6 @@ public:
 
     void setCustomMineRatio(float mineRatio);
 
-
     static void initializeInstance(int columnCount, int rowCount);
 
     SaveGameStateResult saveGame(const QString &filePath);
@@ -98,8 +96,6 @@ public:
     static int DEFAULT_SLEEPY_FACE_TIMEOUT();
     static int LONG_CLICK_THRESHOLD();
     static int MILLISECOND_DELAY_DIGITS();
-
-
 
 public slots:
     void onMineSweeperButtonCreated(std::shared_ptr<QmsButton> msbp);
@@ -148,7 +144,6 @@ private:
     static const int s_LONG_CLICK_THRESHOLD;
     static const int s_MILLISECOND_DISPLAY_DIGITS;
 
-
     GameController(int columnCount, int rowCount);
     GameController(const GameController &other) = delete;
     GameController(GameController &&other) = delete;
@@ -156,6 +151,5 @@ private:
 };
 
 extern GameController *gameController;
-
 
 #endif //QMINESWEEPER_GAMECONTROLLER_HPP

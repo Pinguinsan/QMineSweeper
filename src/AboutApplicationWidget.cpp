@@ -15,10 +15,9 @@
 #include <QPixmap>
 
 AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
-    QWidget{parent},
-    m_ui{new Ui::AboutApplicationWidget{}},
-    m_licenseHiddenHeight{-1}
-{
+        QWidget{parent},
+        m_ui{new Ui::AboutApplicationWidget{}},
+        m_licenseHiddenHeight{-1} {
     using namespace QmsStrings;
     using namespace QmsGlobalSettings;
     this->m_ui->setupUi(this);
@@ -28,23 +27,26 @@ AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     QString currentText{this->m_ui->lblProgramCopyright->text()};
     QString currentYear{QS_NUMBER(QDateTime{}.currentDateTime().date().year())};
     this->m_ui->lblProgramCopyright->setText(QString{"%1 %2 %3"}.arg(currentText, currentYear, AUTHOR_NAME));
-    this->m_ui->lblProgramVersion->setText(QString{"v%1.%2.%3"}.arg(QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION), QS_NUMBER(SOFTWARE_PATCH_VERSION)));
+    this->m_ui->lblProgramVersion->setText(
+            QString{"v%1.%2.%3"}.arg(QS_NUMBER(SOFTWARE_MAJOR_VERSION), QS_NUMBER(SOFTWARE_MINOR_VERSION),
+                                     QS_NUMBER(SOFTWARE_PATCH_VERSION)));
     this->m_ui->lblProgramWebsite->setText(QString{
-            R"(<html><head/><body><p><a href="%1"><span style=" text-decoration: underline; color:#007af4;">)" + QCoreApplication::applicationName() + " website</span></a></p></body></html>"}.arg(REMOTE_URL));
+            R"(<html><head/><body><p><a href="%1"><span style=" text-decoration: underline; color:#007af4;">)" +
+            QCoreApplication::applicationName() + " website</span></a></p></body></html>"}.arg(REMOTE_URL));
     this->m_ui->lblProgramWebsite->setOpenExternalLinks(true);
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
 
     this->m_ui->lblProgramIcon->setPixmap(applicationIcons->MINE_ICON_72.pixmap(QSize{128, 128}));
     this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutApplicationWidget::onLicenseButtonClicked);
-    this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutApplicationWidget::onCloseButtonClicked);
+    this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this,
+                  &AboutApplicationWidget::onCloseButtonClicked);
 
     this->addLicenseTab(QmsGlobalSettings::PROGRAM_NAME, QmsStrings::QMINESWEEPER_LICENSE_PATH);
     this->m_ui->twLicenses->setVisible(false);
 }
 
-
 void AboutApplicationWidget::onLicenseButtonClicked(bool checked) {
-    (void)checked;
+    (void) checked;
     if (this->m_ui->twLicenses->isVisible()) {
         this->clearLicenseText();
         if (this->m_licenseHiddenHeight != -1) {
@@ -80,12 +82,12 @@ int AboutApplicationWidget::addLicenseTab(const QString &licenseName, const QStr
     return 0;
 }
 
-void AboutApplicationWidget::populateLicenseText()
-{
+void AboutApplicationWidget::populateLicenseText() {
     for (auto &it : this->m_licenseTabs) {
         QFile licenseFile{it.second->property(QmsStrings::LICENSE_PATH_KEY).toString()};
         if (!licenseFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
-            LOG_WARNING() << QString{"Could not open license file %1"}.arg(it.second->property(QmsStrings::LICENSE_PATH_KEY).toString());
+            LOG_WARNING() << QString{"Could not open license file %1"}.arg(
+                    it.second->property(QmsStrings::LICENSE_PATH_KEY).toString());
             continue;
         }
         it.second->append(licenseFile.readAll());
@@ -95,28 +97,23 @@ void AboutApplicationWidget::populateLicenseText()
     }
 }
 
-void AboutApplicationWidget::clearLicenseText()
-{
+void AboutApplicationWidget::clearLicenseText() {
     for (auto &it : this->m_licenseTabs) {
         it.second->clear();
     }
 
 }
 
-void AboutApplicationWidget::onCloseButtonClicked(bool checked)
-{
-    (void)checked;
+void AboutApplicationWidget::onCloseButtonClicked(bool checked) {
+    (void) checked;
     this->close();
 }
 
-void AboutApplicationWidget::closeEvent(QCloseEvent *ce)
-{
+void AboutApplicationWidget::closeEvent(QCloseEvent *ce) {
     emit (aboutToClose());
     QWidget::closeEvent(ce);
 }
 
-
-AboutApplicationWidget::~AboutApplicationWidget()
-{
+AboutApplicationWidget::~AboutApplicationWidget() {
     delete this->m_ui;
 }

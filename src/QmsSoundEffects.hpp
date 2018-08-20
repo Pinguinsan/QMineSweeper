@@ -1,15 +1,14 @@
 #ifndef QMINESWEEPER_QMSSOUNDEFFECTS_HPP
 #define QMINESWEEPER_QMSSOUNDEFFECTS_HPP
 
-
 #include <QMediaPlayer>
+
 class QString;
 
 #include "QmsUtilities.hpp"
 #include "QmsStrings.hpp"
 
-class QmsSoundEffects
-{
+class QmsSoundEffects {
 public:
     void setAudioVolume(int volume);
     void setAudioMuted(bool soundMuted);

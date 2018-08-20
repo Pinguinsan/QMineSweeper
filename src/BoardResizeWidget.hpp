@@ -8,11 +8,11 @@ namespace Ui {
 #include "MouseMoveableQWidget.hpp"
 
 class QDesktopWidget;
+
 class QPushButton;
 
-class BoardResizeWidget : public MouseMoveableQWidget
-{
-    Q_OBJECT
+class BoardResizeWidget : public MouseMoveableQWidget {
+Q_OBJECT
 public:
     enum class ResizeWidgetExitCode {
         Accepted,
@@ -56,16 +56,14 @@ private slots:
     void onBtnAdvancedPresetClicked(bool down);
     void onBtnExtremePresetClicked(bool down);
 
-
-
 private:
     Ui::BoardResizeWidget *m_ui;
     int m_numberOfColumns;
     int m_numberOfRows;
-	int m_minimumColumns;
-	int m_maximumColumns;
-	int m_minimumRows;
-	int m_maximumRows;
+    int m_minimumColumns;
+    int m_maximumColumns;
+    int m_minimumRows;
+    int m_maximumRows;
     ResizeWidgetResult m_resultToEmit;
 
     void onPresetBoardSizeActionTriggered(QPushButton *pressedButton);
@@ -74,8 +72,8 @@ private:
     void onBtnIncrementColumnsClicked(bool down);
     void onBtnDecrementColumnsClicked(bool down);
 
-	static const std::pair<int, int> DEFAULT_COLUMN_MIN_MAX;
-	static const std::pair<int, int> DEFAULT_ROW_MIN_MAX;
+    static const std::pair<int, int> DEFAULT_COLUMN_MIN_MAX;
+    static const std::pair<int, int> DEFAULT_ROW_MIN_MAX;
     static const std::pair<int, int> BEGINNER_GAME_DIMENSIONS;
     static const std::pair<int, int> INTERMEDIATE_GAME_DIMENSIONS;
     static const std::pair<int, int> ADVANCED_GAME_DIMENSIONS;

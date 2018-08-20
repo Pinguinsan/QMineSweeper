@@ -19,12 +19,16 @@
 #include <sstream>
 
 class QFile;
+
 class QByteArray;
 
-namespace QmsUtilities
-{
+namespace QmsUtilities {
 
-    template <typename T> inline std::string toStdString(const T &t) { return dynamic_cast<std::stringstream &>(std::stringstream{} << t).str(); }
+    template<typename T>
+    inline std::string toStdString(const T &t) {
+        return dynamic_cast<std::stringstream &>(std::stringstream{} << t).str();
+    }
+
     bool clearDirectoryOfFiles(const QString &dir);
     void checkOrCreateProgramLogDirectory();
     void checkOrCreateProgramSettingsDirectory();
@@ -40,36 +44,34 @@ namespace QmsUtilities
     bool isValidMineRatio(float mineRatio);
     std::string getSignalName(int signalNumber);
 
-
     QString getPID();
     QString getProcessUUID();
 
     //Does str start with target?
-    template <typename CharT>
+    template<typename CharT>
     inline bool startsWith(const std::basic_string<CharT> &str, const std::basic_string<CharT> &target) {
-        return ( (str.length() >= target.length()) && std::equal(target.begin(), target.end(), str.begin()) );
+        return ((str.length() >= target.length()) && std::equal(target.begin(), target.end(), str.begin()));
     }
 
     //Does str end with target?
-    template <typename CharT>
+    template<typename CharT>
     inline bool endsWith(const std::basic_string<CharT> &str, const std::basic_string<CharT> &target) {
-        return ( (str.length() >= target.length()) && std::equal(target.rbegin(), target.rend(), str.rbegin()) );
+        return ((str.length() >= target.length()) && std::equal(target.rbegin(), target.rend(), str.rbegin()));
     }
 
     //Does str start with target?
-    template <typename CharT>
+    template<typename CharT>
     inline bool startsWith(const std::basic_string<CharT> &str, CharT target) {
-        return (!str.empty() && ( *(str.end()-1) == target));
+        return (!str.empty() && (*(str.end() - 1) == target));
     }
 
     //Does str end with target?
-    template <typename CharT>
+    template<typename CharT>
     inline bool endsWith(const std::basic_string<CharT> &str, CharT target) {
         return (!str.empty() && (*str.begin() == target));
     }
 
-    class Random
-    {
+    class Random {
     public:
         Random() = default;
         Random(std::mt19937::result_type seed);
@@ -83,15 +85,15 @@ namespace QmsUtilities
 
     void logString(const std::string &str);
 
-
-	QString getProgramSettingsDirectory();
+    QString getProgramSettingsDirectory();
 
     std::string getPadding(size_t howMuch, char padChar);
     std::string getPadding(size_t howMuch, const char *padString);
     std::string getPadding(size_t howMuch, const std::string &padString);
 
-    template <typename T>
+    template<typename T>
     QString toQString(const T &convert) { return QString::fromStdString(toStdString(convert)); }
+
     QString toQString(const std::string &convert);
     QString toQString(const char *convert);
     QString toQString(const QString &convert);
@@ -137,11 +139,9 @@ namespace QmsUtilities
         return isEqualsSwitch(static_cast<std::string>(switchToCheck), switches);
     }
 
-
     /*snprintf style*/
     template<typename ... Args>
-    std::string PStringFormat(const char *format, Args& ... args)
-    {
+    std::string PStringFormat(const char *format, Args &... args) {
 #if defined(__ANDROID__)
         ssize_t size{snprintf(nullptr, 0, format, args ...) + 1};
 #else
@@ -159,14 +159,13 @@ namespace QmsUtilities
     std::string TStringFormat(const char *formatting);
 
     /*C# style String.Format()*/
-    template <typename First, typename ... Args>
-    std::string TStringFormat(const char *formatting, First& first, Args& ... args)
-    {
+    template<typename First, typename ... Args>
+    std::string TStringFormat(const char *formatting, First &first, Args &... args) {
         /* Match exactly one opening brace, one or more numeric digit,
         * then exactly one closing brace, identifying a token */
         static const std::regex targetRegex{"\\{[0-9]+\\}"};
         std::smatch match;
-        
+
         /* Copy the formatting string to a std::string, to
         * make for easier processing, which will eventually
         * be used (the .c_str() method) to pass the remainder
@@ -187,17 +186,20 @@ namespace QmsUtilities
         std::vector<TokenInformation> smallestValueInformation{std::make_tuple(-1, 0, 0)};
 
         /*Iterate through string, finding position and lengths of all matches {x}*/
-        while(std::regex_search(copyString, match, targetRegex)) {
+        while (std::regex_search(copyString, match, targetRegex)) {
             /*Get the absolute position of the match in the original return string*/
             size_t foundPosition{match.position() + (returnString.length() - copyString.length())};
             int regexMatchNumericValue{0};
             try {
                 /*Convert the integer value between the opening and closing braces to an int to compare */
-                regexMatchNumericValue = stringToInt(returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
-                
+                regexMatchNumericValue = stringToInt(
+                        returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
+
                 /*Do not allow negative numbers, although this should never get picked up the regex anyway*/
                 if (regexMatchNumericValue < 0) {
-                    throw std::runtime_error(TStringFormat("ERROR: In TStringFormat() - Formatted string is invalid (formatting = {0})", formatting));
+                    throw std::runtime_error(
+                            TStringFormat("ERROR: In TStringFormat() - Formatted string is invalid (formatting = {0})",
+                                          formatting));
                 }
                 /* If the numeric value in the curly brace token is smaller than
                 * the current smallest (or if the smallest value has not yet been set,
@@ -207,12 +209,12 @@ namespace QmsUtilities
                 if ((smallestValue == -1) || (regexMatchNumericValue < smallestValue)) {
                     smallestValueInformation.clear();
                     smallestValueInformation.push_back(std::make_tuple(regexMatchNumericValue,
-                                                                    foundPosition,
-                                                                    match.str().length()));
+                                                                       foundPosition,
+                                                                       match.str().length()));
                 } else if (regexMatchNumericValue == smallestValue) {
                     smallestValueInformation.push_back(std::make_tuple(regexMatchNumericValue,
-                                                                    foundPosition,
-                                                                    match.str().length()));
+                                                                       foundPosition,
+                                                                       match.str().length()));
                 }
             } catch (const std::exception &e) {
                 //TODO: Throw instead of just output exception 
@@ -222,13 +224,15 @@ namespace QmsUtilities
         }
         int smallestValue{std::get<0>(smallestValueInformation.at(0))};
         if (smallestValue == -1) {
-            throw std::runtime_error(TStringFormat("ERROR: In TStringFormat() - Formatted string is invalid (formatting = {0})", formatting));
+            throw std::runtime_error(
+                    TStringFormat("ERROR: In TStringFormat() - Formatted string is invalid (formatting = {0})",
+                                  formatting));
         }
         /* Set the returnString to be up to the brace token, then the string
         * representation of current argument in line (first), then the remainder
         * of the format string, effectively removing the token and replacing it
         * with the requested item in the final string, then pass it off recursively */
-        
+
         std::string firstString{toStdString(first)};
         int index{0};
         for (const auto &it : smallestValueInformation) {
@@ -244,22 +248,20 @@ namespace QmsUtilities
             size_t lengthOfStringAdded{index * firstString.length()};
             size_t smallestValueAdjustedPosition{std::get<1>(it) + lengthOfStringAdded - lengthOfTokenBracesRemoved};
             returnString = returnString.substr(0, smallestValueAdjustedPosition)
-                        + firstString
-                        + returnString.substr(smallestValueAdjustedPosition + smallestValueLength);
+                           + firstString
+                           + returnString.substr(smallestValueAdjustedPosition + smallestValueLength);
             index++;
         }
         return TStringFormat(returnString.c_str(), args...);
     }
 
     template<typename ... Args>
-    QString QStringFormat(const char *format, Args ... args)
-    {
+    QString QStringFormat(const char *format, Args ... args) {
         auto size = snprintf(nullptr, 0, format, args ...) + 1;
         std::unique_ptr<char[]> stringBuffer{new char[size]};
         snprintf(stringBuffer.get(), size, format, args ...);
         return QString::fromStdString(std::string{stringBuffer.get(), stringBuffer.get() + size - 1});
     }
-
 
     bool toBool(const QString &str, bool *ok = nullptr);
     bool toBool(const std::string &str, bool *ok = nullptr);
@@ -269,9 +271,9 @@ namespace QmsUtilities
     QByteArray getFileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
     QByteArray getFileChecksum(QIODevice *inputDevice, QCryptographicHash::Algorithm hashAlgorithm);
 
-   QString getFileDirectoryPath(const QFile &file);
-   QString getFileName(const QFile &file);
-   bool looksLikeWindowsFilePath(const QString &path);
+    QString getFileDirectoryPath(const QFile &file);
+    QString getFileName(const QFile &file);
+    bool looksLikeWindowsFilePath(const QString &path);
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip);
     std::string stripFromString(const std::string &stringToStrip, char whatToStrip);
     std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip);

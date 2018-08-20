@@ -12,18 +12,17 @@ const char *QmsSettingsLoader::NUMBER_OF_COLUMNS_KEY{"columns"};
 const char *QmsSettingsLoader::NUMBER_OF_ROWS_KEY{"rows"};
 const char *QmsSettingsLoader::AUDIO_VOLUME_KEY{"volume"};
 
-const QmsSettingsLoader::SupportedLanguage QmsSettingsLoader::DEFAULT_LANGUAGE{QmsSettingsLoader::SupportedLanguage::English};
+const QmsSettingsLoader::SupportedLanguage QmsSettingsLoader::DEFAULT_LANGUAGE{
+        QmsSettingsLoader::SupportedLanguage::English};
 
 QmsSettingsLoader *settingsLoader{nullptr};
 
 QmsSettingsLoader::QmsSettingsLoader(QObject *parent) :
-    QObject{parent}
-{
+        QObject{parent} {
 
 }
 
-const char *QmsSettingsLoader::languageToString(QmsSettingsLoader::SupportedLanguage language)
-{
+const char *QmsSettingsLoader::languageToString(QmsSettingsLoader::SupportedLanguage language) {
     if (language == QmsSettingsLoader::SupportedLanguage::English) {
         return QmsStrings::ENGLISH_STRING;
     } else if (language == QmsSettingsLoader::SupportedLanguage::Japanese) {

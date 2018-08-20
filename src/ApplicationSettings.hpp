@@ -5,8 +5,7 @@
 #include <QtCore/QStringList>
 #include "GlobalDefinitions.hpp"
 
-class ApplicationSettings
-{
+class ApplicationSettings {
 public:
     enum class SupportedLanguage {
         Unknown,
@@ -26,15 +25,21 @@ public:
     static ApplicationSettings loadNewFromDisk();
 
     inline std::string linControllerSerialPort() const { return this->m_linControllerSerialPort; }
-    inline void setLinControllerSerialPort(const std::string &serialPort) { this->m_linControllerSerialPort = serialPort; }
+
+    inline void
+    setLinControllerSerialPort(const std::string &serialPort) { this->m_linControllerSerialPort = serialPort; }
 
     inline SupportedLanguage applicationLanguage() const { return this->m_applicationLanguage; }
-    inline void setApplicationLanguage(SupportedLanguage applicationLanguage) { this->m_applicationLanguage = applicationLanguage; }
+
+    inline void
+    setApplicationLanguage(SupportedLanguage applicationLanguage) { this->m_applicationLanguage = applicationLanguage; }
 
     inline bool verboseLogging() const { return this->m_verboseLogging; }
+
     inline void setVerboseLogging(bool verboseLogging) { this->m_verboseLogging = verboseLogging; }
 
     inline std::string linCommunicationMethod() const { return this->m_linCommunicationMethod; }
+
     inline void setLinCommunicationMethod(const std::string &method) { this->m_linCommunicationMethod = method; }
 
     static SupportedLanguage parseApplicationLanguage(const std::string &applicationLanguage);
@@ -52,8 +57,7 @@ private:
 
 extern ApplicationSettings globalSettings;
 
-namespace GlobalSettings
-{
+namespace GlobalSettings {
     extern const char *PROGRAM_NAME;
     extern const char *COMPANY_NAME;
 
@@ -65,30 +69,29 @@ namespace GlobalSettings
     extern const int SOFTWARE_MINOR_VERSION;
     extern const int SOFTWARE_PATCH_VERSION;
 
-    #if defined(__GNUC__)
+#if defined(__GNUC__)
     extern const char *COMPILER_NAME;
     extern const int COMPILER_MAJOR_VERSION;
     extern const int COMPILER_MINOR_VERSION;
     extern const int COMPILER_PATCH_VERSION;
-    #elif defined(_MSC_VER)
+#elif defined(_MSC_VER)
     extern const char *COMPILER_NAME;
         extern const int COMPILER_MAJOR_VERSION;
         extern const int COMPILER_MINOR_VERSION;
         extern const int COMPILER_PATCH_VERSION;
-        #else
+#else
         extern const char *COMPILER_NAME;
         extern const int COMPILER_MAJOR_VERSION;
         extern const int COMPILER_MINOR_VERSION;
         extern const int COMPILER_PATCH_VERSION;
-        #endif
+#endif
 
     enum SystemErrorCode : uint32_t {
-        NoValidLinControllerSerialPort       = 0b00000001,
-        ErrorInitializingLinController       = 0b00000010,
+        NoValidLinControllerSerialPort = 0b00000001,
+        ErrorInitializingLinController = 0b00000010,
     };
 
     const char *getSystemErrorCodeString(GlobalSettings::SystemErrorCode errorCode);
 }
-
 
 #endif //QMINESWEEPER_APPLICATIONSETTINGS_HPP

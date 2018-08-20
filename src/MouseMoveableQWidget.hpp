@@ -6,9 +6,8 @@
 
 class QMouseEvent;
 
-class MouseMoveableQWidget : public QWidget
-{
-    Q_OBJECT
+class MouseMoveableQWidget : public QWidget {
+Q_OBJECT
 public:
     explicit MouseMoveableQWidget(QWidget *parent = nullptr);
 

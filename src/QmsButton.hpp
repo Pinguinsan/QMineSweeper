@@ -14,12 +14,13 @@
 #include <string>
 
 class QMouseEvent;
+
 class MineCoordinates;
+
 class QmsIcons;
 
-class QmsButton : public QPushButton
-{
-    Q_OBJECT
+class QmsButton : public QPushButton {
+Q_OBJECT
 public:
     explicit QmsButton(QWidget *parent = nullptr) = delete;
     explicit QmsButton(int columnIndex, int rowIndex, QWidget *parent = nullptr);

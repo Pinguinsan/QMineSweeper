@@ -6,9 +6,8 @@
 
 class QMouseEvent;
 
-class MouseMoveableQMainWindow : public QMainWindow
-{
-    Q_OBJECT
+class MouseMoveableQMainWindow : public QMainWindow {
+Q_OBJECT
 public:
     explicit MouseMoveableQMainWindow(QWidget *parent = nullptr);
 

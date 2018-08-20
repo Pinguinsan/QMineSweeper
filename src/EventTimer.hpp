@@ -18,47 +18,43 @@ struct TimePoint {
     unsigned long milliseconds;
 };
 
-template <typename ClockType = std::chrono::steady_clock>
-class EventTimer
-{
+template<typename ClockType = std::chrono::steady_clock>
+class EventTimer {
     friend class QmsGameState;
+
     using platform_clock_t = ClockType;
 
 public:
     EventTimer<ClockType>() :
-        m_startTime{platform_clock_t::now()},
-        m_rawTime{},
-        m_totalTime{0},
-        m_hours{0},
-        m_minutes{0},
-        m_seconds{0},
-        m_milliseconds{0},
-        m_isPaused{false}
-    {
+            m_startTime{platform_clock_t::now()},
+            m_rawTime{},
+            m_totalTime{0},
+            m_hours{0},
+            m_minutes{0},
+            m_seconds{0},
+            m_milliseconds{0},
+            m_isPaused{false} {
 
     }
 
     EventTimer<ClockType>(const EventTimer<ClockType> &other) :
-        m_startTime{other.m_startTime},
-        m_rawTime{other.m_rawTime},
-        m_totalTime{other.m_totalTime},
-        m_hours{other.m_hours},
-        m_minutes{other.m_minutes},
-        m_seconds{other.m_seconds},
-        m_milliseconds{other.m_milliseconds},
-        m_isPaused{other.m_isPaused}
-    {
+            m_startTime{other.m_startTime},
+            m_rawTime{other.m_rawTime},
+            m_totalTime{other.m_totalTime},
+            m_hours{other.m_hours},
+            m_minutes{other.m_minutes},
+            m_seconds{other.m_seconds},
+            m_milliseconds{other.m_milliseconds},
+            m_isPaused{other.m_isPaused} {
 
     }
 
-    template <typename T>
-    static inline std::string toStdString(const T &item)
-    {
+    template<typename T>
+    static inline std::string toStdString(const T &item) {
         return dynamic_cast<std::stringstream &>(std::stringstream{} << item).str();
     }
 
-    void start()
-    {
+    void start() {
         this->m_totalTime = 0;
         this->m_hours = 0;
         this->m_minutes = 0;
@@ -68,90 +64,81 @@ public:
         this->m_isPaused = false;
     }
 
-    void restart()
-    {
+    void restart() {
         return this->start();
     }
 
-    void pause()
-    {
+    void pause() {
         this->stop();
     }
 
-    void stop()
-    {
+    void stop() {
         this->m_isPaused = true;
     }
 
-    void resume()
-    {
+    void resume() {
         this->m_isPaused = false;
     }
 
-    void update() const
-    {
-        if (this->m_isPaused)  {
+    void update() const {
+        if (this->m_isPaused) {
             this->m_startTime = platform_clock_t::now() - this->m_rawTime;
         } else {
             auto endTime = platform_clock_t::now();
-            this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime).count();
+            this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    endTime - this->m_startTime).count();
             this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime);
-            this->m_hours = (this->m_totalTime/MILLISECONDS_PER_HOUR);
+            this->m_hours = (this->m_totalTime / MILLISECONDS_PER_HOUR);
             this->m_minutes = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
-            this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
-            this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) - (this->m_minutes * MILLISECONDS_PER_MINUTE) - (this->m_seconds * MILLISECONDS_PER_SECOND));
+            this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) -
+                               (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
+            this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) -
+                                    (this->m_minutes * MILLISECONDS_PER_MINUTE) -
+                                    (this->m_seconds * MILLISECONDS_PER_SECOND));
         }
     }
 
-    long long int totalMicroseconds()
-    {
+    long long int totalMicroseconds() {
         this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) * MICROSECONDS_PER_MILLISECOND);
     }
 
-    TimePoint timePoint()
-    {
+    TimePoint timePoint() {
         this->update();
-        return TimePoint {
+        return TimePoint{
                 static_cast<unsigned long>(this->m_hours),
-            static_cast<unsigned long>(this->m_minutes),
-            static_cast<unsigned long>(this->m_seconds),
-            static_cast<unsigned long>(this->m_milliseconds)
+                static_cast<unsigned long>(this->m_minutes),
+                static_cast<unsigned long>(this->m_seconds),
+                static_cast<unsigned long>(this->m_milliseconds)
         };
     }
 
-    long long int totalMilliseconds()
-    {
+    long long int totalMilliseconds() {
         this->update();
         return this->m_totalTime;
     }
 
-    long long int totalSeconds()
-    {
+    long long int totalSeconds() {
         this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) / MILLISECONDS_PER_SECOND);
     }
 
-    long long int totalMinutes()
-    {
+    long long int totalMinutes() {
         this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) / MILLISECONDS_PER_MINUTE);
     }
 
-    long long int totalHours()
-    {
+    long long int totalHours() {
         this->update();
         return static_cast<long long int>(static_cast<double>(this->m_totalTime) / MILLISECONDS_PER_HOUR);
     }
 
-    long long int totalTime()
-    {
+    long long int totalTime() {
         this->update();
         return this->m_totalTime;
     }
 
-    std::string toString(uint8_t millisecondDigits = 3) const
-    {
+    std::string toString(uint8_t millisecondDigits = 3) const {
         if (!this->m_isPaused) {
             this->update();
         }
@@ -177,33 +164,27 @@ public:
         return returnString;
     }
 
-    long long int hours()
-    {
+    long long int hours() {
         return this->m_hours;
     }
 
-    long long int minutes()
-    {
+    long long int minutes() {
         return this->m_minutes;
     }
 
-    long long int seconds()
-    {
+    long long int seconds() {
         return this->m_seconds;
     }
 
-    long long int milliseconds()
-    {
+    long long int milliseconds() {
         return this->m_milliseconds;
     }
 
-    inline bool isPaused() const
-    {
+    inline bool isPaused() const {
         return this->m_isPaused;
     }
 
-    inline bool isRunning() const
-    {
+    inline bool isRunning() const {
         return (!this->isPaused());
     }
 
@@ -224,7 +205,7 @@ private:
     static const long long int constexpr NANOSECONDS_PER_SECOND{1000000000};
     static const long long int constexpr NANOSECONDS_PER_MINUTE{60000000000};
     static const long long int constexpr NANOSECONDS_PER_HOUR{3600000000000};
-    static const long long int constexpr NANOSECONDS_PER_DAY {86400000000000};
+    static const long long int constexpr NANOSECONDS_PER_DAY{86400000000000};
 
     static const long long int constexpr MICROSECONDS_PER_SECOND{1000000};
     static const long long int constexpr MICROSECONDS_PER_MINUTE{60000000};

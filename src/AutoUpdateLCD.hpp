@@ -4,15 +4,16 @@
 #include "ChangeAwareValue.hpp"
 #include <QLCDNumber>
 
-
-class AutoUpdateLCD : public ChangeAwareIntEventListener, public QLCDNumber
-{
+class AutoUpdateLCD : public ChangeAwareIntEventListener, public QLCDNumber {
 public:
     explicit AutoUpdateLCD(QWidget *parent = nullptr) :
-        QLCDNumber{parent},
-        m_dataSource{nullptr} {}
+            QLCDNumber{parent},
+            m_dataSource{nullptr} {}
+
     void setDataSource(ChangeAwareInt *dataSource);
+
     inline ChangeAwareInt &dataSource() const { return *this->m_dataSource; }
+
 protected:
     void valueChanged(int value) override;
 private:
@@ -20,6 +21,5 @@ private:
 
     void displayValue(int value);
 };
-
 
 #endif //QMINESWEEPER_AUTOUPDATELCD_HPP
