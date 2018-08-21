@@ -22,6 +22,9 @@ namespace QmsStrings {
     const char *const RESIZE_BOARD_WINDOW_CONFIRMATION{
             "Are you sure you'd like to end the current %1x%2 game and start a new %3x%4 game?"};
 
+    const char *const FAILED_TO_LOAD_GAME_STATE_TITLE{"Failed to load saved game"};
+    const char *const FAILED_TO_LOAD_GAME_STATE{"Load game failed with the following error: \"%1\""};
+
     const char *const WIN_DIALOG{"You win! It took %1 moves and your total play time was %2"};
     const char *const UNCOVERED_NON_MINE_STYLESHEET{"color: rgb(200, 170, 255); background-color: rgb(200, 170, 255);"};
     const char *const UNCOVERED_MINE_STYLESHEET{"color: rgb(255, 0, 0); background-color: rgb(255, 0, 0);"};

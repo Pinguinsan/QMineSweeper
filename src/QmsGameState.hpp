@@ -58,7 +58,7 @@ public:
     QmsGameState &operator=(QmsGameState &&rhs);
     ~QmsGameState() = default;
 
-    LoadGameStateResult loadGameInPlace(const QString &filePath);
+    std::pair<LoadGameStateResult, std::string> loadGameInPlace(const QString &filePath);
     SaveGameStateResult saveToFile(const QString &filePath);
 
     QString filePath() const;
@@ -86,7 +86,7 @@ private:
     static const std::pair<double, double> s_CELL_TO_MINE_RATIOS;
     static const int s_CELL_TO_MINE_THRESHOLD;
 
-    static LoadGameStateResult loadFromFile(const QString &filePath, QmsGameState &targetState);
+    static std::pair<LoadGameStateResult, std::string> loadFromFile(const QString &filePath, QmsGameState &targetState);
     static std::pair<MineCoordinates, std::shared_ptr<QmsButton>> readQmsButtonFromXmlFile(QXmlStreamReader &reader);
     static std::list<std::pair<MineCoordinates, std::shared_ptr<QmsButton>>>
     readQmsButtonListFromXmlFile(QXmlStreamReader &reader);

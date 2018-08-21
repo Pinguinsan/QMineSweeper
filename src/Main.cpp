@@ -76,6 +76,7 @@ std::pair<int, int> tryParseDimensions(std::string str);
 float tryParseMineRatio(std::string str);
 
 static bool verboseLogging{false};
+static std::string initialGameStateFile{""};
 
 using namespace QmsStrings;
 using namespace QmsGlobalSettings;
@@ -154,6 +155,12 @@ int main(int argc, char *argv[]) {
         mineRatioSetByCommandLine = true;
     }
 
+    for (int i = 1; i < argc; i++) {
+        if (QmsUtilities::endsWith(argv[i], QmsStrings::SAVED_GAME_FILE_EXTENSION)) {
+            initialGameStateFile = argv[i];
+        }
+    }
+
 
     displayVersion();
     QmsApplicationSettings settings{QmsSettingsLoader::loadApplicationSettings()};
@@ -195,6 +202,17 @@ int main(int argc, char *argv[]) {
     mainWindow->show();
     mainWindow->centerAndFitWindow(true);
     mainWindow->resizeResetIcon();
+    if (!initialGameStateFile.empty()) {
+        auto result = gameController->loadGame(initialGameStateFile.c_str());
+        if (result.first != LoadGameStateResult::Success) {
+            QString errorString{};
+            QMessageBox warningBox{};
+            warningBox.setWindowTitle(QmsStrings::FAILED_TO_LOAD_GAME_STATE_TITLE);
+            warningBox.setWindowIcon(applicationIcons->FACE_ICON_FROWNY);
+            warningBox.setText(QMessageBox::tr(QString{QmsStrings::FAILED_TO_LOAD_GAME_STATE}.arg(result.second.c_str()).toStdString().c_str()));
+            warningBox.exec();
+        }
+    }
     return qApplication.exec();
 }
 

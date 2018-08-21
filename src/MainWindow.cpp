@@ -255,9 +255,10 @@ void MainWindow::onOpenActionTriggered() {
     gameController->loadGame(maybeNewGamePath);
 }
 
-void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGameState &gameState) {
+void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::string> &loadResult,
+                                     const QmsGameState &gameState) {
     QString errorString{""};
-    if (loadResult == LoadGameStateResult::Success) {
+    if (loadResult.first == LoadGameStateResult::Success) {
         this->resetGame();
         this->boardResize(gameController->numberOfColumns(), gameController->numberOfRows());
         this->setupNewGame();
@@ -275,16 +276,8 @@ void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGa
         }
         emit(gameResumed());
         return;
-    } else if (loadResult == LoadGameStateResult::FileDoesNotExist) {
-        errorString = "File does not exist";
-    } else if (loadResult == LoadGameStateResult::HashFileDoesNotExist) {
-        errorString = "Associated hash file does not exist (was it deleted?)";
-    } else if (loadResult == LoadGameStateResult::HashVerificationFailed) {
-        errorString = "Hash verification failed (was the save file altered?)";
-    } else if (loadResult == LoadGameStateResult::UnableToOpenFile) {
-        errorString = "Could not open file";
     } else {
-        errorString = "Unknown error";
+        errorString = loadResult.second.c_str();
     }
 
     std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
@@ -292,7 +285,6 @@ void MainWindow::onLoadGameCompleted(LoadGameStateResult loadResult, const QmsGa
     QString errorText{QString{QmsStrings::ERROR_LOADING_FILE_MESSAGE}.arg(gameState.filePath(), errorString)};
     LOG_WARNING() << errorText;
     errorBox->setText(errorText);
-
     errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
     errorBox->exec();
 }

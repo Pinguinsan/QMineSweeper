@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "QMineSweeper"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion GetFileVersion("QMineSweeper.exe")
 #define MyAppPublisher "Tyler Lewis"
 #define MyAppURL "https://github.com/tlewiscpp/QMineSweeper"
 #define MyAppExeName "QMineSweeper.exe"
@@ -13,8 +13,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{EDA9C662-E16F-451C-A03F-7A94D6C4B18A}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -25,6 +25,7 @@ LicenseFile=C:\Users\tlewis\GitHub\QMineSweeper\resources\licenses\LICENSE
 OutputDir=C:\Users\tlewis\Downloads
 OutputBaseFilename=QMineSweeper_Win_x86
 SetupIconFile=C:\Users\tlewis\GitHub\QMineSweeper\resources\QMineSweeper.ico
+UninstallDisplayIcon=C:\Users\tlewis\GitHub\QMineSweeper\resources\QMineSweeper.ico
 Compression=lzma
 SolidCompression=yes
 

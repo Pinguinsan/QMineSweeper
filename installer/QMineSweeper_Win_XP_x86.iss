@@ -2,10 +2,13 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "QMineSweeper"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion GetFileVersion("QMineSweeper.exe")
 #define MyAppPublisher "Tyler Lewis"
 #define MyAppURL "https://github.com/tlewiscpp/QMineSweeper"
 #define MyAppExeName "QMineSweeper.exe"
+
+[Setup]
+
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -13,8 +16,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{71E22FB3-192C-4604-AD9F-7D4DF1F97F8B}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -25,6 +28,7 @@ LicenseFile=C:\Users\tlewis\GitHub\QMineSweeper\resources\licenses\LICENSE
 OutputDir=C:\Users\tlewis\Downloads
 OutputBaseFilename=QMineSweeper_WinXP_x86
 SetupIconFile=C:\Users\tlewis\GitHub\QMineSweeper\resources\QMineSweeper.ico
+UninstallDisplayIcon=C:\Users\tlewis\GitHub\QMineSweeper\resources\QMineSweeper.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -45,7 +49,7 @@ Name: "{app}\resources"
 Name: "{app}\translations"
 
 [Files]
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\QMineSweeper.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\QMineSweeper.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -59,13 +63,17 @@ Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\Qt5Mu
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\audio\qtaudio_windows.dll"; DestDir: "{app}\audio"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\bearer\qgenericbearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\iconengines\qsvgicon.dll"; DestDir: "{app}\iconengines"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\bearer\qnativewifibearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\iconengines\qsvgicon.dll"; DestDir: "{app}\iconengines"; Flags: ignoreversionSource: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qdds.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qgif.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qicns.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qico.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qjp2.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qjpeg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qmng.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qsvg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qtga.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
 Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-windowsxp-release\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion

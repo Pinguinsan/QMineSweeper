@@ -155,25 +155,26 @@ QmsGameState &QmsGameState::operator=(QmsGameState &&rhs) {
     return *this;
 }
 
-LoadGameStateResult QmsGameState::loadGameInPlace(const QString &filePath) {
+std::pair<LoadGameStateResult, std::string> QmsGameState::loadGameInPlace(const QString &filePath) {
     QmsGameState loadedState;
     const auto result = QmsGameState::loadFromFile(filePath, loadedState);
-    if (result == LoadGameStateResult::Success) {
+    if (result.first == LoadGameStateResult::Success) {
         *this = loadedState;
     }
     return result;
 }
 
-LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameState &targetState) {
+std::pair<LoadGameStateResult, std::string> QmsGameState::loadFromFile(const QString &filePath,
+                                                                       QmsGameState &targetState) {
     Q_UNUSED(targetState);
     using namespace QmsUtilities;
     QFile inputFile{filePath};
     QXmlStreamReader reader{};
     if (!inputFile.exists()) {
-        return LoadGameStateResult::FileDoesNotExist;
+        return std::make_pair(LoadGameStateResult::FileDoesNotExist, QString{"File \"%1\" does not exist"}.arg(filePath).toStdString());
     }
     if (!inputFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
-        return LoadGameStateResult::UnableToOpenFile;
+        return std::make_pair(LoadGameStateResult::UnableToOpenFile, QString{"Could not open file \"%1\""}.arg(filePath).toStdString());
     }
     /*
     auto fileHash = QmsUtilities::getFileChecksum(&inputFile, QCryptographicHash::Sha512);
@@ -231,11 +232,11 @@ LoadGameStateResult QmsGameState::loadFromFile(const QString &filePath, QmsGameS
     if (reader.hasError()) {
         LOG_CRITICAL() << QString{"An XML parsing error occurred: %1"}.arg(reader.errorString());
         inputFile.close();
-        return LoadGameStateResult::XmlParseFailed;
+        return std::make_pair(LoadGameStateResult::XmlParseFailed, QString{"Parsing XML file failed with the following error: \"%1\""}.arg(reader.errorString()).toStdString());
     }
     inputFile.close();
 
-    return LoadGameStateResult::Success;
+    return std::make_pair(LoadGameStateResult::Success, "");
 }
 
 std::list<MineCoordinates> QmsGameState::readMineCoordinateListFromXmlFile(QXmlStreamReader &reader) {
