@@ -11,7 +11,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{EDA9C662-E16F-451C-A03F-7A94D6C4B18A}
+AppId={{05DD558F-0AF2-423C-B2FF-01395BFE7BE5}
 AppName={#MyAppName}
 AppVerName={#MyAppName} {#MyAppVersion}
 VersionInfoVersion={#MyAppVersion}
@@ -47,65 +47,49 @@ Name: "{app}\styles"
 Name: "{app}\translations"
 
 [Files]
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\QMineSweeper.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\audio\qtaudio_windows.dll"; DestDir: "{app}\audio"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\bearer\qgenericbearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\iconengines\qsvgicon.dll"; DestDir: "{app}\iconengines"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qgif.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qicns.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qico.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qjpeg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qsvg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qtga.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qwbmp.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\imageformats\qwebp.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\mediaservice\dsengine.dll"; DestDir: "{app}\mediaservice"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\mediaservice\qtmedia_audioengine.dll"; DestDir: "{app}\mediaservice"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\playlistformats\qtmultimedia_m3u.dll"; DestDir: "{app}\playlistformats"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\styles\qwindowsvistastyle.dll"; DestDir: "{app}\styles"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_ar.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_bg.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_ca.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_cs.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_da.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_de.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_en.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_es.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_fi.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_fr.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_gd.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_he.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_hu.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_it.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_ja.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_ko.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_lv.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_pl.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_ru.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_sk.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
-Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-release\translations\qt_uk.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
+[Files]
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\QMineSweeper.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\vc_redist.x64.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\audio\qtaudio_wasapi.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\audio\qtaudio_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\bearer\qgenericbearer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\iconengines\qsvgicon.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qgif.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qicns.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qico.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qjpeg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qsvg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qtga.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qtiff.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qwbmp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\imageformats\qwebp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\mediaservice\dsengine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\mediaservice\qtmedia_audioengine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\mediaservice\wmfengine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\platforms\qwindows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\playlistformats\qtmultimedia_m3u.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\tlewis\GitHub\QMineSweeper\cmake-build-visual-studio-x64-release\styles\qwindowsvistastyle.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
+
+[Run]
+Filename: "{app}\vc_redist.x64.exe"; Parameters: "/q /passive /Q:a /c:""msiexec /q /i vcredist.msi"""; StatusMsg: "Installing VC++ Redistributables..."
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 
