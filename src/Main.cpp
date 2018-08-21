@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <array>
 #include <algorithm>
 
 #if defined(_WIN32)
@@ -59,7 +60,7 @@ static struct option longOptions[]{
 template <typename T, size_t N> inline size_t constexpr arraySize(T (&t)[N] ) { return (t ? N : N); }
 static const size_t constexpr PROGRAM_OPTION_COUNT{arraySize(longOptions)-1};
 
-static std::array<const ProgramOption *, PROGRAM_OPTION_COUNT> programOptions {
+static const std::array<const ProgramOption *, PROGRAM_OPTION_COUNT> programOptions {
         &verboseOption,
         &helpOption,
         &versionOption,
