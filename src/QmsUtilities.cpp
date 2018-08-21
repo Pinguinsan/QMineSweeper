@@ -431,25 +431,21 @@ namespace QmsUtilities {
 
     std::string getSignalName(int signalNumber) {
 #if defined(_WIN32)
+#    if defined(_MSC_VER)
+        return std::to_string(signalNumber);
+#    else
         switch (signalNumber) {
             case SIGABRT_COMPAT :
-            case SIGABRT        :
-                return "Abnormal termination";
-            case SIGFPE         :
-                return "Floating-point error";
-            case SIGILL         :
-                return "Illegal instruction";
-            case SIGINT         :
-                return "CTRL+C signal";
-            case SIGSEGV        :
-                return "Illegal storage access";
-            case SIGTERM        :
-                return "Termination request";
-            case SIGBREAK       :
-                return "Break signal";
-            default             :
-                return "Unknown signal";
+            case SIGABRT        : return "Abnormal termination";
+            case SIGFPE         : return "Floating-point error";
+            case SIGILL         : return "Illegal instruction";
+            case SIGINT         : return "CTRL+C signal";
+            case SIGSEGV        : return "Illegal storage access";
+            case SIGTERM        : return "Termination request";
+            case SIGBREAK       : return "Break signal";
+            default             : return "Unknown signal";
         };
+#    endif //define(_MSC_VER)
 #else
         return strsignal(signalNumber);
 #endif //defined(_WIN32)
@@ -476,7 +472,7 @@ namespace QmsUtilities {
                 return std::make_pair(-1, -1);
             }
             return std::make_pair(maybeColumns, maybeRows);
-        } catch (std::exception &e) {
+        } catch (const std::exception &e) {
             (void) e;
             return std::make_pair(-1, -1);
         }
@@ -486,7 +482,8 @@ namespace QmsUtilities {
         float mineRatio{};
         try {
             mineRatio = std::stof(str);
-        } catch (std::exception &e) {
+        } catch (const std::exception &e) {
+            (void) e;
             return mineRatio;
         }
         if (!QmsUtilities::isValidMineRatio(mineRatio)) {
