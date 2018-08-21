@@ -70,7 +70,7 @@ set(QT_PACKAGES Qt5Widgets Qt5Gui Qt5Core Qt5Multimedia)
 set(QT_LINK_LIBRARIES)
 set(QT_LIBRARY_LIST)
 
-if (WIN32)
+if (WIN32 OR WIN64)
         if (WIN_COMPILER STREQUAL "MSVC")
             set(Qt5_DIR "${QT_ROOT}/${QT_MSVC_VERSION}/lib/cmake/Qt5")
             set(QT_QMAKE_EXECUTABLE "${QT_ROOT}/${QT_MSVC_VERSION}/bin/qmake.exe")
