@@ -300,6 +300,6 @@ void QmsButton::setRowIndex(int rowIndex) {
 }
 
 void QmsButton::reveal() {
-    this->leftClickReleased(this);
+    emit(this->leftClickReleased(this));
 }
 

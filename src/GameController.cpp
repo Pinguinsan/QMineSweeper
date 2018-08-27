@@ -442,7 +442,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp) {
         LOG_INFO() << QString{"Mine explosion event triggered (game over, caused by %1)"}.arg(msbp->toQString());
         emit(mineExplosionEvent());
     } else if (msbp->isChecked() || msbp->isRevealed()) {
-
+        LOG_INFO() << QString{"Force reveal of button %1"}.arg(msbp->toQString());
     } else {
         this->incrementNumberOfMovesMade();
         this->m_mainWindow->displayMine(msbp);

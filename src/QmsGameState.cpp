@@ -236,6 +236,7 @@ std::pair<LoadGameStateResult, std::string> QmsGameState::loadFromFile(const QSt
     }
     inputFile.close();
 
+    targetState.m_initialClickFlag = false;
     return std::make_pair(LoadGameStateResult::Success, "");
 }
 
