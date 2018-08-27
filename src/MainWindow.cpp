@@ -181,7 +181,7 @@ void MainWindow::onSaveActionTriggered() {
     } else {
         emit(gamePaused());
         this->doSaveGame(this->m_saveFilePath);
-        emit(gameResumed());
+        //emit(gameResumed());
     }
 }
 
@@ -212,17 +212,23 @@ void MainWindow::onSaveAsActionTriggered() {
 void MainWindow::doSaveGame(const QString &filePath) {
     auto saveGameResult = gameController->saveGame(filePath);
     if (saveGameResult.first == SaveGameStateResult::Success) {
-        LOG_INFO() << QString{"Successfully saved game to %1"}.arg(filePath);
-        return;
-    }
-    std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
-    errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_SAVING_FILE_TITLE));
-    QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, saveGameResult.second.c_str())};
-    LOG_WARNING() << errorText;
-    errorBox->setText(errorText);
+        std::unique_ptr<QMessageBox> successBox{new QMessageBox{}};
+        successBox->setWindowTitle(MainWindow::tr(QmsStrings::SUCCESSFULLY_SAVED_GAME_FILE_TITLE));
+        QString successText{QString{QmsStrings::SUCCESSFULLY_SAVED_GAME_FILE_MESSAGE}.arg(filePath)};
+        LOG_INFO() << successText;
+        successBox->setText(successText);
+        successBox->setWindowIcon(applicationIcons->MINE_ICON_48);
+        successBox->exec();
+    } else {
+        std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
+        errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_SAVING_FILE_TITLE));
+        QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, saveGameResult.second.c_str())};
+        LOG_WARNING() << errorText;
+        errorBox->setText(errorText);
 
-    errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
-    errorBox->exec();
+        errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
+        errorBox->exec();
+    }
 }
 
 void MainWindow::onOpenActionTriggered() {
@@ -248,11 +254,10 @@ void MainWindow::onOpenActionTriggered() {
 
 void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::string> &loadResult,
                                      const QmsGameState &gameState) {
-    QString errorString{""};
     if (loadResult.first == LoadGameStateResult::Success) {
-        this->resetGame();
-        this->boardResize(gameController->numberOfColumns(), gameController->numberOfRows());
+        emit(resetGame());
         this->setupNewGame();
+        this->boardResize(gameController->numberOfColumns(), gameController->numberOfRows());
         gameController->applyGameState(gameState);
         for (auto &it : gameController->mineSweeperButtons()) {
             auto button = it.second;
@@ -267,13 +272,11 @@ void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::s
         }
         emit(gameResumed());
         return;
-    } else {
-        errorString = loadResult.second.c_str();
     }
 
     std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
     errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_LOADING_FILE_TITLE));
-    QString errorText{QString{QmsStrings::ERROR_LOADING_FILE_MESSAGE}.arg(gameState.filePath(), errorString)};
+    QString errorText{QString{QmsStrings::ERROR_LOADING_FILE_MESSAGE}.arg(gameState.filePath(), loadResult.second.c_str())};
     LOG_WARNING() << errorText;
     errorBox->setText(errorText);
     errorBox->setWindowIcon(applicationIcons->MINE_ICON_48);
@@ -439,9 +442,7 @@ void MainWindow::onGameWon() {
     }
     std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
-    QString winText{QString{QmsStrings::WIN_DIALOG}.arg(QS_NUMBER(gameController->numberOfMovesMade()),
-                                                        gameController->playTimer().toString(
-                                                                static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())).c_str())};
+    QString winText{QString{QmsStrings::WIN_DIALOG}.arg(QS_NUMBER(gameController->numberOfMovesMade()), gameController->playTimer().toString(static_cast<uint8_t>(GameController::MILLISECOND_DELAY_DIGITS())).c_str())};
     LOG_INFO() << winText;
     winBox->setText(winText);
     winBox->setWindowIcon(applicationIcons->MINE_ICON_48);

@@ -332,7 +332,7 @@ SteadyEventTimer QmsGameState::readEventTimerFromXmlFile(QXmlStreamReader &reade
     return eventTimer;
 }
 
-std:pair<SaveGameStateResult, std::string> QmsGameState::saveToFile(const QString &filePath) {
+std::pair<SaveGameStateResult, std::string> QmsGameState::saveToFile(const QString &filePath) {
     this->m_filePath = filePath;
     QFile outputFile{filePath};
     if (outputFile.exists()) {

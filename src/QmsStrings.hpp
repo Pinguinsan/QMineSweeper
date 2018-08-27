@@ -18,6 +18,9 @@ namespace QmsStrings {
     const char *const ERROR_SAVING_FILE_TITLE{"Error Saving File"};
     const char *const ERROR_SAVING_FILE_MESSAGE{"An error occurred while saving file %1 (%2)"};
 
+    const char *const SUCCESSFULLY_SAVED_GAME_FILE_TITLE{"Saved File Successfully"};
+    const char *const SUCCESSFULLY_SAVED_GAME_FILE_MESSAGE{"Successfully saved game file to %1"};
+
     const char *const RESIZE_BOARD_WINDOW_CURRENT_BOARD_SIZE_STRING{"Current (columns x rows): "};
     const char *const RESIZE_BOARD_WINDOW_CONFIRMATION{
             "Are you sure you'd like to end the current %1x%2 game and start a new %3x%4 game?"};

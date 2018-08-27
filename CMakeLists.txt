@@ -70,6 +70,8 @@ set(QT_PACKAGES Qt5Widgets Qt5Gui Qt5Core Qt5Multimedia)
 set(QT_LINK_LIBRARIES)
 set(QT_LIBRARY_LIST)
 
+add_definitions("-DUSE_QT_LOG")
+
 if (WIN32 OR WIN64)
         if (WIN_COMPILER STREQUAL "MSVC")
             set(Qt5_DIR "${QT_ROOT}/${QT_MSVC_VERSION}/lib/cmake/Qt5")
@@ -139,7 +141,9 @@ set (${PROJECT_NAME}_SOURCE_FILES
         "${SOURCE_ROOT}/MouseMoveableQWidget.cpp"
 		"${SOURCE_ROOT}/AboutApplicationWidget.cpp"
         "${SOURCE_ROOT}/QmsGameState.cpp"
-        "${SOURCE_ROOT}/AutoUpdateLCD.cpp")
+        "${SOURCE_ROOT}/AutoUpdateLCD.cpp"
+     "${SOURCE_ROOT}/StaticLogger.cpp"
+     "${SOURCE_ROOT}/PrettyPrinter.cpp")
 
 set(${PROJECT_NAME}_HEADER_FILES
         "${SOURCE_ROOT}/QmsGameState.hpp"
@@ -164,7 +168,9 @@ set(${PROJECT_NAME}_HEADER_FILES
         "${SOURCE_ROOT}/MineCoordinateHash.hpp"
         "${SOURCE_ROOT}/ChangeAwareValue.hpp"
         "${SOURCE_ROOT}/AutoUpdateLCD.hpp"
-        "${SOURCE_ROOT}/AbstractEventNotifier.hpp")
+        "${SOURCE_ROOT}/AbstractEventNotifier.hpp"
+        "${SOURCE_ROOT}/StaticLogger.hpp"
+        "${SOURCE_ROOT}/PrettyPrinter.hpp")
 
 
 set (${PROJECT_NAME}_FORMS

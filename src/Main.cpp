@@ -24,8 +24,9 @@
 #include "GameController.hpp"
 #include "GlobalDefinitions.hpp"
 #include "QmsApplicationSettings.hpp"
-
+#include "StaticLogger.hpp"
 #include "ProgramOption.hpp"
+
 #include <getopt.h>
 
 /*
@@ -84,13 +85,18 @@ using namespace QmsGlobalSettings;
 
 int main(int argc, char *argv[]) {
     installSignalHandlers(interruptHandler);
+#if defined(USE_QT_LOG)
     qInstallMessageHandler(globalLogHandler);
+#else
+    StaticLogger::initializeInstance(globalLogHandler);
+#endif //USE_QT_LOG
     QCoreApplication::setOrganizationName(AUTHOR_NAME);
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(LONG_PROGRAM_NAME);
 
     QmsUtilities::checkOrCreateProgramLogDirectory();
     QmsUtilities::checkOrCreateProgramSettingsDirectory();
+
 
 
     int columnCount{-1};
@@ -308,6 +314,8 @@ void displayHelp()
     }
 }
 
+#if defined(USE_QT_LOG)
+
 template<typename StringType, typename FileStringType>
 void logToFile(const StringType &str, const FileStringType &filePath) {
     using QmsUtilities::toStdString;
@@ -389,4 +397,85 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     logToFile(logMessage.toStdString(), QmsUtilities::getLogFilePath());
     outputStream->flush();
 }
+
+#else
+void prettyLogFunction(LogLevel logLevel, LogContext logContext, const std::string &str) {
+#if defined(_WIN32)
+    std::ostream *outputStream{nullptr};
+    switch (logLevel) {
+        case LogLevel::Debug:
+            outputStream = &std::clog;
+            break;
+        case LogLevel::Info:
+            outputStream = &std::cout;
+            break;
+        case LogLevel::Warn:
+            outputStream = &std::cout;
+            break;
+        case LogLevel::Critical:
+            outputStream = &std::cout;
+            break;
+        case LogLevel::Fatal:
+            outputStream = &std::cerr;
+            break;
+    }
+    *outputStream << str << std::endl;
+#else
+    ForegroundColor foregroundColor{ForegroundColor::FG_DEFAULT};
+    BackgroundColor backgroundColor{BackgroundColor::BG_DEFAULT};
+    FontAttribute fontAttribute{FontAttribute::FA_DEFAULT};
+    std::ostream *outputStream{nullptr};
+    switch (logLevel) {
+        case LogLevel::Debug:
+            outputStream = &std::clog;
+            fontAttribute = FontAttribute::FA_DIM;
+            break;
+        case LogLevel::Info:
+            outputStream = &std::cout;
+            break;
+        case LogLevel::Warn:
+            outputStream = &std::cout;
+            fontAttribute = FontAttribute::FA_BOLD;
+            foregroundColor = ForegroundColor::FG_BLUE;
+            break;
+        case LogLevel::Critical:
+            outputStream = &std::cout;
+            fontAttribute = FontAttribute::FA_BOLD;
+            foregroundColor = ForegroundColor::FG_LIGHT_RED;
+            break;
+        case LogLevel ::Fatal:
+            outputStream = &std::cerr;
+            fontAttribute = FontAttribute::FA_BOLD;
+            foregroundColor = ForegroundColor::FG_RED;
+            break;
+    }
+    PrettyPrinter prettyPrinter{foregroundColor, backgroundColor, outputStream};
+    prettyPrinter.setFontAttributes(fontAttribute);
+    prettyPrinter.println(str);
+}
+#endif //defined(_WIN32)
+
+template<typename StringType, typename FileStringType>
+void logToFile(const StringType &str, const FileStringType &filePath) {
+    using QmsUtilities::toStdString;
+    using QmsUtilities::toQString;
+    std::fstream writeToFile{};
+    writeToFile.open(std::ios::app)
+    if (writeToFile.good()) {
+        writeToFile.write(toStdString(str).c_str(), toStdString(str).length());
+        if (!writeToFile.good()) {
+            throw std::runtime_error(
+                    QString{R"(Failed to log data "%1" to file "%2" (file was opened, but not writable, permission problem?))"}.arg(
+                            toQString(str), toQString(filePath)).toStdString());
+        }
+    } else {
+        throw std::runtime_error(
+                QString{R"(Failed to log data "%1" to file "%2" (could not open file))"}.arg(toQString(str), toQString(
+                        filePath)).toStdString());
+    }
+}
+
+#endif //USE_QT_LOG
+
+
 

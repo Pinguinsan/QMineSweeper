@@ -84,18 +84,21 @@ public:
         if (this->m_isPaused) {
             this->m_startTime = platform_clock_t::now() - this->m_rawTime;
         } else {
-            auto endTime = platform_clock_t::now();
-            this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    endTime - this->m_startTime).count();
-            this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime);
-            this->m_hours = (this->m_totalTime / MILLISECONDS_PER_HOUR);
-            this->m_minutes = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
-            this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) -
-                               (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
-            this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) -
-                                    (this->m_minutes * MILLISECONDS_PER_MINUTE) -
-                                    (this->m_seconds * MILLISECONDS_PER_SECOND));
+            this->calculateMembers();
         }
+    }
+
+    void calculateMembers() const {
+        auto endTime = platform_clock_t::now();
+        this->m_totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime).count();
+        this->m_rawTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - this->m_startTime);
+        this->m_hours = (this->m_totalTime / MILLISECONDS_PER_HOUR);
+        this->m_minutes = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR)) / MILLISECONDS_PER_MINUTE;
+        this->m_seconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) -
+                           (this->m_minutes * MILLISECONDS_PER_MINUTE)) / MILLISECONDS_PER_SECOND;
+        this->m_milliseconds = (this->m_totalTime - (this->m_hours * MILLISECONDS_PER_HOUR) -
+                                (this->m_minutes * MILLISECONDS_PER_MINUTE) -
+                                (this->m_seconds * MILLISECONDS_PER_SECOND));
     }
 
     long long int totalMicroseconds() {
@@ -228,7 +231,7 @@ private:
     void setTotalTime(long long int totalTime) {
         auto currentTime = platform_clock_t::now();
         this->m_startTime = currentTime - std::chrono::milliseconds(totalTime);
-        this->update();
+        this->calculateMembers();
     }
 
 };
