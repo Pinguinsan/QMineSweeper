@@ -443,6 +443,7 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp) {
         emit(mineExplosionEvent());
     } else if (msbp->isChecked() || msbp->isRevealed()) {
         LOG_INFO() << QString{"Force reveal of button %1"}.arg(msbp->toQString());
+        this->m_mainWindow->displayMine(msbp);
     } else {
         this->incrementNumberOfMovesMade();
         this->m_mainWindow->displayMine(msbp);

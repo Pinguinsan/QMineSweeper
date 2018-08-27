@@ -266,6 +266,9 @@ void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::s
             emit(mineSweeperButtonCreated(button));
             it.second->setIconSize(button->size() * MainWindow::MINE_ICON_REDUCTION_SCALE_FACTOR);
             this->m_saveStyleSheet = button->styleSheet();
+        }
+        for (const auto &it : gameController->mineSweeperButtons()) {
+            auto button = it.second;
             if (button->isRevealed()) {
                 button->reveal();
             }
@@ -511,6 +514,18 @@ void MainWindow::displayMine(QmsButton *msb) {
         gameController->checkForOtherEmptyMines(msb);
     }
 }
+
+/*
+void MainWindow::forceDisplayMine(QmsButton *msb) {
+    drawNumberOfSurroundingMines(msb);
+    msb->setFlat(true);
+    msb->setChecked(true);
+    emit(mineDisplayed());
+    if (msb->numberOfSurroundingMines() == 0) {
+        gameController->checkForOtherEmptyMines(msb);
+    }
+}
+*/
 
 /* populateMineField() : The initialization for any new game, adding all QMineSweeperButtons
  * Iterate through the number of columns and rows and call GameController::addMineSweeperButton
