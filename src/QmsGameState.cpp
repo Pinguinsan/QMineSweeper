@@ -10,8 +10,8 @@
 
 using namespace QmsStrings;
 
-const std::pair<double, double> QmsGameState::s_CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
-const int QmsGameState::s_CELL_TO_MINE_THRESHOLD{82};
+const std::pair<double, double> QmsGameState::CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.15625)};
+const int QmsGameState::CELL_TO_MINE_THRESHOLD{82};
 
 QmsGameState::QmsGameState() :
         QmsGameState{0, 0} {
@@ -33,11 +33,11 @@ QmsGameState::QmsGameState(int columnCount, int rowCount) :
         m_customMineRatio{nullptr},
         m_filePath{""} {
     using namespace QmsUtilities;
-    this->m_numberOfMines = ((this->m_numberOfColumns * this->m_numberOfRows) < this->s_CELL_TO_MINE_THRESHOLD) ?
+    this->m_numberOfMines = ((this->m_numberOfColumns * this->m_numberOfRows) < this->CELL_TO_MINE_THRESHOLD) ?
                             roundIntuitively(
-                                    this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.first) :
+                                    this->m_numberOfColumns * this->m_numberOfRows * CELL_TO_MINE_RATIOS.first) :
                             roundIntuitively(
-                                    this->m_numberOfColumns * this->m_numberOfRows * s_CELL_TO_MINE_RATIOS.second);
+                                    this->m_numberOfColumns * this->m_numberOfRows * CELL_TO_MINE_RATIOS.second);
     this->m_userDisplayNumberOfMines = this->m_numberOfMines;
 }
 
@@ -273,8 +273,7 @@ QmsGameState::readQmsButtonListFromXmlFile(QXmlStreamReader &reader) {
     return returnList;
 }
 
-std::pair<MineCoordinates, std::shared_ptr<QmsButton>>
-QmsGameState::readQmsButtonFromXmlFile(QXmlStreamReader &reader) {
+std::pair<MineCoordinates, std::shared_ptr<QmsButton>> QmsGameState::readQmsButtonFromXmlFile(QXmlStreamReader &reader) {
     using namespace QmsUtilities;
     MineCoordinates coordinates{0, 0};
     std::shared_ptr<QmsButton> button{std::make_shared<QmsButton>(0, 0, nullptr)};
@@ -333,20 +332,18 @@ SteadyEventTimer QmsGameState::readEventTimerFromXmlFile(QXmlStreamReader &reade
     return eventTimer;
 }
 
-SaveGameStateResult QmsGameState::saveToFile(const QString &filePath) {
+std:pair<SaveGameStateResult, std::string> QmsGameState::saveToFile(const QString &filePath) {
     this->m_filePath = filePath;
     QFile outputFile{filePath};
     if (outputFile.exists()) {
         if (!outputFile.remove()) {
-            return SaveGameStateResult::UnableToDeleteExistingFile;
+            return std::make_pair(SaveGameStateResult::UnableToDeleteExistingFile, QString{"Exiting file \"%1\" could not be removed (permission problem?)"}.arg(filePath).toStdString());
         }
     }
     if (!outputFile.open(QIODevice::OpenModeFlag::ReadWrite)) {
-        return SaveGameStateResult::UnableToOpenFile;
+        return std::make_pair(SaveGameStateResult::UnableToDeleteExistingFile, QString{"Exiting file \"%1\" could not be opened (permission problem?)"}.arg(filePath).toStdString());
     }
     using namespace QmsUtilities;
-    //auto flaggedMines = std::count_if(this->m_mineSweeperButtons.begin(), this->m_mineSweeperButtons.end(), [](auto container) { return container.second->hasFlag(); });
-    //auto numberOfMinesRemaining = this->m_numberOfMines - flaggedMines;
     QXmlStreamWriter writeToFile{};
     writeToFile.setDevice(&outputFile);
     writeToFile.setAutoFormatting(true);
@@ -405,7 +402,7 @@ SaveGameStateResult QmsGameState::saveToFile(const QString &filePath) {
     hashFile.close();
     */
     outputFile.close();
-    return SaveGameStateResult::Success;
+    return std::make_pair(SaveGameStateResult::Success, "");
 }
 
 void QmsGameState::writeQmsButtonToXmlStream(QXmlStreamWriter &writeToFile, const MineCoordinates &coordinates,

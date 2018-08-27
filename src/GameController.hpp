@@ -82,7 +82,7 @@ public:
 
     static void initializeInstance(int columnCount, int rowCount);
 
-    SaveGameStateResult saveGame(const QString &filePath);
+    std::pair<SaveGameStateResult, std::string> saveGame(const QString &filePath);
     std::pair<LoadGameStateResult, std::string> loadGame(const QString &filePath);
 
     static double DEFAULT_NUMBER_OF_MINES();

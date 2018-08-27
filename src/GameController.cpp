@@ -109,13 +109,13 @@ void GameController::onBoardResizeTriggered(int columns, int rows) {
     if (this->m_qmsGameState->m_customMineRatio == nullptr) {
         this->m_qmsGameState->m_numberOfMines = ((this->m_qmsGameState->m_numberOfColumns *
                                                   this->m_qmsGameState->m_numberOfRows) <
-                                                 QmsGameState::s_CELL_TO_MINE_THRESHOLD) ?
+                                                 QmsGameState::CELL_TO_MINE_THRESHOLD) ?
                                                 roundIntuitively(this->m_qmsGameState->m_numberOfColumns *
                                                                  this->m_qmsGameState->m_numberOfRows *
-                                                                 QmsGameState::s_CELL_TO_MINE_RATIOS.first) :
+                                                                 QmsGameState::CELL_TO_MINE_RATIOS.first) :
                                                 roundIntuitively(this->m_qmsGameState->m_numberOfColumns *
                                                                  this->m_qmsGameState->m_numberOfRows *
-                                                                 QmsGameState::s_CELL_TO_MINE_RATIOS.second);
+                                                                 QmsGameState::CELL_TO_MINE_RATIOS.second);
 
     } else {
         this->m_qmsGameState->m_numberOfMines = roundIntuitively(
@@ -285,7 +285,7 @@ void GameController::generateRandomMinePlacement(QmsButton *msbp) {
     }
 }
 
-SaveGameStateResult GameController::saveGame(const QString &filePath) {
+std::pair<SaveGameStateResult, std::string> GameController::saveGame(const QString &filePath) {
     return this->m_qmsGameState->saveToFile(filePath);
 }
 

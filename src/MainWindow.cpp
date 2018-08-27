@@ -210,23 +210,14 @@ void MainWindow::onSaveAsActionTriggered() {
 }
 
 void MainWindow::doSaveGame(const QString &filePath) {
-    QString errorString{""};
     auto saveGameResult = gameController->saveGame(filePath);
-    if (saveGameResult == SaveGameStateResult::Success) {
+    if (saveGameResult.first == SaveGameStateResult::Success) {
         LOG_INFO() << QString{"Successfully saved game to %1"}.arg(filePath);
         return;
-    } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingFile) {
-        errorString = "Unable to remove existing file (check permissions on target file)";
-    } else if (saveGameResult == SaveGameStateResult::UnableToOpenFile) {
-        errorString = "Unable to open file (check permissions on target file)";
-    } else if (saveGameResult == SaveGameStateResult::UnableToDeleteExistingHashFile) {
-        errorString = "Unable to remove existing hash file (check permissions on hash file)";
-    } else if (saveGameResult == SaveGameStateResult::UnableToOpenFileToWriteHash) {
-        errorString = "Unable to open hash file (check permissions on hash file)";
     }
     std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
     errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_SAVING_FILE_TITLE));
-    QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, errorString)};
+    QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, saveResult.second)};
     LOG_WARNING() << errorText;
     errorBox->setText(errorText);
 

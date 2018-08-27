@@ -14,11 +14,8 @@
 #include "ChangeAwareValue.hpp"
 
 class QString;
-
 class QmsButton;
-
 class MineCoordinates;
-
 class QXmlStreamWriter;
 
 using ButtonContainer = std::unordered_map<MineCoordinates, std::shared_ptr<QmsButton>, MineCoordinateHash>;
@@ -59,7 +56,7 @@ public:
     ~QmsGameState() = default;
 
     std::pair<LoadGameStateResult, std::string> loadGameInPlace(const QString &filePath);
-    SaveGameStateResult saveToFile(const QString &filePath);
+    std::pair<SaveGameStateResult, std::string> saveToFile(const QString &filePath);
 
     QString filePath() const;
 
@@ -83,8 +80,8 @@ private:
     void writeQmsButtonToXmlStream(QXmlStreamWriter &writeToFile, const MineCoordinates &coordinates,
                                    std::shared_ptr<QmsButton> targetButton);
 
-    static const std::pair<double, double> s_CELL_TO_MINE_RATIOS;
-    static const int s_CELL_TO_MINE_THRESHOLD;
+    static const std::pair<double, double> CELL_TO_MINE_RATIOS;
+    static const int CELL_TO_MINE_THRESHOLD;
 
     static std::pair<LoadGameStateResult, std::string> loadFromFile(const QString &filePath, QmsGameState &targetState);
     static std::pair<MineCoordinates, std::shared_ptr<QmsButton>> readQmsButtonFromXmlFile(QXmlStreamReader &reader);
