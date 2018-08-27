@@ -217,7 +217,7 @@ void MainWindow::doSaveGame(const QString &filePath) {
     }
     std::unique_ptr<QMessageBox> errorBox{new QMessageBox{}};
     errorBox->setWindowTitle(MainWindow::tr(QmsStrings::ERROR_SAVING_FILE_TITLE));
-    QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, saveResult.second)};
+    QString errorText{QString{QmsStrings::ERROR_SAVING_FILE_MESSAGE}.arg(filePath, saveGameResult.second.c_str())};
     LOG_WARNING() << errorText;
     errorBox->setText(errorText);
 
