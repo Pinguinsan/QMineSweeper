@@ -2,7 +2,9 @@
 Name=QMineSweeper
 Version=1.0
 GenericName=QMineSweeper
-Comment=Play minesweeper
+Comment=Remake of famous WIN32 MineSweeper
+Icon=QMineSweeper.png
+Exec=QMineSweeper
 Terminal=false
 Type=Application
 Categories=Game;
