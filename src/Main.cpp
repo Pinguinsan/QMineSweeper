@@ -58,7 +58,7 @@ static struct option longOptions[]{
         {nullptr, 0, nullptr, 0}
 };
 
-template <typename T, size_t N> inline size_t constexpr arraySize(T (&t)[N] ) { return (t ? N : N); }
+template <typename T, size_t N> inline size_t constexpr arraySize(T (&)[N] ) { return N; }
 static const size_t constexpr PROGRAM_OPTION_COUNT{arraySize(longOptions)-1};
 
 static const std::array<const ProgramOption *, PROGRAM_OPTION_COUNT> programOptions {
