@@ -1,9 +1,9 @@
 
 #!/bin/bash
 
-baseName="DOOMLauncher"
-programLongName="DOOMLauncher"
-programName="DOOMLauncher"
+baseName="QMineSweeper"
+programLongName="QMineSweeper"
+programName="QMineSweeper"
 
 
 absolutePath="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"

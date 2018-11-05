@@ -7,6 +7,7 @@ StaticLogger *staticLogger{nullptr};
 
 namespace {
     void defaultLogFunction(LogLevel logLevel, LogContext logContext, const std::string &str) {
+        (void)logContext;
         std::ostream *outputStream{nullptr};
         switch (logLevel) {
             case LogLevel::Debug:
@@ -49,8 +50,8 @@ LogFunction StaticLogger::initializeInstance(const LogFunction &logHandler)
 {
     if (staticLogger == nullptr) {
         staticLogger = new StaticLogger{};
-        return staticLogger->installLogHandler(logHandler);
     }
+    return staticLogger->installLogHandler(logHandler);
 }
 
 LogFunction StaticLogger::installLogHandler(const LogFunction &logHandler) {
