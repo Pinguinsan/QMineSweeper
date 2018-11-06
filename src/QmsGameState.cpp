@@ -10,7 +10,7 @@
 
 using namespace QmsStrings;
 
-const std::pair<double, double> QmsGameState::CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.20)};
+const std::pair<double, double> QmsGameState::CELL_TO_MINE_RATIOS{std::make_pair(0.15625, 0.17625)};
 const int QmsGameState::CELL_TO_MINE_THRESHOLD{82};
 
 QmsGameState::QmsGameState() :
