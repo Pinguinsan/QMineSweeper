@@ -493,7 +493,7 @@ namespace QmsUtilities {
     }
 
     bool isValidMineRatio(float mineRatio) {
-        return ((mineRatio >= 0.1) && (mineRatio < 1.0));
+        return ((mineRatio >= 0.001) && (mineRatio < 1.0));
     }
 
     bool containsSeparator(const char *testString) {
