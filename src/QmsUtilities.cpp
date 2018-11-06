@@ -13,7 +13,7 @@ namespace QmsUtilities {
     static QString installDirectory{""};
     static QString programSettingsDirectory{""};
     static QString logFileName{""};
-    const std::list<char> KNOWN_DIMENSIONS_SEPARATORS{'x', ',', '.'};
+    const std::list<char> KNOWN_DIMENSIONS_SEPARATORS{'x', ','};
 
     bool toBool(const QString &str, bool *ok) {
         if ((str == "false") || (str == "0")) {
