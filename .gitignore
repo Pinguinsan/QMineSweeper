@@ -16,6 +16,7 @@
 cmake-build-debug/
 build-*
 
+build*
 # Qt-es
 
 /.qmake.cache
