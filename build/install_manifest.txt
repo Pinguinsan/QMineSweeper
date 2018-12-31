@@ -1,5 +1,0 @@
-/usr/bin/QMineSweeper
-/etc/QMineSweeper/QMineSweeper.conf
-/usr/share/applications/QMineSweeper.desktop
-/home/pinguinsan/Desktop/QMineSweeper.desktop
-/usr/share/pixmaps/QMineSweeper.png

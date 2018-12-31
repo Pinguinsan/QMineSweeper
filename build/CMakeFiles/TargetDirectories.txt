@@ -1,8 +1,0 @@
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/install/strip.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/edit_cache.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/QMineSweeper.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/rebuild_cache.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/list_install_components.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/install/local.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/install.dir
-/home/pinguinsan/GitHub/QMineSweeper/build/CMakeFiles/QMineSweeper_autogen.dir
