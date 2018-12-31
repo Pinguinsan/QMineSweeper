@@ -15,9 +15,9 @@
 ApplicationSettings globalSettings{};
 
 namespace GlobalSettings {
-    const char *PROGRAM_NAME{"ArduinoLinController"};
+    const char *PROGRAM_NAME{"QMineSweeper"};
     const char *COMPANY_NAME{"Tyler Lewis"};
-    const char *PROGRAM_LONG_NAME{"ArduinoLinController"};
+    const char *PROGRAM_LONG_NAME{"QMineSweeper"};
     const char *PROGRAM_DESCRIPTION{"An application for creating and viewing LIN bus traffic"};
     const char *REMOTE_URL{""};
     const char *AUTHOR_NAME{"Tyler Lewis"};

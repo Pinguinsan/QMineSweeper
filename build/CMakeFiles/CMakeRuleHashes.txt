@@ -1,0 +1,8 @@
+# Hashes of file build rules.
+5643814d0656c2b3a6cc67649c7e2bd0 CMakeFiles/QMineSweeper_autogen
+c3f14baf92b3a3ed67e704586d7c9494 qrc_icons.cpp
+8b895ffe9b7617500e4f7a9e7fda9dec qrc_sounds.cpp
+ecb4765777916dc15dc12eaf0bee8f73 qrc_translations.cpp
+c526f21c41172823b4bcdde25de0ddcf ui_AboutApplicationWidget.h
+2d1dba3547c4e56b4d193205e8da815b ui_BoardResizeWidget.h
+1771614447da54b9ce97d3a824177242 ui_MainWindow.h
