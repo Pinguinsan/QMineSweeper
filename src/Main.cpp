@@ -374,11 +374,11 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     }
     //coreLogMessage.erase(std::remove_if(coreLogMessage.begin(), coreLogMessage.end(),[](char c) { return c == '\"'; }), coreLogMessage.end());
     if ((type == QtCriticalMsg) || (type == QtFatalMsg)) {
-        logMessage = QString{"[%1][%2] %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().time().toString(), logContext,
+        logMessage = QString{"[%1]-[%2] %3 (%4:%5, %6)"}.arg(QDateTime::currentDateTime().time().toString(), logContext,
                                                              coreLogMessage.c_str(), context.file,
                                                              QS_NUMBER(context.line), context.function);
     } else {
-        logMessage = QString{"[%1][%2] %3"}.arg(QDateTime::currentDateTime().time().toString(), logContext,
+        logMessage = QString{"[%1]-[%2] %3"}.arg(QDateTime::currentDateTime().time().toString(), logContext,
                                                  coreLogMessage.c_str());
     }
     bool addLineEnding{true};
