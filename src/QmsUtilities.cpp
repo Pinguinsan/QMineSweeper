@@ -389,10 +389,6 @@ namespace QmsUtilities {
         return endsWith(stringToCheck, std::string{1, matchChar});
     }
 
-    std::string TStringFormat(const char *formatting) {
-        return std::string{formatting};
-    }
-
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip) {
         std::string returnString{stringToStrip};
         if (returnString.find(whatToStrip) == std::string::npos) {

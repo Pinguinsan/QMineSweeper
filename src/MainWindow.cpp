@@ -239,8 +239,7 @@ void MainWindow::onOpenActionTriggered() {
     fileDialog.setConfirmOverwrite(false);
     fileDialog.setFileMode(QFileDialog::FileMode::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
-    fileDialog.setNameFilter(
-            QString{MainWindow::tr("QMineSweeper files : (*.%1)")}.arg(QmsStrings::SAVED_GAME_FILE_EXTENSION));
+    fileDialog.setNameFilter(QString{MainWindow::tr("QMineSweeper files : (*.%1)")}.arg(QmsStrings::SAVED_GAME_FILE_EXTENSION));
     QString maybeNewGamePath{fileDialog.getOpenFileName(this, MainWindow::tr(QmsStrings::OPEN_FILE_CAPTION))};
 
     if (maybeNewGamePath.isEmpty()) {
@@ -252,8 +251,7 @@ void MainWindow::onOpenActionTriggered() {
     gameController->loadGame(maybeNewGamePath);
 }
 
-void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::string> &loadResult,
-                                     const QmsGameState &gameState) {
+void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::string> &loadResult, const QmsGameState &gameState) {
     if (loadResult.first == LoadGameStateResult::Success) {
         emit(resetGame());
         this->setupNewGame();
@@ -270,9 +268,15 @@ void MainWindow::onLoadGameCompleted(const std::pair<LoadGameStateResult, std::s
         for (const auto &it : gameController->mineSweeperButtons()) {
             auto button = it.second;
             if (button->isRevealed()) {
-                button->reveal();
+                this->displayMineFromLoad(button.get());
+            } else if (button->hasFlag()) {
+                button->setHasFlag(true);
+            } else if (button->hasQuestionMark()) {
+                button->setHasQuestionMark(true);
             }
         }
+        this->m_ui->numberOfMoves->setDataSource(gameController->numbersOfMovesMadeDataSource());
+        this->m_ui->minesRemaining->setDataSource(gameController->userDisplayNumbersOfMinesDataSource());
         emit(gameResumed());
         return;
     }
@@ -431,17 +435,15 @@ void MainWindow::onGameWon() {
         if (it.second->hasMine()) {
             if (it.second->hasFlag()) {
                 it.second->setIcon(applicationIcons->STATUS_ICON_FLAG_CHECK);
-                it.second->setChecked(true);
             } else {
                 it.second->setIcon(applicationIcons->MINE_ICON_72);
-                it.second->setChecked(true);
                 it.second->setStyleSheet(UNCOVERED_MINE_STYLESHEET);
             }
         } else if (it.second->hasFlag()) {
             it.second->setIcon(applicationIcons->STATUS_ICON_FLAG_X);
-            it.second->setChecked(true);
         }
         it.second->setIsRevealed(true);
+        it.second->setChecked(true);
     }
     std::unique_ptr<QMessageBox> winBox{new QMessageBox{}};
     winBox->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
@@ -500,19 +502,29 @@ void MainWindow::onGameResumed() {
     }
 }
 
-/* displayMine() : Called via the click handlers or other code (maybe onGameWon())
+/* displayMineSquare() : Called via the click handlers or other code (maybe onGameWon())
  * to provide a consistent way to display a mine on the MainWindow. First the number
  * of surrounding mines is drawn (the push button icon is set to the correct number
  * of surrounding mines), then a mineDisplayed() signal is emitted, to inform anything
  * connected that a mine is being displayed, then recursively check for other empty mines */
-void MainWindow::displayMine(QmsButton *msb) {
+void MainWindow::displayMineSquare(QmsButton *msb) {
     drawNumberOfSurroundingMines(msb);
     msb->setFlat(true);
     msb->setChecked(true);
+    msb->setIsRevealed(true);
     emit(mineDisplayed());
     if (msb->numberOfSurroundingMines() == 0) {
         gameController->checkForOtherEmptyMines(msb);
     }
+}
+
+/* displayMineFromLoad() : Called after loading a game file from disk,
+ * prevents all of the other events from being fired so we just display the mine */
+void MainWindow::displayMineFromLoad(QmsButton *msb) {
+    drawNumberOfSurroundingMines(msb);
+    msb->setFlat(true);
+    msb->setChecked(true);
+    msb->setIsRevealed(true);
 }
 
 /*

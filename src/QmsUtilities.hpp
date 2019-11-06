@@ -29,6 +29,7 @@ namespace QmsUtilities {
         return dynamic_cast<std::stringstream &>(std::stringstream{} << t).str();
     }
 
+
     bool clearDirectoryOfFiles(const QString &dir);
     void checkOrCreateProgramLogDirectory();
     void checkOrCreateProgramSettingsDirectory();
@@ -155,12 +156,13 @@ namespace QmsUtilities {
     int stringToInt(const std::string &str);
     int stringToInt(const char *str);
 
+
     /*Base case to break recursion*/
-    std::string TStringFormat(const char *formatting);
+    inline std::string CSStringFormat(const char *formatting) { return formatting; }
 
     /*C# style String.Format()*/
-    template<typename First, typename ... Args>
-    std::string TStringFormat(const char *formatting, First &first, Args &... args) {
+    template <typename First, typename ... Args>
+    std::string CSStringFormat(const char *formatting, First&& first, Args&& ... args) {
         /* Match exactly one opening brace, one or more numeric digit,
         * then exactly one closing brace, identifying a token */
         static const std::regex targetRegex{"\\{[0-9]+\\}"};
@@ -185,21 +187,21 @@ namespace QmsUtilities {
         using TokenInformation = std::tuple<int, size_t, size_t>;
         std::vector<TokenInformation> smallestValueInformation{std::make_tuple(-1, 0, 0)};
 
-        /*Iterate through string, finding position and lengths of all matches {x}*/
-        while (std::regex_search(copyString, match, targetRegex)) {
-            /*Get the absolute position of the match in the original return string*/
-            size_t foundPosition{match.position() + (returnString.length() - copyString.length())};
-            int regexMatchNumericValue{0};
-            try {
+        try {
+            /*Iterate through string, finding position and lengths of all matches {x}*/
+            while(std::regex_search(copyString, match, targetRegex)) {
+                /*Get the absolute position of the match in the original return string*/
+                size_t foundPosition{match.position() + (returnString.length() - copyString.length())};
+                int regexMatchNumericValue{0};
                 /*Convert the integer value between the opening and closing braces to an int to compare */
-                regexMatchNumericValue = stringToInt(
-                        returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
+                auto regexMatchNumericString = returnString.substr(foundPosition + 1, match.str().length() - 2);
+                regexMatchNumericValue = stringToInt(regexMatchNumericString);
 
                 /*Do not allow negative numbers, although this should never get picked up the regex anyway*/
                 if (regexMatchNumericValue < 0) {
-                    throw std::runtime_error(
-                            TStringFormat("ERROR: In TStringFormat() - Formatted string is invalid (formatting = {0})",
-                                          formatting));
+                    std::stringstream message{};
+                    message << "ERROR: In CSStringFormat() - Formatted string is invalid (formatting = " << formatting << ")";
+                    throw std::runtime_error(message.str());
                 }
                 /* If the numeric value in the curly brace token is smaller than
                 * the current smallest (or if the smallest value has not yet been set,
@@ -208,52 +210,46 @@ namespace QmsUtilities {
                 int smallestValue{std::get<0>(smallestValueInformation.at(0))};
                 if ((smallestValue == -1) || (regexMatchNumericValue < smallestValue)) {
                     smallestValueInformation.clear();
-                    smallestValueInformation.push_back(std::make_tuple(regexMatchNumericValue,
-                                                                       foundPosition,
-                                                                       match.str().length()));
+                    smallestValueInformation.emplace_back(std::make_tuple(regexMatchNumericValue, foundPosition, match.str().length()));
                 } else if (regexMatchNumericValue == smallestValue) {
-                    smallestValueInformation.push_back(std::make_tuple(regexMatchNumericValue,
-                                                                       foundPosition,
-                                                                       match.str().length()));
+                    smallestValueInformation.emplace_back(std::make_tuple(regexMatchNumericValue, foundPosition, match.str().length()));
                 }
-            } catch (const std::exception &e) {
-                //TODO: Throw instead of just output exception 
-                std::cout << e.what() << std::endl;
+                copyString = match.suffix();
             }
-            copyString = match.suffix();
-        }
-        int smallestValue{std::get<0>(smallestValueInformation.at(0))};
-        if (smallestValue == -1) {
-            throw std::runtime_error(
-                    TStringFormat("ERROR: In TStringFormat() - Formatted string is invalid (formatting = {0})",
-                                  formatting));
-        }
-        /* Set the returnString to be up to the brace token, then the string
-        * representation of current argument in line (first), then the remainder
-        * of the format string, effectively removing the token and replacing it
-        * with the requested item in the final string, then pass it off recursively */
+            int smallestValue{std::get<0>(smallestValueInformation.at(0))};
+            if (smallestValue == -1) {
+                return returnString;
+            }
+            /* Set the returnString to be up to the brace token, then the string
+            * representation of current argument in line (first), then the remainder
+            * of the format string, effectively removing the token and replacing it
+            * with the requested item in the final string, then pass it off recursively */
 
-        std::string firstString{toStdString(first)};
-        int index{0};
-        for (const auto &it : smallestValueInformation) {
-            size_t smallestValueLength{std::get<2>(it)};
+            std::string firstString{toStdString(first)};
+            int index{0};
+            for (const auto &it : smallestValueInformation) {
+                size_t smallestValueLength{std::get<2>(it)};
 
 
-            /* Since the original string will be modified, the adjusted position must be 
-            calculated for any repeated brace tokens, kept track of by index.
-            The length of string representation of first mutiplied by which the iterationn count
-            is added, and the length of the brace token multiplied by the iteration count is
-            subtracted, resulting in the correct starting position of the current brace token */
-            size_t lengthOfTokenBracesRemoved{index * smallestValueLength};
-            size_t lengthOfStringAdded{index * firstString.length()};
-            size_t smallestValueAdjustedPosition{std::get<1>(it) + lengthOfStringAdded - lengthOfTokenBracesRemoved};
-            returnString = returnString.substr(0, smallestValueAdjustedPosition)
-                           + firstString
-                           + returnString.substr(smallestValueAdjustedPosition + smallestValueLength);
-            index++;
+                /* Since the original string will be modified, the adjusted position must be
+                calculated for any repeated brace tokens, kept track of by index.
+                The length of string representation of first mutiplied by which the iterationn count
+                is added, and the length of the brace token multiplied by the iteration count is
+                subtracted, resulting in the correct starting position of the current brace token */
+                size_t lengthOfTokenBracesRemoved{index * smallestValueLength};
+                size_t lengthOfStringAdded{index * firstString.length()};
+                size_t smallestValueAdjustedPosition{std::get<1>(it) + lengthOfStringAdded - lengthOfTokenBracesRemoved};
+                returnString = returnString.substr(0, smallestValueAdjustedPosition) + firstString + returnString.substr(smallestValueAdjustedPosition + smallestValueLength);
+                index++;
+            }
+            return CSStringFormat(returnString.c_str(), args...);
+        } catch (const std::exception &e) {
+            //If we fail something, just return invalid formatting
+            (void)e;
+            return returnString;
         }
-        return TStringFormat(returnString.c_str(), args...);
     }
+
 
     template<typename ... Args>
     QString QStringFormat(const char *format, Args ... args) {

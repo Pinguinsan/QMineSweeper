@@ -93,7 +93,7 @@ bool MineCoordinates::operator>=(const MineCoordinates &compareObject) const {
 
 /* toString() : A string representation of the coordinate pair */
 std::string MineCoordinates::toString() const {
-    return QmsUtilities::TStringFormat("({0},{1})", this->m_x, this->m_y);
+    return QmsUtilities::CSStringFormat("({0},{1})", this->m_x, this->m_y);
 }
 
 /* toQString() : A string representation of the coordinate pair */

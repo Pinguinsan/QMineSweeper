@@ -11,6 +11,8 @@
 #include "QmsApplicationSettings.hpp"
 #include "GlobalDefinitions.hpp"
 
+using QmsUtilities::CSStringFormat;
+
 const std::pair<int, int> BoardResizeWidget::DEFAULT_ROW_MIN_MAX{3, 1000};
 const std::pair<int, int> BoardResizeWidget::DEFAULT_COLUMN_MIN_MAX{3, 1000};
 const std::pair<int, int> BoardResizeWidget::BEGINNER_GAME_DIMENSIONS{9, 9};

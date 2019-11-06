@@ -293,7 +293,9 @@ std::pair<LoadGameStateResult, std::string> GameController::loadGame(const QStri
     QmsGameState loadedState;
     const auto result = QmsGameState::loadFromFile(filePath, loadedState);
     if (result.first == LoadGameStateResult::Success) {
-        //Maybe do stuff
+
+    } else {
+
     }
     emit(loadGameCompleted(result, loadedState));
     return result;
@@ -319,7 +321,7 @@ void GameController::onGameReset() {
     this->m_qmsGameState->m_gameState = GameState::GameInactive;
     this->m_qmsGameState->m_numberOfMovesMade = 0;
     this->m_qmsGameState->m_unopenedMineCount =
-            this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows;
+    this->m_qmsGameState->m_numberOfColumns * this->m_qmsGameState->m_numberOfRows;
 }
 
 void GameController::setGameOver(bool gameOver) {
@@ -396,7 +398,7 @@ void GameController::checkForOtherEmptyMines(QmsButton *msbp) {
                     (!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->isChecked()) &&
                     (!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->hasQuestionMark()) &&
                     (!this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck)->hasFlag())) {
-                    this->m_mainWindow->displayMine(this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck).get());
+                    this->m_mainWindow->displayMineSquare(this->m_qmsGameState->m_mineSweeperButtons.at(minePairCheck).get());
                 }
             }
         }
@@ -443,10 +445,10 @@ void GameController::onMineSweeperButtonLeftClickReleased(QmsButton *msbp) {
         emit(mineExplosionEvent());
     } else if (msbp->isChecked() || msbp->isRevealed()) {
         LOG_INFO() << QString{"Force reveal of button %1"}.arg(msbp->toQString());
-        this->m_mainWindow->displayMine(msbp);
+        this->m_mainWindow->displayMineSquare(msbp);
     } else {
         this->incrementNumberOfMovesMade();
-        this->m_mainWindow->displayMine(msbp);
+        this->m_mainWindow->displayMineSquare(msbp);
         if (msbp->numberOfSurroundingMines() == 0) {
             this->startResetIconTimer(static_cast<unsigned int>(this->s_DEFAULT_BIG_SMILEY_FACE_TIMEOUT),
                                       applicationIcons->FACE_ICON_BIG_SMILEY);

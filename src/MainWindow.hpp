@@ -64,7 +64,8 @@ public:
     void populateMineField();
     void displayAllMines();
     void resizeResetIcon();
-    void displayMine(QmsButton *msb);
+    void displayMineSquare(QmsButton *msb);
+    void displayMineFromLoad(QmsButton *msb);
     void setResetButtonIcon(const QIcon &icon);
     void drawNumberOfSurroundingMines(QmsButton *msb);
     void setLanguage(QmsSettingsLoader::SupportedLanguage newLanguage);

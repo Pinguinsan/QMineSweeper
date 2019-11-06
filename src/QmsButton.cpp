@@ -112,7 +112,7 @@ void QmsButton::initialize() {
 }
 
 std::string QmsButton::toString() const {
-    //return QmsUtilities::TStringFormat("[QmsButtom] ({0}, {1})", this->m_columnIndex, this->m_rowIndex);
+    //return QmsUtilities::CSStringFormat("[QmsButtom] ({0}, {1})", this->m_columnIndex, this->m_rowIndex);
     return this->toQString().toStdString();
 }
 
@@ -263,11 +263,11 @@ void QmsButton::setNumberOfSurroundingMines(int numberOfSurroundingMines) {
     using namespace QmsUtilities;
     using namespace QmsStrings;
     if (numberOfSurroundingMines < 0) {
-        throw std::runtime_error(TStringFormat(
+        throw std::runtime_error(CSStringFormat(
                 "ERROR: In QmsButton::setNumberOfSurroundingMines(int): Argument may not be less than zero ({0} < 0)",
                 numberOfSurroundingMines));
     } else if (numberOfSurroundingMines > 8) {
-        throw std::runtime_error(TStringFormat(
+        throw std::runtime_error(CSStringFormat(
                 "ERROR: In QmsButton::setNumberOfSurroundingMines(int): Argument may not be greater than maximum number of surrounding mines ({0} > {1})",
                 numberOfSurroundingMines, QmsButton::MAXIMUM_NUMBER_OF_SURROUNDING_MINES));
     } else {
