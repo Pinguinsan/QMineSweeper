@@ -17,8 +17,8 @@ const std::pair<int, int> BoardResizeWidget::DEFAULT_ROW_MIN_MAX{3, 1000};
 const std::pair<int, int> BoardResizeWidget::DEFAULT_COLUMN_MIN_MAX{3, 1000};
 const std::pair<int, int> BoardResizeWidget::BEGINNER_GAME_DIMENSIONS{9, 9};
 const std::pair<int, int> BoardResizeWidget::INTERMEDIATE_GAME_DIMENSIONS{18, 9};
-const std::pair<int, int> BoardResizeWidget::ADVANCED_GAME_DIMENSIONS{18, 18};
-const std::pair<int, int> BoardResizeWidget::EXTREME_GAME_DIMENSIONS{24, 24};
+const std::pair<int, int> BoardResizeWidget::ADVANCED_GAME_DIMENSIONS{24, 18};
+const std::pair<int, int> BoardResizeWidget::EXTREME_GAME_DIMENSIONS{32, 18};
 
 BoardResizeWidget::BoardResizeWidget(QWidget *parent) :
         MouseMoveableQWidget{parent},
