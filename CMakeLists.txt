@@ -44,21 +44,6 @@ if (WIN32)
         set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${COVERAGE_LINK_FLAGS}")
     endif()
 
-
-    #Change this variable to the current Qt root!
-    #if (NOT QT_ROOT)
-    #    set(QT_ROOT "C:/Qt/5.12.0")
-    #endif()
-    ##Change this variable to the mingw version used by your Qt build version (NOT THE COMPILER PATH)
-    #if (WIN_COMPILER STREQUAL "MSVC")
-    #    if (NOT QT_MSVC_VERSION)
-    #        set (QT_MSVC_VERSION "msvc2017_64")
-    #    endif()
-    #else()
-    #    if (NOT QT_MINGW_VERSION)
-    #        set(QT_MINGW_VERSION "mingw73_64")
-    #    endif()
-    #endif()
     include(cmake/FindQt5.cmake)
     if (QT_MISSING)
         message(FATAL_ERROR "Could not find Qt")
@@ -114,9 +99,17 @@ endforeach(Qt5Package)
 
 
 set (SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set (INCLUDE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set (HEADER_ROOT "${INCLUDE_ROOT}")
 set (RESOURCES_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set (FORMS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/forms")
 set (THIRD_PARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
+
+
+file(GLOB SOURCE_FILES_GLOB "${SOURCE_ROOT}/*.cpp")
+file(GLOB HEADER_FILES_GLOB "${HEADER_ROOT}/*.h*")
+file(GLOB FORM_FILES_GLOB "${FORMS_ROOT}/*.ui*")
+file(GLOB RESOURCE_FILES_GLOB "${RESOURCES_ROOT}/*.qrc*")
 
 if (WIN32 OR WIN64)
     if (WIN_COMPILER STREQUAL "MSVC")
@@ -129,63 +122,18 @@ else()
     set (PLATFORM_SPECIFIC_LIBS pthread)
 endif()
 
-set (${PROJECT_NAME}_SOURCE_FILES
-        "${SOURCE_ROOT}/Main.cpp"
-        "${SOURCE_ROOT}/MainWindow.cpp"
-        "${SOURCE_ROOT}/GameController.cpp"
-        "${SOURCE_ROOT}/MineCoordinates.cpp"
-        "${SOURCE_ROOT}/QmsIcons.cpp"
-        "${SOURCE_ROOT}/QmsUtilities.cpp"
-        "${SOURCE_ROOT}/QmsSoundEffects.cpp"
-        "${SOURCE_ROOT}/QmsButton.cpp"
-        "${SOURCE_ROOT}/QmsSettingsLoader.cpp"
-        "${SOURCE_ROOT}/QmsApplicationSettings.cpp"
-        "${SOURCE_ROOT}/BoardResizeWidget.cpp"
-        "${SOURCE_ROOT}/MouseMoveableQMainWindow.cpp"
-        "${SOURCE_ROOT}/MouseMoveableQWidget.cpp"
-		"${SOURCE_ROOT}/AboutApplicationWidget.cpp"
-        "${SOURCE_ROOT}/QmsGameState.cpp"
-        "${SOURCE_ROOT}/AutoUpdateLCD.cpp"
-     "${SOURCE_ROOT}/StaticLogger.cpp"
-     "${SOURCE_ROOT}/PrettyPrinter.cpp")
 
-set(${PROJECT_NAME}_HEADER_FILES
-        "${SOURCE_ROOT}/QmsGameState.hpp"
-        "${SOURCE_ROOT}/MouseMoveableQWidget.hpp"
-        "${SOURCE_ROOT}/MouseMoveableQMainWindow.hpp"
-        "${SOURCE_ROOT}/BoardResizeWidget.hpp"
-        "${SOURCE_ROOT}/QmsApplicationSettings.hpp"
-        "${SOURCE_ROOT}/QmsSettingsLoader.hpp"
-        "${SOURCE_ROOT}/QmsButton.hpp"
-        "${SOURCE_ROOT}/QmsSoundEffects.hpp"
-        "${SOURCE_ROOT}/QmsUtilities.hpp"
-        "${SOURCE_ROOT}/QmsIcons.hpp"
-        "${SOURCE_ROOT}/QmsStrings.hpp"
-        "${SOURCE_ROOT}/ProgramOption.hpp"
-        "${SOURCE_ROOT}/MineCoordinates.hpp"
-        "${SOURCE_ROOT}/GameController.hpp"
-        "${SOURCE_ROOT}/MainWindow.hpp"
-        "${SOURCE_ROOT}/AboutApplicationWidget.hpp"
-        "${SOURCE_ROOT}/Version.hpp"
-        "${SOURCE_ROOT}/EventTimer.hpp"
-        "${SOURCE_ROOT}/GlobalDefinitions.hpp"
-        "${SOURCE_ROOT}/MineCoordinateHash.hpp"
-        "${SOURCE_ROOT}/ChangeAwareValue.hpp"
-        "${SOURCE_ROOT}/AutoUpdateLCD.hpp"
-        "${SOURCE_ROOT}/AbstractEventNotifier.hpp"
-        "${SOURCE_ROOT}/StaticLogger.hpp"
-        "${SOURCE_ROOT}/PrettyPrinter.hpp")
+set(${PROJECT_NAME}_SOURCE_FILES
+    ${SOURCE_FILES_GLOB})
 
+set (${PROJECT_NAME}_HEADER_FILES
+     ${HEADER_FILES_GLOB})
 
 set (${PROJECT_NAME}_FORMS
-        "${FORMS_ROOT}/MainWindow.ui"
-        "${FORMS_ROOT}/BoardResizeWidget.ui"
-		"${FORMS_ROOT}/AboutApplicationWidget.ui")
+     ${FORM_FILES_GLOB})
 
 set (${PROJECT_NAME}_RESOURCES
-        "${RESOURCES_ROOT}/icons.qrc"
-        "${RESOURCES_ROOT}/sounds.qrc"
-        "${RESOURCES_ROOT}/translations.qrc")
+     ${RESOURCE_FILES_GLOB})
 
 
 qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
@@ -198,7 +146,7 @@ if (WIN32)
             ${${PROJECT_NAME}_HEADER_FILES}
             ${${PROJECT_NAME}_FORMS}
             ${${PROJECT_NAME}_RESOURCES_RCC}
-            "${RESOURCES_ROOT}/QMineSweeper.rc")
+            "${RESOURCES_ROOT}/${PROJECT_NAME}.rc")
 
 
     if (WIN_COMPILER STREQUAL "MSVC")
